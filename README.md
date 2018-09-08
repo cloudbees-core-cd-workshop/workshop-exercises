@@ -18,7 +18,7 @@ To get started goto the [**Set-up Instructions**](Setup.md).
 **The exercises covered in the workshop are available at the following links:**
 
   * [**Introduction to Pipelines with CloudBees Core**](exercises/intro-pipeline-cb-core.md)
-  * [**Declarative Syntax with CloudBees Core Pipelines](exercises/declarative-snytax-cb-core.md)
+  * [**Declarative Syntax with CloudBees Core Pipelines**](exercises/declarative-snytax-cb-core.md)
   * [**Advanced Pipelines with CloudBees Core**](exercises/advanced-pipeline-cb-core.md)
 
 # Training Prerequisites
