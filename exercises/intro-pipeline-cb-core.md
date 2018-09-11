@@ -8,59 +8,60 @@ First, let's add your GitHub credentials to the Jenkins' Credentials manager:
 
 1. Navigate back to your personal folder in Jenkins
 2. Click on **Credentials**
-3. Click on **[YourFolderName]** under **Stores Scoped to [YourFolderName]**
-4. Click on **Global Credentials (Unrestricted)**
-5. Click on **Add Credentials**
-6. Fill out the form (**Username with password**)
-  - **Username**: The Github organization name
-  - **Password**: Your Github personal access token [created in setup](../Setup.md#create-a-github-personal-access-token)
+3. Click on the **(global)** link under **Stores Scoped to [YourFolderName]** (in this case **beedemo-dev**) <p><img src="img/intro/credential_folder_scope.png" width=500/>
+4. Click on **Add Credentials** in the left menu
+5. Fill out the form (**Username with password**)
+  - **Username**: The GitHub user name
+  - **Password**: Your GitHub personal access token [created in setup](../Setup.md#create-a-github-personal-access-token)
   - **ID**: Create an ID for your credentials (something like **yourorg-github-token**)
-  - **Description**: Can be left blank if you want
-7. Click on **OK**
+  - **Description**: Can be left blank if you want <p><img src="img/intro/credential_github_token_save.png" width=500/>
+6. Click on **OK**
 
 Now let's create the Github Organization project:
 
 1. Click on **New Item**
-2. Enter your organization name as the **Item Name**
-3. Select **GitHub Organization**
+2. Enter your GitHub Organization name as the **Item Name** 
+3. Select **GitHub Organization** <p><img src="img/intro/org_folder_item.png" width=500/>
 4. Click **Ok**
 5. Select the credentials you created above from the **Credentials** drop down
-6. Select **All** from the **Strategy** drop down under **Discover Branches**
+6. Select **All** from the **Strategy** drop down under **Discover Branches** <p><img src="img/intro/org_folder_scm_config.png" width=500/>
 7. **DON'T SAVE**
 
 Continue to the next exercise.
 
 ## Custom Marker Files
 
-In this exercise we are going to demonstrate how you can use the **[Custom Marker feature](https://go.cloudbees.com/docs/cloudbees-documentation/cje-user-guide/#pipeline-custom-factories)** of CloudBees Core to associate an externally managed Pipeline script to a job based on any arbitrary **marker file** like `pom.xml`.
+In this exercise we are going to demonstrate how you can use the **[Custom Marker feature](https://go.cloudbees.com/docs/cloudbees-documentation/cje-user-guide/#pipeline-custom-factories)** of CloudBees Core to associate an externally managed Pipeline script to a job based on any arbitrary **marker file** like `pom.xml` or something slightly more declarative like `.nodejs-app`.
 
 In order to complete the following exercise you should have [forked the following repositories](../Setup.md#fork-the-workshop-repositories) into the Github Organization you created in **[Setup - Create a GitHub Organization](../Setup.md#create-a-github-organization)**:
 
-* https://github.com/PipelineHandsOn/maven-project
-* https://github.com/PipelineHandsOn/custom-marker-files
+1. https://github.com/cloudbees-cd-acceleration-workshop/custom-marker-pipelines 
+2. https://github.com/cloudbees-cd-acceleration-workshop/helloworld-nodejs 
+
+Your GitHub Organization should look like the following:
+<p><img src="img/intro/fork_repos_into_org.png" width=500/>
 
 Once those repositories are forked:
 
-1. In the Github organization project you created in the previous exercise scroll down to the **Project Recognizers** section.
+1. In the Github organization project you started to create in the previous exercise scroll down to the **Project Recognizers** section.
 2. Under **Project Recognizers** select **Custom Script**
-3. In **Marker file** type `.foo-bar`
+3. In **Marker file** type `.nodejs-app`
 4. Under **Pipeline** - **Definition** select **Pipeline script from SCM**
 5. Select **Git** from **SCM**
 6. In **Repository URL** enter: `https://github.com/{your_org_name}/custom-marker-files`
 7. Select the credentials you created in the previous exercise.
-8. In **Script path** enter: `foo-bar/Jenkinsfile.template`
+8. In **Script path** enter: `nodejs-app/Jenkinsfile.template`. Other than the GitHub Organization name it should look like the following:
+<p><img src="img/intro/org_folder_marker_config.png" width=500/>
 9. Click on **Save**
 10. Click on **Scan Organization Now**
 
-When the scan is complete your **Github Organization** project should be **empty**!
+When the scan is complete your **Github Organization** project should be **empty**! But, when the project was created it also should have created a webhook in Github. Verify that the webhook was created in Github by checking **Webhooks** within your Organization's Github **Settings**.
 
-When the project was created it also should have created a webhook in Github. Verify that the webhooks were created in Github by checking **Webhooks** within your Organization's Github **Settings**.
-
-> **NOTE:** The ***custom-marker-files*** repository does not get added to your **Github Organization** project since in doesn't contain a matching marker file: `Jenkinsfile` or `pom.xml`.
+> **NOTE:** The ***custom-marker-files*** repository does not get added to your **Github Organization** project since in doesn't contain a matching marker file yet: `.nodejs-app`.
 
 ## Basic Declarative Syntax Structure
 
-In this exercise we update your `foo-bar/Jenkinsfile.template` Declarative Pipeline using the GitHub editor so that it will actually do something!
+In this exercise we update your `nodejs-app/Jenkinsfile.template` Declarative Pipeline using the GitHub editor so that it will actually do something!
 
 Declarative Pipelines must be enclosed within a `pipeline` block and must contain a top-level `agent` declaration, and then must contain exactly one `stages` block. The `stages` block must have at least one `stage` block but can have an unlimited number of additional stages. Each `stage` block must have exactly one `steps` block. The Blue Ocean editor takes care of much of this for you but we will need to add a `stage` and `steps`.
 
