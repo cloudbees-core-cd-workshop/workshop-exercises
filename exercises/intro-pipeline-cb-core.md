@@ -24,8 +24,9 @@ Now let's create the Github Organization project:
 3. Select **GitHub Organization** <p><img src="img/intro/org_folder_item.png" width=500/>
 4. Click **Ok**
 5. Select the credentials you created above from the **Credentials** drop down
-6. Select **All** from the **Strategy** drop down under **Discover Branches** <p><img src="img/intro/org_folder_scm_config.png" width=500/>
-7. **DON'T SAVE**
+6. Select **All** from the **Strategy** drop down under **Discover Branches** 
+7. Make sure that the **Owner** field matches the name of your GitHub Organization name. <p><img src="img/intro/org_folder_scm_config.png" width=500/>
+8. **DON'T SAVE YET**
 
 Continue to the next exercise.
 
@@ -44,20 +45,19 @@ Your GitHub Organization should look like the following:
 Once those repositories are forked:
 
 1. In the Github organization project you started to create in the previous exercise scroll down to the **Project Recognizers** section.
-2. Under **Project Recognizers** select **Custom Script**
+2. Delete the default **Project Recognizer** **Pipeline Jenkinsfile**. <p><img src="img/intro/custom_marker_delete_default.png" width=500/>
+3. Next, under **Project Recognizers** click the **Add** button and select **Custom Script** <p><img src="img/intro/custom_marker_add_custom_script.png" width=400/>
 3. In **Marker file** type `.nodejs-app`
 4. Under **Pipeline** - **Definition** select **Pipeline script from SCM**
 5. Select **Git** from **SCM**
 6. In **Repository URL** enter: `https://github.com/{your_org_name}/custom-marker-files`
 7. Select the credentials you created in the previous exercise.
-8. In **Script path** enter: `nodejs-app/Jenkinsfile.template`. Other than the GitHub Organization name it should look like the following:
-<p><img src="img/intro/org_folder_marker_config.png" width=500/>
+8. In **Script path** enter: `nodejs-app/Jenkinsfile.template`. Other than the GitHub Organization name it should look like the following: <p><img src="img/intro/custom_marker_config.png" width=550/>
 9. Click on **Save**
-10. Click on **Scan Organization Now**
+11. When the scan is complete your **Github Organization** project should be **empty**! <p><img src="img/intro/custom_marker_empty.png" width=500/> But, when the project was created it also should have created a webhook in Github. Verify that the webhook was created in Github by checking **Webhooks** within your Organization's Github **Settings**.
+12. In your forked copy of the **hello-nodejs** repository click on the **Add file** button towards the top right of the screen.
 
-When the scan is complete your **Github Organization** project should be **empty**! But, when the project was created it also should have created a webhook in Github. Verify that the webhook was created in Github by checking **Webhooks** within your Organization's Github **Settings**.
-
-> **NOTE:** The ***custom-marker-files*** repository does not get added to your **Github Organization** project since in doesn't contain a matching marker file yet: `.nodejs-app`.
+> **NOTE:** The ***custom-marker-files*** repository does not get added to your **Github Organization** project since in doesn't contain a matching marker file: `.nodejs-app`.
 
 ## Basic Declarative Syntax Structure
 
