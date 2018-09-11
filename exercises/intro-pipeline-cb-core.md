@@ -54,29 +54,35 @@ Once those repositories are forked:
 7. Select the credentials you created in the previous exercise.
 8. In **Script path** enter: `nodejs-app/Jenkinsfile.template`. Other than the GitHub Organization name it should look like the following: <p><img src="img/intro/custom_marker_config.png" width=550/>
 9. Click on **Save**
-11. When the scan is complete your **Github Organization** project should be **empty**! <p><img src="img/intro/custom_marker_empty.png" width=500/> But, when the project was created it also should have created a webhook in Github. Verify that the webhook was created in Github by checking **Webhooks** within your Organization's Github **Settings**.
-12. In your forked copy of the **hello-nodejs** repository click on the **Add file** button towards the top right of the screen.
+11. When the scan is complete your **Github Organization** project should be **empty**! <p><img src="img/intro/custom_marker_empty.png" width=500/> <p>But, when the project was created it also should have created a webhook in Github. Verify that the webhook was created in Github by checking **Webhooks** within your Organization's Github **Settings**. <p><img src="img/intro/custom_marker_org_webhook.png" width=500/>
+12. In your forked copy of the **helloworld-nodejs** repository click on the **Add file** button towards the top right of the screen. <p><img src="img/intro/custom_marker_create_file.png" width=500/>
+13. Name the file `.nodejs-app` - no need to add any content - and click the **Commit new file** button at the bottom of the screen to save it your repository master branch.
+14. Navigate back to your GitHub Organization Folder project on your CloudBees Team Master and voila - you have a new Pipeline Multibranch project mapped to the the **helloworld-nodejs** repository thanks to the the GitHub Organization webhook that was created when we first save the GitHub Organization Folder project. Notice how the **helloworld-nodej** Multibranch Pipelein project's description came from the GitHub repository description. <p><img src="img/intro/custom_marker_with_multibranch.png" width=500/>
 
-> **NOTE:** The ***custom-marker-files*** repository does not get added to your **Github Organization** project since in doesn't contain a matching marker file: `.nodejs-app`.
+> **NOTE:** The ***custom-marker-files*** repository does not get added to your **Github Organization** project since in doesn't and will never contain a matching marker file: `.nodejs-app`.
 
 ## Basic Declarative Syntax Structure
 
-In this exercise we update your `nodejs-app/Jenkinsfile.template` Declarative Pipeline using the GitHub editor so that it will actually do something!
+In this exercise we update the `nodejs-app/Jenkinsfile.template` Declarative Pipeline using the GitHub editor so that it will actually do something as opposed to the following error that everyone should have seen in their build log:
 
-Declarative Pipelines must be enclosed within a `pipeline` block and must contain a top-level `agent` declaration, and then must contain exactly one `stages` block. The `stages` block must have at least one `stage` block but can have an unlimited number of additional stages. Each `stage` block must have exactly one `steps` block. The Blue Ocean editor takes care of much of this for you but we will need to add a `stage` and `steps`.
+```
+WorkflowScript: 1: Missing required section "stages" @ line 1, column 1.
+   pipeline {
+   ^
+
+WorkflowScript: 1: Missing required section "agent" @ line 1, column 1.
+   pipeline {
+   ^
+
+2 errors
+```
+
+Declarative Pipelines must be enclosed within a `pipeline` block - which we have. But they must also contain a top-level `agent` declaration, and then must contain exactly one `stages` block. The `stages` block must have at least one `stage` block but can have an unlimited number of additional stages. Each `stage` block must have exactly one `steps` block. 
 
 Using the Blue Ocean Pipeline editor we setup in the previous exercise, do the following:
 
-1. You should see the **You don't have any branches that contain a Jenkinsfile** dialog, click on the **Create Pipeline** button (NOTE: If you already had a `Jenkinsfile` in your repository then the editor should open straight-away) <p><img src="img/1-1-create-pipeline-no-jenkinsfile.png" width=300/>
-2. Click on the **+** icon next to the pipeline's **Start** node to add a `stage` <p><img src="img/1-basic-syntax-add-stage.png" width=400/>
-3. Click into **Name your stage** and type in the text 'Say Hello'
-4. Click on the **+ Add step** button <p><img src="img/1-basic-syntax-add-step.png" width=400/>
-5. Click on the **Print Message** step and type in ***Hello World!*** as the **Message**
-6. Click on the **<-** (arrow) next to the **'Say Hello / Print Message'** text to add another step <p><img src="img/1-1-print-message-then-add-step.png" width=300/>
-7. Click on the **+ Add step** button
-8. Click on the **Shell Script** step and enter `java -version` into the text area
-9. Press the key combination `CTRL + S` to open the Blue Ocean free-form editor and you should see a Pipeline similar to the one below **(click anywhere outside the editor to close it)**:
-
+1. We will use the GitHub file editor to update the `nodejs-app/Jenkinsfile.template` file in your forked **customer-marker-pipelines** directory.
+2. Replace the contents with the following.
 ```
 pipeline {
    agent any
@@ -90,9 +96,9 @@ pipeline {
    }
 }
 ```
-
-10. Click the **Save** button <p><img src="img/1-1-shell-step-save.png" width=350/>
-11. Enter a commit message into the **Save Pipeline** pop up and click **Save & Run** <p><img src="img/1-basic-syntax-save-run.png" width=350/>
+3. Add a commit description and then click the **Commit Changes** button witht the default selection of *Commit directly to the master branch.*
+4. Navigate back to the **helloworld-nodejs** job for the *master* branch on your Team Master and click the **Build Now** button in the left menu.
+5. Your job should complete successfully. Note some things from the log:
   
 >NOTE: You may have noticed that your Pipeline GitHub repository is being cloned even though you didn't specify that in your Jenkinsfile. Declarative Pipeline checks out source code by default using the `checkout scm` step.
 
