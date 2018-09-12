@@ -77,12 +77,10 @@ WorkflowScript: 1: Missing required section "agent" @ line 1, column 1.
 2 errors
 ```
 
-Declarative Pipelines must be enclosed within a `pipeline` block - which we have. But they must also contain a top-level `agent` declaration, and then must contain exactly one `stages` block. The `stages` block must have at least one `stage` block but can have an unlimited number of additional stages. Each `stage` block must have exactly one `steps` block. 
+Declarative Pipelines must be enclosed within a `pipeline` block - which we have. But they must also contain a top-level `agent` declaration, and must contain exactly one `stages` block. The `stages` block must have at least one `stage` block but can have an unlimited number of additional `stage` blocks. Each `stage` block must have exactly one `steps` block. 
 
-Using the Blue Ocean Pipeline editor we setup in the previous exercise, do the following:
-
-1. We will use the GitHub file editor to update the `nodejs-app/Jenkinsfile.template` file in your forked **customer-marker-pipelines** directory.
-2. Replace the contents with the following.
+1. We will use the GitHub file editor to update the `nodejs-app/Jenkinsfile.template` file in your forked **customer-marker-pipelines** directory. Navigate to the `custom-marker-pipelines/nodejs-app/Jenkinsfile.template` file in your forked repository and then click on the pencil icon to the upper right to edit that file. <p><img src="img/intro/basic_snytax_edit_github.png" width=500/>
+2. Replace the contents of that file with the following Declarative Pipeliine:
 ```
 pipeline {
    agent any
@@ -96,9 +94,32 @@ pipeline {
    }
 }
 ```
-3. Add a commit description and then click the **Commit Changes** button witht the default selection of *Commit directly to the master branch.*
-4. Navigate back to the **helloworld-nodejs** job for the *master* branch on your Team Master and click the **Build Now** button in the left menu.
+3. Add a commit description and then click the **Commit Changes** button with the default selection of *Commit directly to the master branch* selected.
+4. Navigate back to the **helloworld-nodejs** *master* branch job on your Team Master and click the **Build Now** button in the left menu.
 5. Your job should complete successfully. Note some things from the log:
+The custom marker script is being pulle from your forked *custom-marker-pipelines* forked repository:
+```
+...
+Obtained nodejs-app/Jenkinsfile.template from git https://github.com/cd-accel-beedemo/custom-marker-pipelines.git
+...
+```
+```
+...
+Agent default-jnlp-0p189 is provisioned from template Kubernetes Pod Template
+...
+```
+```
+...
+Cloning repository https://github.com/cd-accel-beedemo/helloworld-nodejs.git
+...
+```
+```
+...
+Running shell script
++ java -version
+openjdk version "1.8.0_171"
+...
+```
   
 >NOTE: You may have noticed that your Pipeline GitHub repository is being cloned even though you didn't specify that in your Jenkinsfile. Declarative Pipeline checks out source code by default using the `checkout scm` step.
 
