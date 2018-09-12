@@ -57,13 +57,13 @@ Once those repositories are forked:
 11. When the scan is complete your **Github Organization** project should be **empty**! <p><img src="img/intro/custom_marker_empty.png" width=500/> <p>But, when the project was created it also should have created a webhook in Github. Verify that the webhook was created in Github by checking **Webhooks** within your Organization's Github **Settings**. <p><img src="img/intro/custom_marker_org_webhook.png" width=500/>
 12. In your forked copy of the **helloworld-nodejs** repository click on the **Add file** button towards the top right of the screen. <p><img src="img/intro/custom_marker_create_file.png" width=500/>
 13. Name the file `.nodejs-app` - no need to add any content - and click the **Commit new file** button at the bottom of the screen to save it your repository master branch.
-14. Navigate back to your GitHub Organization Folder project on your CloudBees Team Master and voila - you have a new Pipeline Multibranch project mapped to the the **helloworld-nodejs** repository thanks to the the GitHub Organization webhook that was created when we first save the GitHub Organization Folder project. Notice how the **helloworld-nodej** Multibranch Pipelein project's description came from the GitHub repository description. <p><img src="img/intro/custom_marker_multibranch.png" width=500/>
+14. Navigate back to your GitHub Organization Folder project on your CloudBees Team Master and voila - you have a new [Pipeline Multibranch project](https://jenkins.io/doc/book/pipeline/multibranch/) mapped to the the **helloworld-nodejs** repository thanks to the the GitHub Organization webhook that was created when we first save the GitHub Organization Folder project. Notice how the **helloworld-nodej** Multibranch Pipeline project's description came from the GitHub repository description. <p><img src="img/intro/custom_marker_multibranch.png" width=500/>
 
 > **NOTE:** The ***custom-marker-files*** repository does not get added to your **Github Organization** project since in doesn't and will never contain a matching marker file: `.nodejs-app`.
 
 ## Basic Declarative Syntax Structure
 
-In this exercise we update the `nodejs-app/Jenkinsfile.template` Declarative Pipeline using the GitHub editor so that it will actually do something as opposed to the following error that everyone should have seen in their build log:
+In this exercise we will update the `nodejs-app/Jenkinsfile.template` Declarative Pipeline using the GitHub editor so that it will actually do something as opposed to resulting in the following errors:
 
 ```
 WorkflowScript: 1: Missing required section "stages" @ line 1, column 1.
@@ -97,7 +97,8 @@ pipeline {
 3. Add a commit description and then click the **Commit Changes** button with the default selection of *Commit directly to the master branch* selected.
 4. Navigate back to the **helloworld-nodejs** *master* branch job on your Team Master and click the **Build Now** button in the left menu.
 5. Your job should complete successfully. Note some things from the log:
-  1. The custom marker script is being pulled from your forked *custom-marker-pipelines* forked repository:
+  
+  1. The custom marker script - `nodejs-app/Jenkinsfile.template` - is being pulled from your forked *custom-marker-pipelines* forked repository:
 ```
 ...
 Obtained nodejs-app/Jenkinsfile.template from git https://github.com/cd-accel-beedemo/custom-marker-pipelines.git
@@ -126,14 +127,24 @@ openjdk version "1.8.0_171"
   
 >NOTE: You may have noticed that your Pipeline GitHub repository is being cloned even though you didn't specify that in your Jenkinsfile. Declarative Pipeline checks out source code by default using the `checkout scm` step.
 
-## Jenkins Kubernetes Agents
+## Kubernetes Agents for CloudBees Core
 
-In this exercise we will get an introduction to the [Jenkins Kubernetes plugin](https://github.com/jenkinsci/kubernetes-plugin) and use the `container` block to run a set of Pipelein `steps` inside a Docker container set-up in a Jenkins Kubernetes Agent Pod template. Initially we only used `agent any`. But now we want to use Node.js and our CloudBees Core Jenkins Administrator has configured the CloudBees Kubernetes Shared Cloud to include an Agent Pod template to provide a Node.js container.
+In this exercise we will get an introduction to the [Jenkins Kubernetes plugin](https://github.com/jenkinsci/kubernetes-plugin/blob/master/README.md) for running dynamic and ephemeral agents in a Kubernetes cluster - leveraging the scaling abilities of Kubernetes to schedule build agents.
 
-1. Replace the **Testing** stage with the following stage:
+CloudBees Core has built-in support for Kubernetes build agents. The agents are contained in pods, where a pod is a group of one or more containers sharing a common storage system and network. A pod is the smallest deployable unit of computing that Kubernetes can create and manage (you can read more about pods in the [Kubernetes documentation](https://kubernetes.io/docs/concepts/workloads/pods/pod/)).
+
+>NOTE: One of the containers hosts the actual Jenkins build agent (the slave.jar file). By convention, this container always exists, and has the name jnlp and default execution always goes to the jnlp container (as it did when we used `agent any` above). If needed, this may be overridden by specifying a **Container Template** with the ***Name*** `jnlp`.
+
+We will use the Pipeline `container` block to run Pipeline `steps` inside a specific container configured as part of a Jenkins Kubernetes Agent Pod template. In our initial Pipeline, we used `agent any` which required at least one Jenkins agent configured to *Use this node as much as possible* - resulting in the use of a Pod Template that only had a JNLP container. But now we want to use Node.js in our Pipeline. Luckily, our CloudBees Core Jenkins Administrator has configured the [CloudBees Core Kubernetes Shared Cloud](https://go.cloudbees.com/docs/cloudbees-core/cloud-admin-guide/agents/#_globally_editing_pod_templates_in_operations_center) to include a Kubernetes Pod Template to provide a Node.js container. <p><img src="img/intro/k8s_agent_nodejs_template.png" width=500/> <p>Take note of the ***Labels*** field and the **Container Template** ***Name*** field - both of these are important.
+
+1. First, we need to update the `agent any` directive with the following so that we will get the Kubernetes Pod Template with the containers we need for our Pipeline:
+```
+  agent 
+```
+2. Next, replace the **Say Hello** `stage` with the following stage:
 
 ```
-      stage('Testing') {
+      stage('Test') {
         parallel {
           stage('Java 8') {
             agent { label 'jdk9' }
