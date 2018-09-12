@@ -6,7 +6,11 @@ In addition to all the freely available [Jenkins Pipeline features](https://jenk
 
 In this exercise we are going to create a special type of Jenkins Pipeline project referred to as an [*Organization Folder*](https://jenkins.io/doc/book/pipeline/multibranch/#organization-folders) and more specifically a *GitHub Organization* project. The *GitHub Organization* project will scan a GitHub Organization to discover the organization’s repositories, automatically creating **managed** *Multibranch Pipeline* jobs for any repository with at least one branch containing a *project recognizer* - typically **Jenkinsfile**. We will use the GitHub Organization that you created in **[Setup - Create a GitHub Organization](./Setup.md#create-a-github-organization)**.
 
-First, let's add your GitHub credentials to the Jenkins' Credentials manager:
+We must exit the Blue Ocean UI to the Jenkins classic UI to complete the steps in this lesson.
+
+1. Click the ***Go to classic*** icon at the top of common section of Blue Ocean’s navigation bar.
+
+Now, let's add your GitHub credentials to the Jenkins' Credentials manager:
 
 1. Navigate back to your personal folder in Jenkins
 2. Click on **Credentials**
