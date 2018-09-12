@@ -1,6 +1,6 @@
 # Introduction to Pipelines with CloudBees Core
 
-In addition to all the freely available Jenkins Pipeline features, CloudBees Core provides additional features that make it easier for organizations of any size implement and manage Jenkins Pipelines for Continuous Delivery.
+In addition to all the freely available [Jenkins Pipeline features](https://jenkins.io/doc/book/pipeline/), CloudBees Core provides additional features that make it easier for organizations of any size to implement and manage Jenkins Pipelines for Continuous Delivery.
 
 ## GitHub Organization Project
 
