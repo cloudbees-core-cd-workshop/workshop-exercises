@@ -176,7 +176,7 @@ We will use the Pipeline `container` block to run Pipeline `steps` inside a spec
         }
       }
 ```
-  All of the Pipeline steps within that `container` block will run in the container specified by the **Name** of the **Container Template** - and in this case that **Container Template** is using the `node:8.12.0-alpine` Docker image. Run the **helloworld-nodejs** job again - it should result in an error because the `nodejs` container does not have Java installed. <p><img src="img/intro/k8s_agent_java_error.png" width=500/>
+  All of the Pipeline steps within that `container` block will run in the container specified by the **Name** of the **Container Template** - and in this case that **Container Template** is using the `node:8.12.0-alpine` Docker image. Run the **helloworld-nodejs** job again - it should result in an error because the `nodejs` container does not have Java installed. <p><img src="img/intro/k8s_agent_java_error.png" width=600/>
 
 >NOTE: If you waited for your job to complete in Blue Ocean before you navigated to the [Pipeline Runs Details View](https://jenkins.io/doc/book/blueocean/pipeline-run-details/#pipeline-run-details-view) you will discover a nice feature where if a particular step fails, the tab with the failed step will be automatically expanded, showing the console log for the failed step as you can see in the image above.
 
@@ -184,7 +184,7 @@ We will use the Pipeline `container` block to run Pipeline `steps` inside a spec
 ```
   sh 'node --version'
 ```
-6. Run the **helloworld-nodejs** job again and it should complete successfully with the following output: <p><img src="img/intro/k8s_agent_success.png" width=500/>
+6. Run the **helloworld-nodejs** job again and it should complete successfully with the following output: <p><img src="img/intro/k8s_agent_success.png" width=600/>
 
 ## Conditional Execution
 
