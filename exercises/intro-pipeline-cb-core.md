@@ -133,6 +133,20 @@ openjdk version "1.8.0_171"
   
 >NOTE: You may have noticed that your Pipeline GitHub repository is being cloned even though you didn't specify that in your Jenkinsfile. Declarative Pipeline checks out source code by default using the `checkout scm` step.
 
+## The options Directive
+
+The `options` directive allows configuring Pipeline-specific options from within the Pipeline itself. We are going to add `buildDiscarder` `option` to the `nodejs-app/Jenkinsfile.template` file in your forked **customer-marker-pipelines** repository. That will allows you to easily manage the *Discard old builds* option across all of the jobs that use the `nodejs-app/Jenkinsfile.template`.
+
+1. Use the GitHub file editor to update the `nodejs-app/Jenkinsfile.template` file in your forked **customer-marker-pipelines** repository - adding the following `options` directive below the `agent` section:
+
+```
+  options { 
+    buildDiscarder(logRotator(numToKeepStr: '2'))
+  }
+```
+
+2. **Commit Changes** and then navigate to the **master** branch of your **helloworld-nodejs** job in the classic UI on your Team Master and run the job. Once the job has run at least once and the job configuation will be updated to reflect what was added to the Pipeline script.
+
 ## Kubernetes Agents with CloudBees Core
 
 In this exercise we will get an introduction to the [Jenkins Kubernetes plugin](https://github.com/jenkinsci/kubernetes-plugin/blob/master/README.md) for running dynamic and ephemeral agents in a Kubernetes cluster - leveraging the scaling abilities of Kubernetes to schedule build agents.
