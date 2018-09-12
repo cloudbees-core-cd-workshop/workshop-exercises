@@ -10,7 +10,7 @@ We must exit the Blue Ocean UI to the Jenkins classic UI to complete the steps i
 
 1. Click the ***Go to classic*** icon at the top of common section of Blue Ocean’s navigation bar. <p><img src="img/intro/go_to_classic.png" width=500/>
 
-Now, let's add your GitHub credentials to the Jenkins' Credentials manager:
+Now, let's add your GitHub credentials to the Jenkins' Credentials manager to be used for the *GitHub Organization* project we will create next:
 
 1. Navigate back to your personal folder in Jenkins
 2. Click on **Credentials**
@@ -36,7 +36,7 @@ Now let's create the Github Organization project:
 
 Continue to the next exercise.
 
-## Custom Marker Files
+## Project Recognizers with Custom Marker Files
 
 In this exercise we are going to demonstrate how you can use the **[Custom Marker feature](https://go.cloudbees.com/docs/cloudbees-documentation/cje-user-guide/#pipeline-custom-factories)** of CloudBees Core to associate an externally managed Pipeline script to a job based on any arbitrary **marker file** like `pom.xml` or something slightly more declarative like `.nodejs-app`.
 
@@ -66,6 +66,8 @@ Once those repositories are forked:
 14. Navigate back to your GitHub Organization Folder project on your CloudBees Team Master and voila - you have a new [Pipeline Multibranch project](https://jenkins.io/doc/book/pipeline/multibranch/) mapped to the the **helloworld-nodejs** repository thanks to the the GitHub Organization webhook that was created when we first save the GitHub Organization Folder project. Notice how the **helloworld-nodej** Multibranch Pipeline project's description came from the GitHub repository description. <p><img src="img/intro/custom_marker_multibranch.png" width=500/>
 
 > **NOTE:** The ***custom-marker-files*** repository does not get added to your **Github Organization** project since in doesn't and will never contain a matching marker file: `.nodejs-app`.
+
+> **NOTE:** For the purposes of this workshop everyone is creating and updating their own fork of the **custom-marker-pipelines** repository and `nodejs-app/Jenkinsfile.template` Pipeline script. However, if you were all part of the same organization and each had one or more Node.js apps - then you would all get instant CD as soon as you added the `.nodjs-app` file to your repository.
 
 ## Basic Declarative Syntax Structure
 
@@ -135,7 +137,7 @@ openjdk version "1.8.0_171"
 
 ## The options Directive
 
-The `options` directive allows configuring Pipeline-specific options from within the Pipeline itself. We are going to add `buildDiscarder` `option` to the `nodejs-app/Jenkinsfile.template` file in your forked **customer-marker-pipelines** repository. That will allows you to easily manage the *Discard old builds* option across all of the jobs that use the `nodejs-app/Jenkinsfile.template`.
+The [`options` directive](https://jenkins.io/doc/book/pipeline/syntax/#options) allows configuring Pipeline-specific options from within the Pipeline itself. We are going to add `buildDiscarder` `option` to the `nodejs-app/Jenkinsfile.template` file in your forked **customer-marker-pipelines** repository. That will allows you to easily manage the *Discard old builds* option across all of the jobs that use the `nodejs-app/Jenkinsfile.template`.
 
 1. Use the GitHub file editor to update the `nodejs-app/Jenkinsfile.template` file in your forked **customer-marker-pipelines** repository - adding the following `options` directive below the `agent` section:
 
@@ -145,7 +147,7 @@ The `options` directive allows configuring Pipeline-specific options from within
   }
 ```
 
-2. **Commit Changes** and then navigate to the **master** branch of your **helloworld-nodejs** job in the classic UI on your Team Master and run the job. Once the job has run at least once and the job configuation will be updated to reflect what was added to the Pipeline script.
+2. **Commit Changes** and then navigate to the **master** branch of your **helloworld-nodejs** job in the classic UI on your Team Master and run the job. Once the job has run at least once and the job configuation will be updated to reflect what was added to the Pipeline script. <p><img src="img/intro/options_build_discard.png" width=550/>
 
 ## Kubernetes Agents with CloudBees Core
 
