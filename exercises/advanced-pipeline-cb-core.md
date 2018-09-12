@@ -6,11 +6,11 @@ In this exercise we are going to add a *step* to our Pipeline from a [**Pipeline
 
 Once you have forked the ***pipeline-library*** repository into your GitHub Organization you will need to configure it as a Pipeline Shared Library configuration for your Team master. Pipeline Shared Libraries may be configured at the Jenkins Master level or the Jenkins folder level. The GitHub Oranization project that you created earlier is actually a special type of folder, so we will add the ***pipeline-library*** to that folder.
 
-1. In the ***Github Organization** folder Jenkins project you started to create in the previous exercise scroll down to the **Pipeline Libraries** section and click the **Add** button. <p><img src="img/intro/advanced_shared_lib_add.png" width=550/>
+1. In the ***Github Organization** folder Jenkins project you started to create in the previous exercise scroll down to the **Pipeline Libraries** section and click the **Add** button. <p><img src="img/advanced/shared_lib_add.png" width=550/>
 2. Enter `cd-accel` for the Library **Name**, `master` for the **Default version**.
 3. Next for the **Retrieval method** seleclt **Modern SCM**.
 4. Then, for the **Source Code Management** select **GitHub**.
-5. Select the GitHub **Credentials** you created earlier, enter your GitHub Organization name as the **Owner**, select **pipeline-library** for the **Repository** and the click the **Save** button. <p><img src="img/intro/shared_lib_config.png" width=600/>
+5. Select the GitHub **Credentials** you created earlier, enter your GitHub Organization name as the **Owner**, select **pipeline-library** for the **Repository** and the click the **Save** button. <p><img src="img/advanced/shared_lib_config.png" width=600/>
 
 If you navigate back to your fork of the **pipeline-library** repository you will notice.
 
