@@ -8,7 +8,7 @@ In this exercise we are going to create a special type of Jenkins Pipeline proje
 
 We must exit the Blue Ocean UI to the Jenkins classic UI to complete the steps in this lesson.
 
-1. Click the ***Go to classic*** icon at the top of common section of Blue Ocean’s navigation bar.
+1. Click the ***Go to classic*** icon at the top of common section of Blue Ocean’s navigation bar. <p><img src="img/intro/go_to_classic.png" width=500/>
 
 Now, let's add your GitHub credentials to the Jenkins' Credentials manager:
 
