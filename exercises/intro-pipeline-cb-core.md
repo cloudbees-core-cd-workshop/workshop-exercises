@@ -191,3 +191,9 @@ In this exercise we will edit the `nodejs-app/Jenkinsfile.template` file in that
 <p><img src="img/intro/conditional_branches_with_push_event.png" width=500/>
 
 5. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The new conditional ***Build and Push Image*** `stage` should now run. <p><img src="img/intro/conditional_master_branch.png" width=500/>
+
+## Next Lesson
+
+Before moving on to the next lesson you can make sure that your **nodejs-app/Jenkinsfile.template** file is correct by comparing to or copying from the **after-intro** branch of your forked **customer-marker-pipelines** repository.
+
+You may proceed to the next set of exercises - **[More Declarative Syntax with CloudBees Core](./declarative-snytax-cb-core.md)** - when your instructor tells you.
