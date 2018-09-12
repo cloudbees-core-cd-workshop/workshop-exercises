@@ -2,13 +2,19 @@
 
 ## Shared Libraries
 
-In this exercise we are going to add a *step* to our Pipeline from a **Shared Library**, providing functionality to set default values based on default Jenkins environmental variables. But first, you will fork the Pipeline Shared Library for this exercise from https://github.com/PipelineHandsOn/shared-libraries/ into the GitHub Organization you created for this workshop.
+In this exercise we are going to add a *step* to our Pipeline from a [**Pipeline Shared Library**](https://jenkins.io/doc/book/pipeline/shared-libraries/), providing functionality to set default values based on default Jenkins environmental variables. But first, you will fork the Pipeline Shared Library for this exercise from https://github.com/cloudbees-cd-acceleration-workshop/pipeline-library into the GitHub Organization you created in **[Setup - Create a GitHub Organization](./Setup.md#create-a-github-organization)**.
 
-Once you have forked the ***shared-libraries*** repository into your organization you will need to update the Shared Library configuration for your Team master.
+Once you have forked the ***pipeline-library*** repository into your GitHub Organization you will need to configure it as a Pipeline Shared Library configuration for your Team master. Pipeline Shared Libraries may be configured at the Jenkins Master level or the Jenkins folder level. The GitHub Oranization project that you created earlier is actually a special type of folder, so we will add the ***pipeline-library*** to that folder.
 
-More information on using Shared Libraries is available here: https://jenkins.io/doc/book/pipeline/shared-libraries/
+1. In the ***Github Organization** folder Jenkins project you started to create in the previous exercise scroll down to the **Pipeline Libraries** section and click the **Add** button. <p><img src="img/intro/advanced_shared_lib_add.png" width=550/>
+2. Enter `cd-accel` for the Library **Name**, `master` for the **Default version**.
+3. Next for the **Retrieval method** seleclt **Modern SCM**.
+4. Then, for the **Source Code Management** select **GitHub**.
+5. Select the GitHub **Credentials** you created earlier, enter your GitHub Organization name as the **Owner**, select **pipeline-library** for the **Repository** and the click the **Save** button. <p><img src="img/intro/shared_lib_config.png" width=600/>
 
->Note: The `libraries ` declaration does not currently work with the Blue Ocean Pipeline Editor. So the changes for this exercise will need to be done directly on your file in source control. See https://help.github.com/articles/editing-files-in-your-repository/ 
+If you navigate back to your fork of the **pipeline-library** repository you will notice.
+
+Now that the **Pipeline Shared Library** is configured for your Team Master we will use it in the `nodejs-app/Jenkinsfile.template` Pipeline in your forked **customer-marker-pipelines** repository.
 
 1. Add the following line after the top level the `agent` directive:
 
