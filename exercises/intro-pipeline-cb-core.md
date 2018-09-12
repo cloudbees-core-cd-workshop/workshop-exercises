@@ -4,7 +4,7 @@ In addition to all the freely available [Jenkins Pipeline features](https://jenk
 
 ## GitHub Organization Project
 
-In this exercise we are going to create a special type of Jenkins Pipeline project referred to as an *Organization Folder* and more specifically a *GitHub Organization* project. The *GitHub Organization* project will scan a GitHub Organization to discover the organization’s repositories, automatically creating **managed** *Multibranch Pipeline* jobs for any repository with at least one branch containing a *project recognizer* - typically **Jenkinsfile**. We will use the GitHub Organization that you created in **[Setup - Create a GitHub Organization](./Setup.md#create-a-github-organization)**.
+In this exercise we are going to create a special type of Jenkins Pipeline project referred to as an [*Organization Folder*](https://jenkins.io/doc/book/pipeline/multibranch/#organization-folders) and more specifically a *GitHub Organization* project. The *GitHub Organization* project will scan a GitHub Organization to discover the organization’s repositories, automatically creating **managed** *Multibranch Pipeline* jobs for any repository with at least one branch containing a *project recognizer* - typically **Jenkinsfile**. We will use the GitHub Organization that you created in **[Setup - Create a GitHub Organization](./Setup.md#create-a-github-organization)**.
 
 First, let's add your GitHub credentials to the Jenkins' Credentials manager:
 
@@ -41,12 +41,12 @@ In order to complete the following exercise you should have [forked the followin
 1. https://github.com/cloudbees-cd-acceleration-workshop/custom-marker-pipelines 
 2. https://github.com/cloudbees-cd-acceleration-workshop/helloworld-nodejs 
 
-Your GitHub Organization should look like the following:
+Your GitHub Organization should look like the following with those two forked repositories:
 <p><img src="img/intro/fork_repos_into_org.png" width=500/>
 
 Once those repositories are forked:
 
-1. In the Github organization project you started to create in the previous exercise scroll down to the **Project Recognizers** section.
+1. In the ***Github Organization** folder Jenkins project you started to create in the previous exercise scroll down to the **Project Recognizers** section.
 2. Delete the default **Project Recognizer** **Pipeline Jenkinsfile**. <p><img src="img/intro/custom_marker_delete_default.png" width=500/>
 3. Next, under **Project Recognizers** click the **Add** button and select **Custom Script** <p><img src="img/intro/custom_marker_add_custom_script.png" width=400/>
 3. In **Marker file** type `.nodejs-app`
@@ -168,13 +168,10 @@ We will use the Pipeline `container` block to run Pipeline `steps` inside a spec
 
 ## Conditional Execution
 
-In this exercise we are going to create a new **development** branch in your forked **customer-marker-pipelines** repository and edit the `nodejs-app/Jenkinsfile.template` file in that **development** branch to add a branch specific `stage`.
+In this exercise we will edit the `nodejs-app/Jenkinsfile.template` file in that **development** branch to add a branch specific `stage` and then create a new **development** branch in your forked **helloworld-nodejs** repository.
 
-1. Within your forked **customer-marker-pipelines** repository - select the **development** branch from the **Branch** drop down menu
-2. 
-2. Navigate to and click on the **nodejs-app/Jenkinsfile.template** in the file list
-3. Click on the **Edit this file** button (pencil)
-4. Insert the following stage after the existing **Test** stage:
+1. Navigate to and open the GitHub editor for the **nodejs-app/Jenkinsfile.template** file in your forked **customer-marker-pipelines** repository
+2. Insert the following stage after the existing **Test** stage and commit the change:
 
 ```
       stage('Build and Push Image') {
@@ -187,45 +184,10 @@ In this exercise we are going to create a new **development** branch in your for
          }
       }
 ```
+3. Next, in GitHub, navigate to your forked **helloworld-nodejs** repository - click on the **Branch** drop down menu, type ***development** in the input box, and then click on the blue box to create the new branch - ***Create branch: development*** <p><img src="img/intro/conditional_create_dev_branch.png" width=500/>
+4. Navigate to the **helloworld-nodejs** job in Blue Ocean on your Team Master. You should see that a job for the new branch was created and is running. Note that the ***Build and Push Image*** `stage` was skipped. <p><img src="img/intro/conditional_skipped_stage.png" width=500/>
 
-5. Fill out the commit information, select 'Commit directly to the development branch.', and click on **Commit Changes**
+>NOTE: Creating the new ***development*** branch in GitHub triggered the webhook that was auto-created when you create the GitHub Organization project on your Team Master resulting in a new Pipeline job being created for the ***development*** branch in the **helloworld-nodejs** Multibranch Pipeline folder. Up until now we hadn't made any commits in your forked **helloworld-nodejs** repository so no webhook events were triggered to kick-off the job on your Team Master. In the image below, note the two branch jobs and the *Push event* that triggered the creation of the **development** job and kicked-off a run for that branch.
+<p><img src="img/intro/conditional_branches_with_push_event.png" width=500/>
 
->Notice how after you commit your changes the Github web hooks trigger a build of the development branch in Jenkins.
-
-## PRs and Merging
-
-In this exercise we are going to edit the development branch's Jenkinsfile again but make our commit against a feature branch and use a pull request to merge the edits into our development branch.
-
-1. Click on the **Edit this file** button (pencil)
-2. Insert the following stage after the existing **build** stage:
-
-```
-      stage('Masters Tests') {
-         when {
-            branch 'master'
-         }
-         steps {
-            echo "Run the master tests!"
-         }
-      }
-```
-
-3. Fill out the commit information, select 'Create a new branch for this commit and start a pull request.' and click on **Propose file change**
-4. Flip back to your Jenkins job and notice that the new feature branch appears in your projects
-5. Return back to the Github **Open a pull request** page
-6. Click on the **Create pull request** button
-7. Go to your Jenkins job and notice that that the PR has been added to the Pull Requests tab
-8. In Github click on **Merge pull request** and then **Confirm** to close the PR and merge the results into the development branch
-9. Optionally you can also delete the feature branch you created
-
-Finally, we should merge our work into our master branch to verify that our changes work there:
-
-1. Return back to your repository's main page where you will be on the master branch by default
-2. Click on **New pull request**
-3. Select your base fork (not the project we forked from)
-4. Compare **master** to **development** and resolve any conflicts.
-5. Click **View pull request**
-6. Click **Merge pull request**
-7. Click **Confirm merge**
-
->Notice how after you merge your changes into master the Github web hooks trigger a build of the master branch in Jenkins.
+5. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The new conditional ***Build and Push Image*** `stage` should now run. <p><img src="img/intro/conditional_master_branch.png" width=500/>
