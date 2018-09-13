@@ -63,15 +63,17 @@ Once those repositories are forked:
 11. When the scan is complete your **Github Organization** project should be **empty**! <p><img src="img/intro/custom_marker_empty.png" width=500/> <p>But, when the project was created it also should have created a webhook in Github. Verify that the webhook was created in Github by checking **Webhooks** within your Organization's Github **Settings**. <p><img src="img/intro/custom_marker_org_webhook.png" width=550/>
 12. In your forked copy of the **helloworld-nodejs** repository click on the **Create new  file** button towards the top right of the screen. <p><img src="img/intro/custom_marker_create_file.png" width=550/>
 13. Name the file `.nodejs-app` - no need to add any content - and click the **Commit new file** button at the bottom of the screen to save it your repository master branch.  <p><img src="img/intro/custom_marker_commit_file.png" width=550/>
-14. Navigate back to your GitHub Organization Folder project on your CloudBees Team Master and voila - you have a new [Pipeline Multibranch project](https://jenkins.io/doc/book/pipeline/multibranch/) mapped to the the **helloworld-nodejs** repository thanks to the the GitHub Organization webhook that was created when we first save the GitHub Organization Folder project. Notice how the **helloworld-nodej** Multibranch Pipeline project's description came from the GitHub repository description. <p><img src="img/intro/custom_marker_multibranch.png" width=650/>
+14. Navigate back to your GitHub Organization Folder project on your CloudBees Team Master and voila (*Disclaimer: You may need to refresh your browser*) - you have a new [Pipeline Multibranch project](https://jenkins.io/doc/book/pipeline/multibranch/) mapped to the the **helloworld-nodejs** repository thanks to the the GitHub Organization webhook that was created when we first save the GitHub Organization Folder project. Notice how the **helloworld-nodej** Multibranch Pipeline project's description came from the GitHub repository description. <p><img src="img/intro/custom_marker_multibranch.png" width=650/>
 
 > **NOTE:** The ***custom-marker-files*** repository does not get added to your **Github Organization** project since in doesn't and will never contain a matching marker file: `.nodejs-app`.
 
-For the purposes of this workshop everyone is creating and updating their own fork of the **custom-marker-pipelines** repository and `nodejs-app/Jenkinsfile.template` Pipeline script. However, if you were all part of the same organization and each had one or more Node.js apps - then you would all get instant CD as soon as you added the `.nodjs-app` file to your repository and all use the same `nodejs-app/Jenkinsfile.template` Pipeline script.
+For the purposes of this workshop everyone is creating and updating their own fork of the **custom-marker-pipelines** repository and `nodejs-app/Jenkinsfile.template` Pipeline script. However, if you were all part of the same organization and each had one or more Node.js apps - then you would all get instant CD as soon as you added the `.nodjs-app` file to your repository and all of the organizations managed Node.js apps would use the same `nodejs-app/Jenkinsfile.template` Pipeline script.
 
 ## Basic Declarative Syntax Structure
 
-In the previous lesson your Pipeline should have run and should have failed. In this exercise we will update the `nodejs-app/Jenkinsfile.template` Declarative Pipeline using the GitHub editor so that it will actually do something as opposed to resulting in the following errors:
+In the previous lesson your Pipeline should have run and should have failed. <p><img src="img/intro/basic_snytax_failed.png" width=550/>
+
+In this exercise we will update the `nodejs-app/Jenkinsfile.template` Declarative Pipeline using the GitHub editor so that it will actually do something as opposed to resulting in the following errors:
 
 ```
 WorkflowScript: 1: Missing required section "stages" @ line 1, column 1.
@@ -85,10 +87,13 @@ WorkflowScript: 1: Missing required section "agent" @ line 1, column 1.
 2 errors
 ```
 
-Declarative Pipelines must be enclosed within a `pipeline` block - which we have. But they must also contain a top-level `agent` declaration, and must contain exactly one `stages` block. The `stages` block must have at least one `stage` block but can have an unlimited number of additional `stage` blocks. Each `stage` block must have exactly one `steps` block. 
+[Declarative Pipelines](https://jenkins.io/doc/book/pipeline/syntax/#declarative-pipeline) must be enclosed within a `pipeline` block - which we have. But Declarative Pipelines must also contain a top-level `agent` declaration, and must contain exactly one `stages` block. The `stages` block must have at least one `stage` block but can have an unlimited number of additional `stage` blocks. Each `stage` block must have exactly one `steps` block. 
 
-1. We will use the GitHub file editor to update the `nodejs-app/Jenkinsfile.template` file in your forked **customer-marker-pipelines** repository. Navigate to the `custom-marker-pipelines/nodejs-app/Jenkinsfile.template` file in your forked repository and then click on the pencil icon to the upper right to edit that file. <p><img src="img/intro/basic_snytax_edit_github.png" width=500/>
-2. Replace the contents of that file with the following Declarative Pipeliine:
+1. We will use the GitHub file editor to update the `nodejs-app/Jenkinsfile.template` file in your forked **customer-marker-pipelines** repository. Navigate to the `custom-marker-pipelines/nodejs-app/Jenkinsfile.template` file in your forked repository and then click on the pencil icon to the upper right to edit that file. <p><img src="img/intro/basic_snytax_edit_github.png" width=550/>
+
+> NOTE: Remember we are using a CloudBees Core feature that allows us to specifcy a Pipeline script from a different source code repository that the one where the application code is committed.
+
+2. Replace the contents of that file with the following Declarative Pipeline:
 ```
 pipeline {
    agent any
@@ -103,28 +108,28 @@ pipeline {
 }
 ```
 3. Add a commit description and then click the **Commit Changes** button with the default selection of *Commit directly to the master branch* selected.
-4. Navigate back to the **helloworld-nodejs** *master* branch job on your Team Master and click the **Build Now** button in the left menu.
+4. Navigate back to the **helloworld-nodejs** *master* branch job on your Team Master and click the **Build Now** button in the left menu. <p><img src="img/intro/basic_snytax_build_now.png" width=550/>
 5. Your job should complete successfully. Note some things from the log:
   
-  1. The custom marker script - `nodejs-app/Jenkinsfile.template` - is being pulled from your forked *custom-marker-pipelines* forked repository:
+    1. The custom marker script - `nodejs-app/Jenkinsfile.template` - is being pulled from your forked *custom-marker-pipelines* forked repository:
 ```
 ...
 Obtained nodejs-app/Jenkinsfile.template from git https://github.com/cd-accel-beedemo/custom-marker-pipelines.git
 ...
 ```
-  2. The agent is being provisioned from a Kubernetes Pod Template (more on this in the next lesson):
+    2. The agent is being provisioned from a Kubernetes Pod Template (more on this in the next lesson):
 ```
 ...
 Agent default-jnlp-0p189 is provisioned from template Kubernetes Pod Template
 ...
 ```
-  3. Your fork of the **helloworld-nodejs** repository is being checked out, even though you did not put any steps in the `nodejs-app/Jenkinsfile.template` to do so:
+    3. Your fork of the **helloworld-nodejs** repository is being checked out, even though you did not put any steps in the `nodejs-app/Jenkinsfile.template` to do so:
 ```
 ...
 Cloning repository https://github.com/cd-accel-beedemo/helloworld-nodejs.git
 ...
 ```
-  4. The agent has a Java version of `1.8.0_171`:
+    4. The agent has a Java version of `1.8.0_171`:
 ```
 ...
 Running shell script
