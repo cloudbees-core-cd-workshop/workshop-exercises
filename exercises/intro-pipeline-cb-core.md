@@ -111,25 +111,32 @@ pipeline {
 4. Navigate back to the **helloworld-nodejs** *master* branch job on your Team Master and click the **Build Now** button in the left menu. <p><img src="img/intro/basic_syntax_build_now.png" width=550/>
 5. Your job should complete successfully. Note some things from the log:
   
-    1. The custom marker script - `nodejs-app/Jenkinsfile.template` - is being pulled from your forked *custom-marker-pipelines* forked repository:
+   1. The custom marker script - `nodejs-app/Jenkinsfile.template` - is being pulled from your forked *custom-marker-pipelines* forked repository:
+
 ```
 ...
 Obtained nodejs-app/Jenkinsfile.template from git https://github.com/cd-accel-beedemo/custom-marker-pipelines.git
 ...
 ```
-    2. The agent is being provisioned from a Kubernetes Pod Template (more on this in the next lesson):
+
+  2. The agent is being provisioned from a Kubernetes Pod Template (more on this in the next lesson):
+
 ```
 ...
 Agent default-jnlp-0p189 is provisioned from template Kubernetes Pod Template
 ...
 ```
-    3. Your fork of the **helloworld-nodejs** repository is being checked out, even though you did not put any steps in the `nodejs-app/Jenkinsfile.template` to do so:
+
+  3. Your fork of the **helloworld-nodejs** repository is being checked out, even though you did not put any steps in the `nodejs-app/Jenkinsfile.template` to do so:
+
 ```
 ...
 Cloning repository https://github.com/cd-accel-beedemo/helloworld-nodejs.git
 ...
 ```
-    4. The agent has a Java version of `1.8.0_171`:
+
+  4. The agent has a Java version of `1.8.0_171`:
+
 ```
 ...
 Running shell script
