@@ -15,7 +15,7 @@ Now, let's add your GitHub credentials to the Jenkins' Credentials manager to be
 1. Navigate back to your personal folder in Jenkins
 2. Click on **Credentials**
 3. Click on the **(global)** link under **Stores Scoped to [YourFolderName]** (in this case **beedemo-dev**) <p><img src="img/intro/credential_folder_scope.png" width=550/>
-4. Click on **Add Credentials** in the left menu
+4. Click on **Add Credentials** in the left menu <p><img src="img/intro/credential_add_link.png" width=550/>
 5. Fill out the form (**Username with password**)
   - **Username**: The GitHub user name
   - **Password**: Your GitHub personal access token [created in setup](../Setup.md#create-a-github-personal-access-token)
@@ -25,12 +25,11 @@ Now, let's add your GitHub credentials to the Jenkins' Credentials manager to be
 
 Now let's create the Github Organization project:
 
-1. Click on **New Item**
+1. Click on **New Item** <p><img src="img/intro/org_folder_new_item.png" width=550/>
 2. Enter your GitHub Organization name as the **Item Name** 
 3. Select **GitHub Organization** <p><img src="img/intro/org_folder_item.png" width=550/>
 4. Click **Ok**
-5. Select the credentials you created above from the **Credentials** drop down
-6. Select **All** from the **Strategy** drop down under **Discover Branches** 
+5. Select the credentials you created above from the **Credentials** drop down <p><img src="img/intro/org_folder_credentials.png" width=550/>
 7. Make sure that the **Owner** field matches the name of your GitHub Organization name. <p><img src="img/intro/org_folder_scm_config.png" width=550/>
 8. **DON'T SAVE YET**
 
@@ -50,20 +49,21 @@ Your GitHub Organization should look like the following with those two forked re
 
 Once those repositories are forked:
 
-1. In the ***Github Organization** folder Jenkins project you started to create in the previous exercise scroll down to the **Project Recognizers** section.
+1. In the **Github Organization** folder Jenkins project you started to create in the previous exercise scroll down to the **Project Recognizers** section.
 2. Delete the default **Project Recognizer** **Pipeline Jenkinsfile**. <p><img src="img/intro/custom_marker_delete_default.png" width=500/>
 3. Next, under **Project Recognizers** click the **Add** button and select **Custom Script** <p><img src="img/intro/custom_marker_add_custom_script.png" width=400/>
 3. In **Marker file** type `.nodejs-app`
 4. Under **Pipeline** - **Definition** select **Pipeline script from SCM**
-5. Select **Git** from **SCM**
+5. Select **Git** for the **SCM** drop-down
 6. In **Repository URL** enter: `https://github.com/{your_org_name}/custom-marker-files`
 7. Select the credentials you created in the previous exercise.
 8. In **Script path** enter: `nodejs-app/Jenkinsfile.template`. Other than the GitHub Organization name it should look like the following: <p><img src="img/intro/custom_marker_config.png" width=550/>
 9. Click on **Save**
-11. When the scan is complete your **Github Organization** project should be **empty**! <p><img src="img/intro/custom_marker_empty.png" width=500/> <p>But, when the project was created it also should have created a webhook in Github. Verify that the webhook was created in Github by checking **Webhooks** within your Organization's Github **Settings**. <p><img src="img/intro/custom_marker_org_webhook.png" width=500/>
-12. In your forked copy of the **helloworld-nodejs** repository click on the **Add file** button towards the top right of the screen. <p><img src="img/intro/custom_marker_create_file.png" width=500/>
-13. Name the file `.nodejs-app` - no need to add any content - and click the **Commit new file** button at the bottom of the screen to save it your repository master branch.
-14. Navigate back to your GitHub Organization Folder project on your CloudBees Team Master and voila - you have a new [Pipeline Multibranch project](https://jenkins.io/doc/book/pipeline/multibranch/) mapped to the the **helloworld-nodejs** repository thanks to the the GitHub Organization webhook that was created when we first save the GitHub Organization Folder project. Notice how the **helloworld-nodej** Multibranch Pipeline project's description came from the GitHub repository description. <p><img src="img/intro/custom_marker_multibranch.png" width=500/>
+10. After the scan is complete, click on the bread-crumb link to go back to your **Github Organization** folder Jenkins project <p><img src="img/intro/custom_marker_scan_complete.png" width=650/>
+11. When the scan is complete your **Github Organization** project should be **empty**! <p><img src="img/intro/custom_marker_empty.png" width=500/> <p>But, when the project was created it also should have created a webhook in Github. Verify that the webhook was created in Github by checking **Webhooks** within your Organization's Github **Settings**. <p><img src="img/intro/custom_marker_org_webhook.png" width=550/>
+12. In your forked copy of the **helloworld-nodejs** repository click on the **Create new  file** button towards the top right of the screen. <p><img src="img/intro/custom_marker_create_file.png" width=550/>
+13. Name the file `.nodejs-app` - no need to add any content - and click the **Commit new file** button at the bottom of the screen to save it your repository master branch.  <p><img src="img/intro/custom_marker_commit_file.png" width=550/>
+14. Navigate back to your GitHub Organization Folder project on your CloudBees Team Master and voila - you have a new [Pipeline Multibranch project](https://jenkins.io/doc/book/pipeline/multibranch/) mapped to the the **helloworld-nodejs** repository thanks to the the GitHub Organization webhook that was created when we first save the GitHub Organization Folder project. Notice how the **helloworld-nodej** Multibranch Pipeline project's description came from the GitHub repository description. <p><img src="img/intro/custom_marker_multibranch.png" width=650/>
 
 > **NOTE:** The ***custom-marker-files*** repository does not get added to your **Github Organization** project since in doesn't and will never contain a matching marker file: `.nodejs-app`.
 
