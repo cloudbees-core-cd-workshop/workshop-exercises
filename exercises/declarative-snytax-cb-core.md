@@ -80,7 +80,9 @@ echo "Continuing with deployment - approved by ${APPROVER}"
 4. The ***submitter*** needs to navigate to the **master** branch of your **helloworld-nodejs** job on your Team Master to approve the `input` of your **helloworld-nodejs** Pipeline. You can use the *Team switcher* to quickly navigate to another Team Master that you are a member. The *Team switcher* drop-down will appear in the top right of your screen once you have been added as a member to another Team Master. The ***submitter*** needs to switch to the Team where they are a *Team Guest* member by selecting that team from the *Team switcher* drop-down. <p><img src="img/more/input_submitter_team_switcher.png" width=600/>
 5. As the ***submitter*** navigate to the **helloworld-nodejs** job on your new team and approve the `input`. Note the output of the `echo` step. <p><img src="img/more/input_submitter_approved_by.png" width=550/>
 
->**NOTE:** If you select a Pipeline job as a *favorite* you will be able to see things like jobs awaiting `input` submission in the Blue Ocean **Dashboard**. <p><img src="img/more/input_submitter_favorite.png" width=600/>
+>**NOTE:** If you select a Pipeline job as a *favorite* you will be able to see things like jobs awaiting `input` submission in the Blue Ocean **Dashboard**. 
+
+<img src="img/more/input_submitter_favorite.png" width=600/>
 
 ## Post Actions
 
