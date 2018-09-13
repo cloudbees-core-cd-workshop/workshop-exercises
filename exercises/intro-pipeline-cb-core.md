@@ -228,6 +228,6 @@ In this exercise we will edit the `nodejs-app/Jenkinsfile.template` by adding so
 
 ## Next Lesson
 
-Before moving on to the next lesson you can make sure that your **nodejs-app/Jenkinsfile.template** file is correct by comparing to or copying from the **after-intro** branch of your forked **customer-marker-pipelines** repository.
+Before moving on to the next lesson you can make sure that your **nodejs-app/Jenkinsfile.template** Pipeline script is correct by comparing to or copying from the **after-intro** branch of your forked **customer-marker-pipelines** repository.
 
 You may proceed to the next set of exercises - **[More Declarative Syntax with CloudBees Core](./declarative-snytax-cb-core.md)** - when your instructor tells you.

@@ -47,24 +47,46 @@ The `input` directive supports a [number of interesting configuration options](h
 - **Team Member:** read, write and execute permission on the pipelines.
 - **Team Guest:** read only.
 
-We want to add a **Team Guest** to our Team Masters and the set that Team member as the `submitter` for our `input` directive. Before you beging pick a person next to you and share each other's Jenkins account name with each other. You will use that account name when added a new member to your Team Master.
+We want to add a **Team Guest** to our Team Masters and then set that Team member as the `submitter` for our `input` directive. Before you begin, pick a person next to you and share each other's Jenkins account names. You will use that account name when adding a new member to your Team Master below:
 
 1. On your Team Master, navigate to the Team list by clicking on the ***Administration*** link on the top right (this link is available on all Blue Ocean pages accept for the [Pipeline Run Details view](https://jenkins.io/doc/book/blueocean/pipeline-run-details/#pipeline-run-details-view)). <p><img src="img/more/input_submitter_admin_link.png" width=600/>
 2. Next, click on the cog icon for your team.  <p><img src="img/more/input_submitter_team_cog.png" width=500/>
 3. Click on the ***Members*** link in the left menu and then click on the ***Add a user or group*** link. <p><img src="img/more/input_submitter_members_link.png" width=600/>
 4. select **Team Guest** from the role drop-down, enter the account name for the person next to you in the ***Add user or group*** input (I will use **beedemo-ops**), press your **enter/return** key, and then click the **Save changes** button.  <p><img src="img/more/input_submitter_add_team_guest.png" width=600/>
+5. Click on the ***Pipelines*** link in the top menu.
 
 Now that we have a new team member, you can add them as a `submitter` for the `input` directive in your `nodejs-app/Jenkinsfile.template` Pipeline script.
 
-1. 
+1. Use the GitHub file editor to update your `nodejs-app/Jenkinsfile.template` Pipeline script in your forked **custom-marker-pipelines** repository - updating the `input` directive of the **Deploy** `stage` with the following changes (replacing **beedemo-ops** with Jenkins username of your new team member). We also update the `timeout` duration to give our approver plenty of time to submit the `input`:
+
+```
+options {
+    timeout(time: 60, unit: 'SECONDS') 
+}
+input {
+    message "Should we deploy?"
+    submitter "beedemo-ops"
+    submitterParameter "APPROVER"
+}
+```
+
+2. So we added one additonal configuration option for our `input` directive: `submitterParameter`. This will result in an environmental variable named `APPROVER` being set with the value being the username of the user that submitted the `input`. In this case it will either be **beedemo-ops** or **system** if it timeouts before it is submitted. Modify the `echo` step in your `nodejs-app/Jenkinsfile.template` Pipeline script to print the `APPROVER` environmental variable and commit the changes:
+
+```
+echo "Continuing with deployment - approved by ${APPROVER}"
+```
+
+3. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. If you attempt to approve the `input` you will get an error: <p><img src="img/more/input_submitter_error.png" width=600/>
+4. The ***submitter*** needs to navigate to the **master** branch of your **helloworld-nodejs** job on your Team Master. You can use the *Team switcher* To quickly navigate to another Team Master that you are a member. The *Team switcher* drop-down will appear in the top right of your screen once you have been added as a member to another Team Master. The ***submitter*** needs to switch to the Team where they are a *Team Guest* member by selecting that team from the *Team switcher* drop-down. <p><img src="img/more/input_submitter_team_switcher.png" width=600/>
+5. As the ***submitter*** navigate to the **helloworld-nodejs** job on your new team and approve the `input`. Note the output of the `echo` step. <p><img src="img/more/input_submitter_approved_by.png" width=550/>
 
 ## Post Actions
 
-What happens if your `input` step times out or if the *approver* clicks the **Abort** button? There is a special `post` section for Delcarative Pipelines that allows you to define one or more additional steps that are run upon the completion of a Pipeline’s or stage’s execution and are designed to handle a variety of conditions (not only **aborted**) that could occur outside the standard pipeline flow.
+What happens if your `input` step times out or if the *approver* clicks the **Abort** button? There is a special `post` section for Delcarative Pipelines that allows you to define one or more additional steps that are run upon the completion of the `pipeline` or `stage` execution and are designed to handle a variety of conditions (not only **aborted**) that could occur outside the standard pipeline flow.
 
-In this example we will add a `post` section to our **Deploy** stage to handle a time out (aborted run). 
+In this example we will add a `post` section to our **Deploy** stage to handle a timeout (aborted run). 
 
->NOTE: The `post` section is available at either the global `pipeline` level or at individual `stage` levels.
+>NOTE: The [`post` section](https://jenkins.io/doc/book/pipeline/syntax/#post) is available at either the global `pipeline` level or at individual `stage` levels.
 
 1. Add the following to the bottom of your `pipeline` - right before the close curly brace for the entire `pipeline` using the GitHub editor:
 
