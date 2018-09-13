@@ -113,27 +113,27 @@ pipeline {
   
    1. The custom marker script - `nodejs-app/Jenkinsfile.template` - is being pulled from your forked *custom-marker-pipelines* forked repository:
 
-```
-...
-Obtained nodejs-app/Jenkinsfile.template from git https://github.com/cd-accel-beedemo/custom-marker-pipelines.git
-...
-```
+  ```
+  ...
+  Obtained nodejs-app/Jenkinsfile.template from git https://github.com/cd-accel-beedemo/custom-marker-pipelines.git
+  ...
+  ```
 
   2. The agent is being provisioned from a Kubernetes Pod Template (more on this in the next lesson):
 
-```
-...
-Agent default-jnlp-0p189 is provisioned from template Kubernetes Pod Template
-...
-```
+  ```
+  ...
+  Agent default-jnlp-0p189 is provisioned from template Kubernetes Pod Template
+  ...
+  ```
 
   3. Your fork of the **helloworld-nodejs** repository is being checked out, even though you did not put any steps in the `nodejs-app/Jenkinsfile.template` to do so:
 
-```
-...
-Cloning repository https://github.com/cd-accel-beedemo/helloworld-nodejs.git
-...
-```
+  ```
+  ...
+  Cloning repository https://github.com/cd-accel-beedemo/helloworld-nodejs.git
+  ...
+  ```
 
   4. The agent has a Java version of `1.8.0_171`:
 
@@ -149,7 +149,7 @@ openjdk version "1.8.0_171"
 
 ## The options Directive
 
-The [`options` directive](https://jenkins.io/doc/book/pipeline/syntax/#options) allows configuring Pipeline-specific options from within the Pipeline itself. We are going to add the `buildDiscarder` `option` to the `nodejs-app/Jenkinsfile.template` file in your forked **customer-marker-pipelines** repository. As a centrally managed CD service, that will allows easily managing the *Discard old builds* option across all of the jobs that use the `nodejs-app/Jenkinsfile.template` so that storage doesn't become an issue on the CloudBees Team Masters.
+The [`options` directive](https://jenkins.io/doc/book/pipeline/syntax/#options) allows configuring Pipeline-specific options from within the Pipeline itself. We are going to add the `buildDiscarder` `option` to the `nodejs-app/Jenkinsfile.template` file in your forked **customer-marker-pipelines** repository. As a centrally managed CD service, that will provide easy managment of the *Discard old builds* strategy across all of the jobs that use the `nodejs-app/Jenkinsfile.template` so that storage doesn't become an issue on the CloudBees Team Masters.
 
 1. Use the GitHub file editor to update the `nodejs-app/Jenkinsfile.template` file in your forked **customer-marker-pipelines** repository - adding the following `options` directive below the `agent` section:
 
