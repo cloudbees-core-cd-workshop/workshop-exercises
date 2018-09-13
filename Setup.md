@@ -10,7 +10,7 @@ The URL for the GitHub Repository with these instructions and the exercises is *
 ### Create a Jenkins Account
 
 1. Goto to the Workshop URL provided by the instructor;
-2. Click on the **create an account** link in the middle above the **Username** input.<p><img src="img/setup-create-an-account.png" width=300/>
+2. Click on the **create an account** link in the middle above the **Username** input.<p><img src="img/setup-login.png" width=350/>
 3. Complete the **Create an account!** form (all fields are required) and click the **Create account** button;<p><img src="img/setup-create-account.png" width=350/>
 4. You should see a **Success** page - click on **the top page** link;<p><img src="img/setup-create-account-success.png" width=550/>
 
