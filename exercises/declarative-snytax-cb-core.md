@@ -39,9 +39,24 @@ For this exercise we are going to add a new stage after the **Build and Push Ima
 
 4. **Run** your updated Pipeline job in Blue Ocean and wait at least 30 seconds. Your pipeline should be automatically **aborted** after 30 seconds after the 'Deploy' `stage` starts.<p><img src="img/more/input_timeout.png" width=550/> <p>Run it again if you would like - but this time approving it before 30 seconds expires - the job should complete successfully.
 
-## Input with Approval
+## Input Approval for Team Members
 
-The `input` directive supports a [number of interesting parameters](https://jenkins.io/doc/book/pipeline/syntax/#configuration-options).
+The `input` directive supports a [number of interesting configuration options](https://jenkins.io/doc/book/pipeline/syntax/#configuration-options). In this exercise we are going to use the `submitter` option to control what Team Master member is allowed to submit the `input` directive. But first we need to add another member to our CloudBees Team Master. Team Masters provide an easy to use authorization model right out-of-the-box. The following roles are available (there is a CLI to add or modify roles):
+
+- **Team Admin:** administrator of the Team Master.
+- **Team Member:** read, write and execute permission on the pipelines.
+- **Team Guest:** read only.
+
+We want to add a **Team Guest** to our Team Masters and the set that Team member as the `submitter` for our `input` directive. Before you beging pick a person next to you and share each other's Jenkins account name with each other. You will use that account name when added a new member to your Team Master.
+
+1. On your Team Master, navigate to the Team list by clicking on the ***Administration*** link on the top right (this link is available on all Blue Ocean pages accept for the [Pipeline Run Details view](https://jenkins.io/doc/book/blueocean/pipeline-run-details/#pipeline-run-details-view)). <p><img src="img/more/input_submitter_admin_link.png" width=600/>
+2. Next, click on the cog icon for your team.  <p><img src="img/more/input_submitter_team_cog.png" width=500/>
+3. Click on the ***Members*** link in the left menu and then click on the ***Add a user or group*** link. <p><img src="img/more/input_submitter_members_link.png" width=600/>
+4. select **Team Guest** from the role drop-down, enter the account name for the person next to you in the ***Add user or group*** input (I will use **beedemo-ops**), press your **enter/return** key, and then click the **Save changes** button.  <p><img src="img/more/input_submitter_add_team_guest.png" width=600/>
+
+Now that we have a new team member, you can add them as a `submitter` for the `input` directive in your `nodejs-app/Jenkinsfile.template` Pipeline script.
+
+1. 
 
 ## Post Actions
 
