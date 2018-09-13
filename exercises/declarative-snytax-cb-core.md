@@ -21,7 +21,7 @@ For this exercise we are going to add a new stage after the **Build and Push Ima
 
 2. **Run** your updated Pipeline job in Blue Ocean and note the `input` prompt during the `Deploy` stage.  *This `input` prompt is also available in the Console log and classic Stage View.* <p><img src="img/more/input_basic.png" width=550/>
 
-3. Your Team Master will wait indefinitely for a user response to an `input` step. Let's fix that by setting a timeout. Earlier we used `options` at the global `pipeline` level to set the *Discard old builds* strategy for your Team Master with the `buildDiscarder` `option`. Now we will configure `options` at the `stage` level -a  `timeout` for the `stage` using the `stage` `options` directive. Update the **Deploy** `stage` to match the following and commit the changes:
+3. Your Team Master will wait indefinitely for a user response to an `input` step. Let's fix that by setting a timeout. Earlier we used `options` at the global `pipeline` level to set the ***Discard old builds*** strategy for your Team Master with the `buildDiscarder` `option`. Now we will configure `options` at the `stage` level -a  `timeout` for the `stage` using the `stage` `options` directive. Update the **Deploy** `stage` to match the following and commit the changes:
 
 ```
     stage('Deploy') {
@@ -37,11 +37,11 @@ For this exercise we are going to add a new stage after the **Build and Push Ima
     }
 ```
 
-4. **Run** your updated Pipeline job in Blue Ocean and wait at least 30 seconds. Your pipeline should be automatically **aborted** after 30 seconds after the 'Deploy' `stage` starts.<p><img src="img/more/input_timeout.png" width=550/> <p>Run it again if you would like - but this time approving it before 30 seconds expires - the job should complete successfully.
+4. **Run** your updated Pipeline job in Blue Ocean and wait at least 30 seconds once it reaches the 'Deploy' `stage`. Your pipeline should be automatically **aborted** 30 seconds after the 'Deploy' `stage` starts.<p><img src="img/more/input_timeout.png" width=550/> <p>Run it again if you would like - but this time approving it before 30 seconds expires - the job should will successfully.
 
 ## Input Approval for Team Members
 
-The `input` directive supports a [number of interesting configuration options](https://jenkins.io/doc/book/pipeline/syntax/#configuration-options). In this exercise we are going to use the `submitter` option to control what Team Master member is allowed to submit the `input` directive. But first we need to add another member to our CloudBees Team Master. Team Masters provide an easy to use authorization model right out-of-the-box. The following roles are available (there is a CLI to add or modify roles):
+The `input` directive supports a [number of interesting configuration options](https://jenkins.io/doc/book/pipeline/syntax/#configuration-options). In this exercise we are going to use the `submitter` option to control what Team Master member is allowed to submit the `input` directive. But first you need to add another member to your CloudBees Team Master. Team Masters provide an easy to use authorization model right out-of-the-box. The following roles are available (there is a CLI to add or modify roles):
 
 - **Team Admin:** administrator of the Team Master.
 - **Team Member:** read, write and execute permission on the pipelines.
@@ -52,12 +52,12 @@ We want to add a **Team Guest** to our Team Masters and then set that Team membe
 1. On your Team Master, navigate to the Team list by clicking on the ***Administration*** link on the top right (this link is available on all Blue Ocean pages accept for the [Pipeline Run Details view](https://jenkins.io/doc/book/blueocean/pipeline-run-details/#pipeline-run-details-view)). <p><img src="img/more/input_submitter_admin_link.png" width=600/>
 2. Next, click on the cog icon for your team.  <p><img src="img/more/input_submitter_team_cog.png" width=500/>
 3. Click on the ***Members*** link in the left menu and then click on the ***Add a user or group*** link. <p><img src="img/more/input_submitter_members_link.png" width=600/>
-4. select **Team Guest** from the role drop-down, enter the account name for the person next to you in the ***Add user or group*** input (I will use **beedemo-ops**), press your **enter/return** key, and then click the **Save changes** button.  <p><img src="img/more/input_submitter_add_team_guest.png" width=600/>
+4. Select **Team Guest** from the role drop-down, enter the account name for the person next to you in the ***Add user or group*** input (I will use **beedemo-ops**), press your ***enter/return*** key, and then click the **Save changes** button.  <p><img src="img/more/input_submitter_add_team_guest.png" width=500/>
 5. Click on the ***Pipelines*** link in the top menu.
 
 Now that we have a new team member, you can add them as a `submitter` for the `input` directive in your `nodejs-app/Jenkinsfile.template` Pipeline script.
 
-1. Use the GitHub file editor to update your `nodejs-app/Jenkinsfile.template` Pipeline script in your forked **custom-marker-pipelines** repository - updating the `input` directive of the **Deploy** `stage` with the following changes (replacing **beedemo-ops** with Jenkins username of your new team member). We also update the `timeout` duration to give our approver plenty of time to submit the `input`:
+1. Use the GitHub file editor to update your `nodejs-app/Jenkinsfile.template` Pipeline script in your forked **custom-marker-pipelines** repository - updating the `input` directive of the **Deploy** `stage` with the following changes (replacing **beedemo-ops** with Jenkins username of your new **Team Guest** member). Also, update the `timeout` duration to give your approver plenty of time to submit the `input`:
 
 ```
 options {
@@ -70,7 +70,7 @@ input {
 }
 ```
 
-2. So we added one additonal configuration option for our `input` directive: `submitterParameter`. This will result in an environmental variable named `APPROVER` being set with the value being the username of the user that submitted the `input`. In this case it will either be **beedemo-ops** or **system** if it timeouts before it is submitted. Modify the `echo` step in your `nodejs-app/Jenkinsfile.template` Pipeline script to print the `APPROVER` environmental variable and commit the changes:
+2. So, we added one additonal configuration option for our `input` directive: `submitterParameter`. Setting the  `submitterParameter` option will result in a Pipeline environmental variable named `APPROVER` being set with the value being the username of the user that submitted the `input`. In this case it will either be **beedemo-ops** or **system** if it timeouts before it is submitted. Update the `echo` step in your `nodejs-app/Jenkinsfile.template` Pipeline script to print the `APPROVER` environmental variable and commit the changes:
 
 ```
 echo "Continuing with deployment - approved by ${APPROVER}"
