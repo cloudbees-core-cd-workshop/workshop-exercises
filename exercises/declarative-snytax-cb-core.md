@@ -4,9 +4,9 @@
 
 For this exercise we are going to add a new stage after the **Build and Push Image** stage that will demonstrate how to pause a Pipeline job and prompt for interactive input. 
 
->NOTE: The declarative `input` directive blocks the `stage` from executing and acquiring an agent.
+>**NOTE:** The [Declarative `input` directive](https://jenkins.io/doc/book/pipeline/syntax/#input) blocks the `stage` from acquiring an agent.
 
-1. Use the GitHub file editor to update the `nodejs-app/Jenkinsfile.template` file in your forked **customer-marker-pipelines** repository - adding the following `stage` to your Pipeline after the ***Build and Push Image*** `stage`:
+1. Use the GitHub file editor to update the `nodejs-app/Jenkinsfile.template` file in your forked **custom-marker-pipelines** repository - adding the following `stage` to your Pipeline after the ***Build and Push Image*** `stage` and commit the change:
 
 ```
     stage('Deploy') {
@@ -19,9 +19,9 @@ For this exercise we are going to add a new stage after the **Build and Push Ima
     }
 ```
 
-2. **Commit & Run** your updated Pipeline and note the `input` prompt during the `Deploy` stage.  This `input` prompt is also available in the Console log and classic Stage View.<p><img src="img/more/input_basic.png" width=550/>
+2. **Run** your updated Pipeline job in Blue Ocean and note the `input` prompt during the `Deploy` stage.  *This `input` prompt is also available in the Console log and classic Stage View.* <p><img src="img/more/input_basic.png" width=550/>
 
-3. Your Team Master will wait indefinitely for a user response to an `input` step. Let's fix that by setting a timeout. Earlier we used `options` at the global `pipeline` level to  Set a `timeout` for the `stage` using the `stage` `options` directive by updating the **Deploy** `stage` to match the following:
+3. Your Team Master will wait indefinitely for a user response to an `input` step. Let's fix that by setting a timeout. Earlier we used `options` at the global `pipeline` level to set the *Discard old builds* strategy for your Team Master with the `buildDiscarder` `option`. Now we will configure `options` at the `stage` level -a  `timeout` for the `stage` using the `stage` `options` directive. Update the **Deploy** `stage` to match the following and commit the changes:
 
 ```
     stage('Deploy') {
@@ -37,11 +37,11 @@ For this exercise we are going to add a new stage after the **Build and Push Ima
     }
 ```
 
-4. **Commit & Run** your pipeline and wait at least 30 seconds. Your pipeline should be automatically **aborted**.<p><img src="img/2-input-timeout.png" width=550/>
+4. **Run** your updated Pipeline job in Blue Ocean and wait at least 30 seconds. Your pipeline should be automatically **aborted** after 30 seconds after the 'Deploy' `stage` starts.<p><img src="img/more/input_timeout.png" width=550/> <p>Run it again if you would like - but this time approving it before 30 seconds expires - the job should complete successfully.
 
-## Input Approvers
+## Input with Approval
 
-The `input` step supports an additional attribute.
+The `input` directive supports a [number of interesting parameters](https://jenkins.io/doc/book/pipeline/syntax/#configuration-options).
 
 ## Post Actions
 
@@ -74,4 +74,10 @@ Declarative Pipelines support a feature referred to as ***Restartable Stages***.
 2. 
 
 ## Parallel Stages
+
+
+
+## Sequential Stages
+
+
 

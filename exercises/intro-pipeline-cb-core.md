@@ -145,7 +145,7 @@ openjdk version "1.8.0_171"
 ...
 ```
   
->NOTE: You may have noticed that your Pipeline GitHub repository is being cloned even though you didn't specify that in your Jenkinsfile. Declarative Pipeline checks out source code by default using the `checkout scm` step.
+> **NOTE:** You may have noticed that your Pipeline GitHub repository is being cloned even though you didn't specify that in your Jenkinsfile. Declarative Pipeline checks out source code by default using the `checkout scm` step.
 
 ## The options Directive
 
@@ -159,21 +159,23 @@ The [`options` directive](https://jenkins.io/doc/book/pipeline/syntax/#options) 
   }
 ```
 
-2. **Commit Changes** and then navigate to the **master** branch of your **helloworld-nodejs** job in the classic UI on your Team Master and run the job. Once the job has run at least once and the job configuation will be updated to reflect what was added to the Pipeline script. <p><img src="img/intro/options_build_discard.png" width=550/>
+2. **Commit Changes** and then navigate to the **master** branch of your **helloworld-nodejs** job in the classic UI on your Team Master and run the job. Once the job has run at least once, the job configuation will be updated to reflect what was added to the Pipeline script. <p><img src="img/intro/options_build_discard.png" width=550/>
+
+> **NOTE:** A Pipeline job must run in Jenkins before any type of Pipeline directive that modifies the job configuration can take effect because there is no way for the Jenkins master to know about it unitl it is runs on the Jenkins master. Also note that for Multibranch Pipeline projects - the only way to modify much of the configuration of branch specific Pipeline jobs is by doing it in the Pipeline script as those jobs are not configurable from the Jenkins UI.
 
 ## Kubernetes Agents with CloudBees Core
 
 In this exercise we will get an introduction to the [Jenkins Kubernetes plugin](https://github.com/jenkinsci/kubernetes-plugin/blob/master/README.md) for running dynamic and ephemeral agents in a Kubernetes cluster - leveraging the scaling abilities of Kubernetes to schedule build agents.
 
-CloudBees Core has built-in support for Kubernetes build agents. The agents are contained in pods, where a pod is a group of one or more containers sharing a common storage system and network. A pod is the smallest deployable unit of computing that Kubernetes can create and manage (you can read more about pods in the [Kubernetes documentation](https://kubernetes.io/docs/concepts/workloads/pods/pod/)).
+CloudBees Core has [built-in support for Kubernetes build agents](https://go.cloudbees.com/docs/cloudbees-core/cloud-admin-guide/agents/#kubernete-agents). The Jenkins Kubernetes based agent is contained in a pod, where a pod is a group of one or more containers sharing a common storage system and network. A pod is the smallest deployable unit of computing that Kubernetes can create and manage (you can read more about pods in the [Kubernetes documentation](https://kubernetes.io/docs/concepts/workloads/pods/pod/)).
 
->NOTE: One of the containers hosts the actual Jenkins build agent (the slave.jar file). By convention, this container always exists (and is automatically added to any Pod Templates that don't define a ***jnlp*** **Container Template**). It has the ***Name*** `jnlp` and default execution of the Pipeline always happens in this `jnlp` container (as it did when we used `agent any` above) - unless you declare otherwise. If needed, this may be overridden by specifying a **Container Template** with the ***Name*** `jnlp`.
+>NOTE: One of the containers must host the actual Jenkins build agent (the slave.jar file that is used for communication between the CloudBees Team Master and the agent). By convention, this container always exists (and is automatically added to any Pod Templates that don't define a **Container Template** with the name ***jnlp*** ). It has the ***Name*** `jnlp` and default execution of the Pipeline always happens in this `jnlp` container (as it did when we used `agent any` above) - unless you declare otherwise. If needed, this may be overridden by specifying a **Container Template** with the ***Name*** `jnlp`.
 
-We will use the Pipeline `container` block to run Pipeline `steps` inside a specific container configured as part of a Jenkins Kubernetes Agent Pod template. In our initial Pipeline, we used `agent any` which required at least one Jenkins agent configured to *Use this node as much as possible* - resulting in the use of a Pod Template that only had a `jnlp` container. But now we want to use Node.js in our Pipeline. Luckily, our CloudBees Core Jenkins Administrator has configured the [CloudBees Core Kubernetes Shared Cloud](https://go.cloudbees.com/docs/cloudbees-core/cloud-admin-guide/agents/#_globally_editing_pod_templates_in_operations_center) to include a Kubernetes Pod Template to provide a Node.js container. <p><img src="img/intro/k8s_agent_nodejs_template.png" width=500/> <p>Take note of the ***Labels*** field with a value of ***nodejs-app*** and the **Container Template** ***Name*** field with a value of ***nodejs*** - both of these are important and we will need those values to configure our Pipeline to use this **Pod Template** and **Container Template**.
+We will use the [Pipeline `container` block](https://jenkins.io/doc/pipeline/steps/kubernetes/#container-run-build-steps-in-a-container) (a Pipeline step from the Kubernetes plugin) to run Pipeline `steps` inside a specific container configured as part of a Jenkins Kubernetes Agent Pod template. In our initial Pipeline, we used `agent any` which required at least one Jenkins agent configured to *Use this node as much as possible* - resulting in the use of a Pod Template that only had a `jnlp` container. But now we want to use Node.js in our Pipeline. Luckily, our CloudBees Core Jenkins Administrator has configured the [CloudBees Core Kubernetes Shared Cloud](https://go.cloudbees.com/docs/cloudbees-core/cloud-admin-guide/agents/#_globally_editing_pod_templates_in_operations_center) to include a Kubernetes Pod Template to provide a Node.js container. <p><img src="img/intro/k8s_agent_nodejs_template.png" width=500/> <p>Take note of the ***Labels*** field with a value of ***nodejs-app*** and the **Container Template** ***Name*** field with a value of ***nodejs*** - both of these are important and we will need those values to configure our Pipeline to use this **Pod Template** and **Container Template**.
 
-1. Navigate to and click on the **nodejs-app/Jenkinsfile.template** in the file list within your forked **customer-marker-pipelines** repository
+1. Navigate to and click on the **nodejs-app/Jenkinsfile.template** in the file list within your forked **custom-marker-pipelines** repository
 2. Click on the **Edit this file** button (pencil)
-3. First, we need to update the `agent any` directive with the following so that we will get the correct Kubernetes Pod Template with the containers we need for our Pipeline:
+3. First, we need to update the `agent any` directive with the following so that we will get the correct Kubernetes Pod Template - configured with the **Container Template** with the `node:8.12.0-alpine` Docker image:
 ```
   agent { label 'nodejs-app' }
 ```
@@ -198,9 +200,9 @@ We will use the Pipeline `container` block to run Pipeline `steps` inside a spec
 ```
 6. Run the **helloworld-nodejs** job again and it should complete successfully with the following output: <p><img src="img/intro/k8s_agent_success.png" width=600/>
 
-## Conditional Execution
+## Conditional Execution with when
 
-In this exercise we will edit the `nodejs-app/Jenkinsfile.template` file in that **development** branch to add a branch specific `stage` and then create a new **development** branch in your forked **helloworld-nodejs** repository.
+In this exercise we will edit the `nodejs-app/Jenkinsfile.template` by adding some conditional logic based on the repository branch being build using the [`when` directive](https://jenkins.io/doc/book/pipeline/syntax/#when). We will accomplish this by adding a branch specific `stage` to the `nodejs-app/Jenkinsfile.template` Pipeline script and then creating a new **development** branch in your forked **helloworld-nodejs** repository.
 
 1. Navigate to and open the GitHub editor for the **nodejs-app/Jenkinsfile.template** file in your forked **customer-marker-pipelines** repository
 2. Insert the following stage after the existing **Test** stage and commit the change:
@@ -217,12 +219,12 @@ In this exercise we will edit the `nodejs-app/Jenkinsfile.template` file in that
       }
 ```
 3. Next, in GitHub, navigate to your forked **helloworld-nodejs** repository - click on the **Branch** drop down menu, type ***development** in the input box, and then click on the blue box to create the new branch - ***Create branch: development*** <p><img src="img/intro/conditional_create_dev_branch.png" width=500/>
-4. Navigate to the **helloworld-nodejs** job in Blue Ocean on your Team Master. You should see that a job for the new branch was created and is running. Note that the ***Build and Push Image*** `stage` was skipped. <p><img src="img/intro/conditional_skipped_stage.png" width=500/>
+4. Navigate to the **helloworld-nodejs** job in Blue Ocean on your Team Master. You should see that a new Pipeline job for the new branch was created automatically (thanks to the GitHub webhook that was created earlier) and is running. Note that the ***Build and Push Image*** `stage` was skipped. <p><img src="img/intro/conditional_skipped_stage.png" width=600/>
 
->NOTE: Creating the new ***development*** branch in GitHub triggered the webhook that was auto-created when you create the GitHub Organization project on your Team Master resulting in a new Pipeline job being created for the ***development*** branch in the **helloworld-nodejs** Multibranch Pipeline folder. Up until now we hadn't made any commits in your forked **helloworld-nodejs** repository so no webhook events were triggered to kick-off the job on your Team Master. In the image below, note the two branch jobs and the *Push event* that triggered the creation of the **development** job and kicked-off a run for that branch.
-<p><img src="img/intro/conditional_branches_with_push_event.png" width=500/>
+>NOTE: Creating the new ***development*** branch in GitHub triggered the webhook that was auto-created when you created the GitHub Organization project on your Team Master resulting in a new Pipeline job being created for the ***development*** branch in the **helloworld-nodejs** Multibranch Pipeline folder. Up until now we hadn't made any commits in your forked **helloworld-nodejs** repository so no webhook events were triggered to kick-off the job on your Team Master. In the image below, note the two branch jobs and the ***Push event*** that triggered the creation of the new **development** job and kicked-off a run for that branch.
+<p><img src="img/intro/conditional_branches_with_push_event.png" width=600/>
 
-5. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The new conditional ***Build and Push Image*** `stage` should now run. <p><img src="img/intro/conditional_master_branch.png" width=500/>
+5. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The new conditional ***Build and Push Image*** `stage` should now run. <p><img src="img/intro/conditional_master_branch.png" width=550/>
 
 ## Next Lesson
 
