@@ -71,7 +71,7 @@ For the purposes of this workshop everyone is creating and updating their own fo
 
 ## Basic Declarative Syntax Structure
 
-In the previous lesson your Pipeline should have run and should have failed. <p><img src="img/intro/basic_snytax_failed.png" width=550/>
+In the previous lesson your Pipeline should have run and should have failed. <p><img src="img/intro/basic_syntax_failed.png" width=550/>
 
 In this exercise we will update the `nodejs-app/Jenkinsfile.template` Declarative Pipeline using the GitHub editor so that it will actually do something as opposed to resulting in the following errors:
 
