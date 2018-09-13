@@ -19,9 +19,9 @@ For this exercise we are going to add a new stage after the **Build and Push Ima
     }
 ```
 
-2. **Commit & Run** your updated Pipeline and note the input prompt during the `Deploy` stage.  This `input` prompt is also available in the Console log and classic Stage View.<p><img src="img/more/input_basic.png" width=550/>
+2. **Commit & Run** your updated Pipeline and note the `input` prompt during the `Deploy` stage.  This `input` prompt is also available in the Console log and classic Stage View.<p><img src="img/more/input_basic.png" width=550/>
 
-3. Your Team Master will wait indefinitely for a user response. Let's fix that by setting a timeout. Earlier we used `options` at the global `pipeline` level to  Set a `timeout` for the `stage` using the `stage` `options` directive by updating the **Deploy** `stage` to match the following:
+3. Your Team Master will wait indefinitely for a user response to an `input` step. Let's fix that by setting a timeout. Earlier we used `options` at the global `pipeline` level to  Set a `timeout` for the `stage` using the `stage` `options` directive by updating the **Deploy** `stage` to match the following:
 
 ```
     stage('Deploy') {
@@ -37,7 +37,11 @@ For this exercise we are going to add a new stage after the **Build and Push Ima
     }
 ```
 
-4. **Commit & Run** your pipeline and wait at least 30 seconds. Your pipeline should be automatically aborted.<p><img src="img/2-input-timeout.png" width=550/>
+4. **Commit & Run** your pipeline and wait at least 30 seconds. Your pipeline should be automatically **aborted**.<p><img src="img/2-input-timeout.png" width=550/>
+
+## Input Approvers
+
+The `input` step supports an additional attribute.
 
 ## Post Actions
 

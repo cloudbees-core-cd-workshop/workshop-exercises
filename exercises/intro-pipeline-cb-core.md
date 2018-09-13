@@ -1,6 +1,6 @@
 # Introduction to Pipelines with CloudBees Core
 
-In addition to all the freely available [Jenkins Pipeline features](https://jenkins.io/doc/book/pipeline/), CloudBees Core provides additional features that make it easier for organizations of any size to implement and manage Jenkins Pipelines for Continuous Delivery.
+In addition to all the freely available [Jenkins Pipeline features](https://jenkins.io/doc/book/pipeline/), CloudBees Core provides additional features and capabilities that make it easier and faster for organizations of any size to implement and manage Jenkins Pipelines for Continuous Delivery. We like to refer to it as CD Acceleration.
 
 ## GitHub Organization Project
 
@@ -8,30 +8,30 @@ In this exercise we are going to create a special type of Jenkins Pipeline proje
 
 We must exit the Blue Ocean UI to the Jenkins classic UI to complete the steps in this lesson.
 
-1. Click the ***Go to classic*** icon at the top of common section of Blue Ocean’s navigation bar. <p><img src="img/intro/go_to_classic.png" width=500/>
+1. Click the ***Go to classic*** icon at the top of common section of Blue Ocean’s navigation bar. <p><img src="img/intro/go_to_classic.png" width=550/>
 
 Now, let's add your GitHub credentials to the Jenkins' Credentials manager to be used for the *GitHub Organization* project we will create next:
 
 1. Navigate back to your personal folder in Jenkins
 2. Click on **Credentials**
-3. Click on the **(global)** link under **Stores Scoped to [YourFolderName]** (in this case **beedemo-dev**) <p><img src="img/intro/credential_folder_scope.png" width=500/>
+3. Click on the **(global)** link under **Stores Scoped to [YourFolderName]** (in this case **beedemo-dev**) <p><img src="img/intro/credential_folder_scope.png" width=550/>
 4. Click on **Add Credentials** in the left menu
 5. Fill out the form (**Username with password**)
   - **Username**: The GitHub user name
   - **Password**: Your GitHub personal access token [created in setup](../Setup.md#create-a-github-personal-access-token)
   - **ID**: Create an ID for your credentials (something like **yourorg-github-token**)
-  - **Description**: Can be left blank if you want <p><img src="img/intro/credential_github_token_save.png" width=500/>
+  - **Description**: Can be left blank if you want <p><img src="img/intro/credential_github_token_save.png" width=550/>
 6. Click on **OK**
 
 Now let's create the Github Organization project:
 
 1. Click on **New Item**
 2. Enter your GitHub Organization name as the **Item Name** 
-3. Select **GitHub Organization** <p><img src="img/intro/org_folder_item.png" width=500/>
+3. Select **GitHub Organization** <p><img src="img/intro/org_folder_item.png" width=550/>
 4. Click **Ok**
 5. Select the credentials you created above from the **Credentials** drop down
 6. Select **All** from the **Strategy** drop down under **Discover Branches** 
-7. Make sure that the **Owner** field matches the name of your GitHub Organization name. <p><img src="img/intro/org_folder_scm_config.png" width=500/>
+7. Make sure that the **Owner** field matches the name of your GitHub Organization name. <p><img src="img/intro/org_folder_scm_config.png" width=550/>
 8. **DON'T SAVE YET**
 
 Continue to the next exercise.
@@ -67,7 +67,7 @@ Once those repositories are forked:
 
 > **NOTE:** The ***custom-marker-files*** repository does not get added to your **Github Organization** project since in doesn't and will never contain a matching marker file: `.nodejs-app`.
 
-For the purposes of this workshop everyone is creating and updating their own fork of the **custom-marker-pipelines** repository and `nodejs-app/Jenkinsfile.template` Pipeline script. However, if you were all part of the same organization and each had one or more Node.js apps - then you would all get instant CD as soon as you added the `.nodjs-app` file to your repository.
+For the purposes of this workshop everyone is creating and updating their own fork of the **custom-marker-pipelines** repository and `nodejs-app/Jenkinsfile.template` Pipeline script. However, if you were all part of the same organization and each had one or more Node.js apps - then you would all get instant CD as soon as you added the `.nodjs-app` file to your repository and all use the same `nodejs-app/Jenkinsfile.template` Pipeline script.
 
 ## Basic Declarative Syntax Structure
 
@@ -137,7 +137,7 @@ openjdk version "1.8.0_171"
 
 ## The options Directive
 
-The [`options` directive](https://jenkins.io/doc/book/pipeline/syntax/#options) allows configuring Pipeline-specific options from within the Pipeline itself. We are going to add `buildDiscarder` `option` to the `nodejs-app/Jenkinsfile.template` file in your forked **customer-marker-pipelines** repository. That will allows you to easily manage the *Discard old builds* option across all of the jobs that use the `nodejs-app/Jenkinsfile.template`.
+The [`options` directive](https://jenkins.io/doc/book/pipeline/syntax/#options) allows configuring Pipeline-specific options from within the Pipeline itself. We are going to add the `buildDiscarder` `option` to the `nodejs-app/Jenkinsfile.template` file in your forked **customer-marker-pipelines** repository. As a centrally managed CD service, that will allows easily managing the *Discard old builds* option across all of the jobs that use the `nodejs-app/Jenkinsfile.template` so that storage doesn't become an issue on the CloudBees Team Masters.
 
 1. Use the GitHub file editor to update the `nodejs-app/Jenkinsfile.template` file in your forked **customer-marker-pipelines** repository - adding the following `options` directive below the `agent` section:
 
