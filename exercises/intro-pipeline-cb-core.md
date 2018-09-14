@@ -55,7 +55,7 @@ Once those repositories are forked:
 3. In **Marker file** type `.nodejs-app`
 4. Under **Pipeline** - **Definition** select **Pipeline script from SCM**
 5. Select **Git** for the **SCM** drop-down
-6. In **Repository URL** enter: `https://github.com/{your_org_name}/custom-marker-files`
+6. In **Repository URL** enter: `https://github.com/{your_org_name}/custom-marker-pipelines`
 7. Select the credentials you created in the previous exercise.
 8. In **Script path** enter: `nodejs-app/Jenkinsfile.template`. Other than the GitHub Organization name it should look like the following: <p><img src="img/intro/custom_marker_config.png" width=550/>
 9. Click on **Save**
