@@ -207,8 +207,8 @@ Unstashed file(s) from https://cd-accel.s3.amazonaws.com/cb-core/artifacts/beede
 Declarative Pipelines support a feature referred to as [***Restartable Stages***](https://jenkins.io/doc/book/pipeline/running-pipelines/#restart-from-a-stage). You can restart any completed Declarative Pipeline from any top-level `stage` which ran in that Pipeline job run. This allows you to re-run a Pipeline from a `stage` which may have failed due to transient or environmental reasons. All inputs to the Pipeline will be the same. This includes SCM information, build parameters, and the contents of any `stash` step calls in the original Pipeline, if specified. Stages which were skipped due to an earlier failure will not be available to be restarted, but `stages` which were skipped due to a `when` condition not being satisfied will be available.
 
 1. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master.
-2. Select the **Build and Push Image** `stage` if it isn't already selected and then click on the ***Restart Build and Push Image*** link. <p><img src="img/more/restart_build_push_link.png" width=650/>
-3. The **Test** `stage` will be skipped, but the job will fail with the following error: <p><img src="img/more/restart_build_push_fail.png" width=650/>
+2. Select the **Build and Push Image** `stage` if it isn't already selected and then click on the ***Restart Build and Push Image*** link. <p><img src="img/more/restart_build_push_link.png" width=850/>
+3. The **Test** `stage` will be skipped, but the job will fail with the following error: <p><img src="img/more/restart_build_push_fail.png" width=850/>
 4. So what is going on? By default, a `stash` is removed when a Pipeline job completes, regardless of the result of the Pipeline. But in this case we want to **restart** from a `stage` where we `unstash` files. Declarative Pipeline has the ability to **preserve** a `stash` across job runs for this exact reason - but you must declare it by adding the `preserveStashes` job property to the `pipeline` global `options`. Update the global `options` section of your **nodejs-app/Jenkinsfile.template** Pipeline script:
 
 ```
@@ -221,7 +221,7 @@ Declarative Pipelines support a feature referred to as [***Restartable Stages***
 
 5. By default, the `preserveStashes` step will only preserver 1 run, but provides the `buildCount` parameter to set a range from 1 to 50 runs to preserve. We will preserve 2 to match the `buildDiscarder` policy we have in place. 
 6. Next, navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job from the start. This is necessary for the `preserveStash` to take effect and for the `stash` in the **Test** `stage` to get preserved. 
-7. Once the job has completed, select the **Build and Push Image** `stage` and then click on the ***Restart Build and Push Image*** link. The `unstash` step in the **Build and Push Image** `stage` will be successful and the job will complete successfully. <p><img src="img/more/restart_build_push_success.png" width=650/>
+7. Once the job has completed, select the **Build and Push Image** `stage` and then click on the ***Restart Build and Push Image*** link. The `unstash` step in the **Build and Push Image** `stage` will be successful and the job will complete successfully. <p><img src="img/more/restart_build_push_success.png" width=850/>
 
 ## Next Lesson
 
