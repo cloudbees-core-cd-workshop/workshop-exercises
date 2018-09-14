@@ -200,7 +200,7 @@ Unstashed file(s) from https://cd-accel.s3.amazonaws.com/cb-core/artifacts/beede
 
 >**NOTE:** Typically `stash` files are copied from the `agent` to the Jenkins master and `unstash` files are copied from the Jenkins master to the agent. This results in quite a bit of network IO between the Jenkins master(s) and agents, and has been a source of numerous performance issues with CloudBees customers. So working with the community, CloudBees developed an AWS S3 based implementation of the [**ArtifactManagerFactory**](https://jenkins.io/doc/developer/extensions/jenkins-core/#artifactmanagerfactory) extension that was added to Jenkins core as of the 2.118 release. The CloudBees developed [Artifact Manager on S3 plugin](https://github.com/jenkinsci/artifact-manager-s3-plugin) integrates transparently with the `archive`/`unarchive` and `stash`/`unstash` Pipeline steps to store those files in an AWS S3 Bucket - with the upload and download happeing on the agent without any overhead for the Jenkins master. And because of the modern, container based architecture of CloudBees Core on Kubernetes - we were able to easily add the necessarry plugins and configuration to the custom Team Master Docker image being used by everyone so this awesome cloud native artifact storage was available for everyones' Team Master as soon as they were provisioned.
 
- <p><img src="img/more/stash_aws_s3_bucket.png" width=650/>
+ <p><img src="img/more/stash_aws_s3_bucket.png" width=850/>
 
 ## Restartable Stages
 
