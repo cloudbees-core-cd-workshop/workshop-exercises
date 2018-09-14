@@ -230,7 +230,7 @@ In this exercise we will edit the `nodejs-app/Jenkinsfile.template` Pipeline scr
 
 ## Stage Specific Agents and Agent None
 
-Up to this point we only had one global `agent` defined that is being used by all `stages` of our `pipeline`. However, we don't need an agent for the 'Build and Push Image' and 'Deploy' `stages` (we will be adding Pipeline shared library steps later that will provide agents for those stages). So we will update the Pipeline to have no global `agent` and to have the same 'nodejs-app' `agent` for just the 'Test' `stage`.
+Up to this point we only had one global `agent` defined that is being used by all `stages` of our `pipeline`. However, we don't need an agent for the 'Build and Push Image' `stage` (we will be adding Pipeline shared library steps later that will provide agents for that and other additional stages). We will update the Pipeline to have no global `agent` and to have the same 'nodejs-app' `agent` just for the 'Test' `stage`.
 
 1. Navigate to and open the GitHub editor for the **nodejs-app/Jenkinsfile.template** file in the **master** branch of your forked **customer-marker-pipelines** repository
 2. Replace the global `agent` section with the following:
