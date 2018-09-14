@@ -42,7 +42,7 @@ Detailed set-up instructions are available at **[Setup](Setup.md)**
 
  See: [Releases](https://github.com/PipelineHandsOn/intro-to-declarative-pipeline/releases)
 
-**Important Note**: The ```CD-Acceleration-with-CloudBees-Workshop.pdf``` file contains corporate identify materials that are proprietary to CloudBees, Inc. that cannot be reused without written permission from CloudBees, Inc. 
+**Important Note**: The ```CD-Acceleration-with-CloudBees-Workshop.pdf``` file contains copywritten material that is proprietary to CloudBees, Inc. that cannot be reused without written permission from CloudBees, Inc. 
 
 # Disclaimer
 
