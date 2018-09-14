@@ -263,11 +263,11 @@ Up to this point we only had one global `agent` defined that is being used by al
 5. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. It will result in the job failing with the following error: 
 
 ```
+Required context class hudson.FilePath is missing
+Perhaps you forgot to surround the code with a step that provides this, such as: node
 Attempted to execute a step that requires a node context while ‘agent none’ was specified. Be sure to specify your own ‘node { ... }’ blocks when using ‘agent none’.
-— Error signal
 ```
 
-<p><img src="img/intro/agent_none_fail.png" width=700/>
 6. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** file in the **master** branch of your forked **customer-marker-pipelines** repository and remove the `sh 'node --version'` step from the **Build and Push Image** `stage` and commit the changes.
 7. Run the **helloworld-nodejs** **master** branch job again and it will complete successfully.
 
