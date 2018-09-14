@@ -63,7 +63,7 @@ The workshop utilizes several existing repositories from the CD Acceleration wit
 You should see the following **Create a new Pipeline** screen for your Team:
 <p><img src="img/setup-success.png" width=600/>
   
-You may proceed to the first set of exercises - **[Introduction to Pipelines with CloudBees Core](./exercises/intro-pipeline-cb-core.md)** - when your instructor tells you.
+You may proceed to the first set of exercises - **[Introduction to Pipelines with CloudBees Core](exercises/intro-pipeline-cb-core.md)** - when your instructor tells you.
 
 >NOTE: If you see the following screen then please follow **[these instructions](./License-Screen.md)**.
 <p><img src="img/license-error-1.png" width=400/>

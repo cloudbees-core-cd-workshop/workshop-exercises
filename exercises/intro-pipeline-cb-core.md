@@ -25,7 +25,7 @@ Now, let's add your GitHub credentials to the Jenkins' Credentials manager to be
 
 Now let's create the Github Organization project:
 
-1. Click on **New Item** <p><img src="img/intro/org_folder_new_item.png" width=550/>
+1. Click on **New Item** - make sure that you are in the folder with the same name as your team, and not at the root of your Team Master <p><img src="img/intro/org_folder_new_item.png" width=550/> 
 2. Enter your GitHub Organization name as the **Item Name** 
 3. Select **GitHub Organization** <p><img src="img/intro/org_folder_item.png" width=550/>
 4. Click **Ok**
@@ -202,7 +202,9 @@ We will use the [Pipeline `container` block](https://jenkins.io/doc/pipeline/ste
 
 ## Conditional Execution with when
 
-In this exercise we will edit the `nodejs-app/Jenkinsfile.template` by adding some conditional logic based on the repository branch being build using the [`when` directive](https://jenkins.io/doc/book/pipeline/syntax/#when). We will accomplish this by adding a branch specific `stage` to the `nodejs-app/Jenkinsfile.template` Pipeline script and then creating a new **development** branch in your forked **helloworld-nodejs** repository.
+In this exercise we will edit the `nodejs-app/Jenkinsfile.template` Pipeline script in the **custom-marker-pipelines** repository by adding some conditional logic based on the **helloworld-nodejs** repository branch being built using the [`when` directive](https://jenkins.io/doc/book/pipeline/syntax/#when). We will accomplish this by adding a branch specific `stage` to the `nodejs-app/Jenkinsfile.template` Pipeline script and then creating a new **development** branch in your forked **helloworld-nodejs** repository.
+
+>**NOTE:** Even though we are adding the conditional logic to the `nodejs-app/Jenkinsfile.template` Pipeline script in the **custom-marker-pipelines** repository we are actually creating a new branch in the **helloworld-nodejs** repository which is the one configured as the SCM source for the **helloworld-nodejs** Multibranch Pipeline project on your Team Master.  <p><img src="img/intro/conditional_multibranch_config.png" width=600/>
 
 1. Navigate to and open the GitHub editor for the **nodejs-app/Jenkinsfile.template** file in your forked **customer-marker-pipelines** repository
 2. Insert the following stage after the existing **Test** stage and commit the change:
@@ -230,4 +232,4 @@ In this exercise we will edit the `nodejs-app/Jenkinsfile.template` by adding so
 
 Before moving on to the next lesson you can make sure that your **nodejs-app/Jenkinsfile.template** Pipeline script is correct by comparing to or copying from the **after-intro** branch of your forked **customer-marker-pipelines** repository.
 
-You may proceed to the next set of exercises - **[Pipeline Approvals and More with CloudBees Core](./declarative-snytax-cb-core.md)** - when your instructor tells you.
+You may proceed to the next set of exercises - **[Pipeline Approvals and Artifact Management with CloudBees Core](./approvals-artifacts-cb-core.md)** - when your instructor tells you.
