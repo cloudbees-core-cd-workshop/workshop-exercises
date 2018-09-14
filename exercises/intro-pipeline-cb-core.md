@@ -198,7 +198,7 @@ We will use the [Pipeline `container` block](https://jenkins.io/doc/pipeline/ste
 ```
   sh 'node --version'
 ```
-6. Run the **helloworld-nodejs** job again and it should complete successfully with the following output: <p><img src="img/intro/k8s_agent_success.png" width=600/>
+6. Run the **helloworld-nodejs** job again and it will complete successfully with the following output: <p><img src="img/intro/k8s_agent_success.png" width=600/>
 
 ## Conditional Execution with when
 
@@ -207,7 +207,7 @@ In this exercise we will edit the `nodejs-app/Jenkinsfile.template` Pipeline scr
 >**NOTE:** Even though we are adding the conditional logic to the `nodejs-app/Jenkinsfile.template` Pipeline script in the **custom-marker-pipelines** repository we are actually creating a new branch in the **helloworld-nodejs** repository which is the one configured as the **Repository** for the **helloworld-nodejs** Multibranch Pipeline project on your Team Master.  <p><img src="img/intro/conditional_multibranch_config.png" width=600/>
 
 1. Navigate to and open the GitHub editor for the **nodejs-app/Jenkinsfile.template** file in your forked **customer-marker-pipelines** repository
-2. Insert the following stage after the existing **Test** stage and commit the change and note the `beforeAgent true` option - this setting will result in the `when` condition being evaluated before acquiring an `agent` for the `stage`:
+2. Insert the following stage after the existing **Test** stage, commit the change and note the `beforeAgent true` option - this setting will result in the `when` condition being evaluated before acquiring an `agent` for the `stage`:
 
 ```
       stage('Build and Push Image') {
@@ -226,10 +226,46 @@ In this exercise we will edit the `nodejs-app/Jenkinsfile.template` Pipeline scr
 >NOTE: Creating the new ***development*** branch in GitHub triggered the webhook that was auto-created when you created the GitHub Organization project on your Team Master resulting in a new Pipeline job being created for the ***development*** branch in the **helloworld-nodejs** Multibranch Pipeline folder. Up until now we hadn't made any commits in your forked **helloworld-nodejs** repository so no webhook events were triggered to kick-off the job on your Team Master. In the image below, note the two branch jobs and the ***Push event*** that triggered the creation of the new **development** job and kicked-off a run for that branch.
 <p><img src="img/intro/conditional_branches_with_push_event.png" width=600/>
 
-5. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The new conditional ***Build and Push Image*** `stage` should now run. <p><img src="img/intro/conditional_master_branch.png" width=550/>
+5. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The new conditional ***Build and Push Image*** `stage` will now run. <p><img src="img/intro/conditional_master_branch.png" width=550/>
+
+## Stage Specific Agents and Agent None
+
+Up to this point we only had one global `agent` defined that is being used by all `stages` of our `pipeline`. However, we don't need an agent for the 'Build and Push Image' and 'Deploy' `stages` (we will be adding Pipeline shared library steps later that will provide agents for those stages). So we will update the Pipeline to have no global `agent` and to have the same 'nodejs-app' `agent` for just the 'Test' `stage`.
+
+1. Navigate to and open the GitHub editor for the **nodejs-app/Jenkinsfile.template** file in the **master** branch of your forked **customer-marker-pipelines** repository
+2. Replace the global `agent` section with the following:
+
+```
+  agent none
+```
+
+3. Next, in the 'Test' `stage` add the following `agent` section right above the `steps` section:
+
+```
+    agent { label 'nodejs-app' }
+```
+
+4. You may be asking yourself how the `steps` are able to run in the `stages` where there is no `agent`. Every Pipeline script runs on the Jenkins master using a flyweight executor (i.e. Java thread). However, certain Pipeline `steps` require a heavyweight executor - that is an executor on an `agent`. One such step is the `sh` step. We will add such a step to the **Build and Push Image** `stage` to illustrate this. Add an `sh` step to the **Build and Push Image** stage after the `echo` step so the stage looks like the following:
+
+```
+    stage('Build and Push Image') {
+      when {
+        beforeAgent true
+        branch 'master'
+      }
+      steps {
+        echo "TODO - build and push image"
+        sh 'node --version'
+      }
+    }
+```
+
+5. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. It will result in the job failing with the following error: <p><img src="img/intro/agent_none_fail.png" width=600/>
+6. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** file in the **master** branch of your forked **customer-marker-pipelines** repository and remove the `sh 'node --version'` step from the **Build and Push Image** `stage` and commit the changes.
+7. Run the **helloworld-nodejs** **master** branch job again and it will complete successfully.
 
 ## Next Lesson
 
 Before moving on to the next lesson you can make sure that your **nodejs-app/Jenkinsfile.template** Pipeline script is correct by comparing to or copying from the **after-intro** branch of your forked **customer-marker-pipelines** repository.
 
-You may proceed to the next set of exercises - **[Pipeline Approvals and Artifact Management with CloudBees Core](./approvals-artifacts-cb-core.md)** - when your instructor tells you.
+You may proceed to the next set of exercises - **[Pipeline Approvals and Artifact Management with CloudBees Core](./approvals-artifacts-cb-core.md)** - when your instructor tells you. By default, the Pipeline script runs on the Jenkins master, using a lightweight executor (often referred to as a flyweight executor) and is expected to use very few resources.

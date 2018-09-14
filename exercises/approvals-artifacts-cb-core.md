@@ -114,7 +114,34 @@ Sometimes you may need to share certain files between `stages` of a `pipeline` b
 
 ### Default Code Checkout
 
-Before we add `stash` and `unstash` steps to our Pipeline we are going to revisit the automatic code checkout for Declarative Pipelines that was mentioned in the [Basic Declarative Syntax Structure](./intro-pipeline-cb-core.md#basic-declarative-syntax-structure) lesson. Declarative Pipeline checks out source code by default as part of the `agent` directive.
+Before we add `stash` and `unstash` steps to our Pipeline we are going to revisit the automatic code checkout for Declarative Pipelines that was mentioned in the [Basic Declarative Syntax Structure](./intro-pipeline-cb-core.md#basic-declarative-syntax-structure) lesson. Declarative Pipeline checks out source code by default as part of the `agent` directive. However, we don't need all of the files in the **helloworld-nodejs** repository in all of the stages. The `skipDefaultCheckout` option is a global level `options` to disable automatic checkouts.
+
+1. First, update the global `options` directive:
+
+```
+pipeline {
+  agent { label 'nodejs-app' }
+  options { 
+    buildDiscarder(logRotator(numToKeepStr: '2'))
+    skipDefaultCheckout true
+  }
+```
+
+2. Next, we need to add a checkout step - `checkout scm` to the **Test** stage, we don't want to do a full checkout in any of the other stages:
+
+```
+    stage('Test') {
+        steps {
+          checkout scm
+          container('nodejs') {
+            echo 'Hello World!'   
+            sh 'node --version'
+          }
+        }
+      }
+```
+
+>**NOTE:** The `scm` part of the [`checkout scm` step](https://jenkins.io/doc/pipeline/steps/workflow-scm-step/#code-checkout-code-general-scm) is a special variable that is created for all Pipelines configured to load their Pipeline script from source control such as our **helloworld-nodejs** Multibranch Pipeline project.
 
 ## Restartable Stages
 
