@@ -190,7 +190,7 @@ Sometimes you may need to share certain files between `stages` of a `pipeline` b
     }
 ```
 
-4. Also note that we added `agent any` to the **Build and Push Image** `stage` because the `unstash` step requires a heavyweight executor as discussed in the **Stage Specific Agents and Agent None** lesson. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. You will see files being stashed and then unstashed.
+4. Also note that we added `agent any` to the **Build and Push Image** `stage` because the `unstash` step requires a heavyweight executor as discussed in the [**Stage Specific Agents and Agent None**](exercises/intro-pipeline-cb-core.md#stage-specific-agents-and-agent-none) lesson. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. You will see files being stashed and then unstashed.
 
 ```
 Stashed 4 file(s) to https://cd-accel.s3.amazonaws.com/cb-core/artifacts/beedemod-dev/bee-cd/helloworld-nodejs/master/28/stashes/app.tgz
