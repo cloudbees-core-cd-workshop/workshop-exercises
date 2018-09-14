@@ -21,7 +21,7 @@ For this exercise we are going to add a new stage after the **Build and Push Ima
 
 2. **Run** your updated Pipeline job in Blue Ocean and note the `input` prompt during the `Deploy` stage.  *This `input` prompt is also available in the Console log and classic Stage View.* <p><img src="img/more/input_basic.png" width=550/>
 
-3. Your Team Master will wait indefinitely for a user response to an `input` step. Let's fix that by setting a timeout. Earlier we used `options` at the global `pipeline` level to set the ***Discard old builds*** strategy for your Team Master with the `buildDiscarder` `option`. Now we will configure `options` at the `stage` level -a  `timeout` for the `stage` using the `stage` `options` directive. Update the **Deploy** `stage` to match the following and commit the changes:
+3. Your Team Master will wait indefinitely for a user response to an `input` step. Let's fix that by setting a timeout. Earlier we used `options` at the global `pipeline` level to set the ***Discard old builds*** strategy for your Team Master with the `buildDiscarder` `option`. Now we will configure `options` at the `stage` level -a  `timeout` for the `stage` using the `stage` `options` directive. Update the **Deploy** `stage` to match the following and then commit the changes:
 
 ```
     stage('Deploy') {
@@ -60,20 +60,22 @@ Now that we have a new team member, you can add them as a `submitter` for the `i
 1. Use the GitHub file editor to update your `nodejs-app/Jenkinsfile.template` Pipeline script in your forked **custom-marker-pipelines** repository - updating the `input` directive of the **Deploy** `stage` with the following changes (replacing **beedemo-ops** with Jenkins username of your new **Team Guest** member). Also, update the `timeout` duration to give your approver plenty of time to submit the `input`:
 
 ```
-options {
-    timeout(time: 60, unit: 'SECONDS') 
-}
-input {
-    message "Should we deploy?"
-    submitter "beedemo-ops"
-    submitterParameter "APPROVER"
-}
+      options {
+        timeout(time: 60, unit: 'SECONDS') 
+      }
+      input {
+        message "Should we deploy?"
+        submitter "beedemo-ops"
+        submitterParameter "APPROVER"
+      }
 ```
 
-2. So, we added one additonal configuration option for our `input` directive: `submitterParameter`. Setting the  `submitterParameter` option will result in a Pipeline environmental variable named `APPROVER` being set with the value being the username of the user that submitted the `input`. In this case it will either be **beedemo-ops** or **SYSTEM** if it timeouts before it is submitted. Update the `echo` step in your `nodejs-app/Jenkinsfile.template` Pipeline script to print the `APPROVER` environmental variable and commit the changes:
+2. So, we added one additonal configuration option for our `input` directive: `submitterParameter`. Setting the  `submitterParameter` option will result in a Pipeline environmental variable named `APPROVER` being set with the value being the username of the user that submitted the `input`. In this case it will either be **beedemo-ops** or **SYSTEM** if it timeouts before it is submitted. Update the `steps` section so the `echo` step in your `nodejs-app/Jenkinsfile.template` Pipeline script will print the `APPROVER` environmental variable and then commit the changes:
 
 ```
-echo "Continuing with deployment - approved by ${APPROVER}"
+      steps {
+        echo "Continuing with deployment - approved by ${APPROVER}"
+      }
 ```
 
 3. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. If you attempt to approve the `input` you will get an error: <p><img src="img/more/input_submitter_error.png" width=600/>
@@ -107,20 +109,32 @@ pipeline {
 
 3. Run your pipeline from the **Branches** view of the Blue Ocean Activity View for your pipeline.
 4. Let the job timeout or have your `submitter` click the **Abort** button. You will see the following output: <p><img src="img/more/input_post_abort.png" width=550/>
+5. In order to speed up the rest of the workshop, remove the the `submitter` option for the `input` directive by editing the `nodejs-app/Jenkinsfile.template` file in your forked **custom-marker-pipelines** repository and then commit the changes. Your **Deploy** `stage` should match the following:
 
-## Stash and Unstash
+```
+    stage('Deploy') {
+      options {
+        timeout(time: 60, unit: 'SECONDS') 
+      }
+      input {
+        message "Should we deploy?"
+        submitterParameter "APPROVER"
+      }
+      steps {
+        echo "Continuing with deployment - approved by ${APPROVER}"
+      }
+    }
+```
 
-Sometimes you may need to share certain files between `stages` of a `pipeline` but not actually need to archive those files for use once the job run has completed. That is precisely the purpose of the [`stash`](https://jenkins.io/doc/pipeline/steps/workflow-basic-steps/#stash-stash-some-files-to-be-used-later-in-the-build) and [`unstash`](https://jenkins.io/doc/pipeline/steps/workflow-basic-steps/#unstash-restore-files-previously-stashed) steps.
+### Skip Default Checkout
 
-### Default Code Checkout
-
-Before we add `stash` and `unstash` steps to our Pipeline we are going to revisit the automatic code checkout for Declarative Pipelines that was mentioned in the [Basic Declarative Syntax Structure](./intro-pipeline-cb-core.md#basic-declarative-syntax-structure) lesson. Declarative Pipeline checks out source code by default as part of the `agent` directive. However, we don't need all of the files in the **helloworld-nodejs** repository in all of the stages. The `skipDefaultCheckout` option is a global level `options` to disable automatic checkouts.
+Sometimes you don't need to checkout the source code in every `stage` and that is the case for our Pipeline for the **helloworld-nodejs** repository. So we are going to revisit the automatic code checkout for Declarative Pipelines that was mentioned in the [Basic Declarative Syntax Structure](./intro-pipeline-cb-core.md#basic-declarative-syntax-structure) lesson. Declarative Pipeline checks out source code by default as part of the `agent` directive. However, we don't need all of the files in the **helloworld-nodejs** repository in all of the stages. The `skipDefaultCheckout` option is a global level `options` to disable automatic checkouts.
 
 1. First, update the global `options` directive:
 
 ```
 pipeline {
-  agent { label 'nodejs-app' }
+  agent none
   options { 
     buildDiscarder(logRotator(numToKeepStr: '2'))
     skipDefaultCheckout true
@@ -131,24 +145,83 @@ pipeline {
 
 ```
     stage('Test') {
-        steps {
-          checkout scm
-          container('nodejs') {
-            echo 'Hello World!'   
-            sh 'node --version'
-          }
+      agent { label 'nodejs-app' }
+      steps {
+        checkout scm
+        container('nodejs') {
+          echo 'Hello World!'   
+          sh 'node --version'
+        }
+      }
+    }
+```
+
+3. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job.
+
+>**NOTE:** The `scm` part of the [`checkout scm` step](https://jenkins.io/doc/pipeline/steps/workflow-scm-step/#code-checkout-code-general-scm) is a special variable that is created for all Pipelines configured to load their Pipeline script from source control such as our **helloworld-nodejs** Multibranch Pipeline project.
+
+## Stash and Unstash
+
+Sometimes you may need to share certain files between `stages` of a `pipeline` but not actually need to archive those files for use once the job run has completed. That is precisely the purpose of the [`stash`](https://jenkins.io/doc/pipeline/steps/workflow-basic-steps/#stash-stash-some-files-to-be-used-later-in-the-build) and [`unstash`](https://jenkins.io/doc/pipeline/steps/workflow-basic-steps/#unstash-restore-files-previously-stashed) steps. We are eventually going to need certain files from **helloworld-nodejs** in the **Build and Push Image** `stage` - but we won't need all of the checked out files - like the **test** files. So we will `stash` only the files checked out in the **Test** `stage` that we will need for the the **Build and Push Image** `stage`.
+
+1. Add the following `post` section just below the `steps` section of the **Test** `stage` using the GitHub editor and commit your changes:
+
+```
+      post {
+        success {
+          stash name: 'app', includes: '*.js, public/**, views/*, Dockerfile'
         }
       }
 ```
 
->**NOTE:** The `scm` part of the [`checkout scm` step](https://jenkins.io/doc/pipeline/steps/workflow-scm-step/#code-checkout-code-general-scm) is a special variable that is created for all Pipelines configured to load their Pipeline script from source control such as our **helloworld-nodejs** Multibranch Pipeline project.
+2. Remember, `post` sections are available at both the global `pipeline` level and at the individual `stage` level. The reason we added it to the `success` condition of the `post` section is because we only need the `stash` of files if we successfully get past the **Test** `stage`. Now we will add the `unstash` step to the **Build and Push Image** `stage`.
+
+```
+    stage('Build and Push Image') {
+      agent any
+      when {
+        beforeAgent true
+        branch 'master'
+      }
+      steps {
+        echo "TODO - build and push image"
+        unstash 'app'
+      }
+    }
+```
+
+4. Also note that we added `agent any` to the **Build and Push Image** `stage` because the `unstash` step requires a heavyweight executor as discussed in the **Stage Specific Agents and Agent None** lesson. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. You will see files being stashed and then unstashed.
+
+```
+Stashed 4 file(s) to https://cd-accel.s3.amazonaws.com/cb-core/artifacts/beedemod-dev/bee-cd/helloworld-nodejs/master/28/stashes/app.tgz
+...
+Unstashed file(s) from https://cd-accel.s3.amazonaws.com/cb-core/artifacts/beedemod-dev/bee-cd/helloworld-nodejs/master/28/stashes/app.tgz
+```
+
+>**NOTE:** Typically `stash` files are copied from the `agent` to the Jenkins master and `unstash` files are copied from the Jenkins master to the agent. This results in quite a bit of network IO between the Jenkins master(s) and agents, and has been a source of numerous performance issues with CloudBees customers. So working with the community, CloudBees developed an AWS S3 based implementation of the [**ArtifactManagerFactory**](https://jenkins.io/doc/developer/extensions/jenkins-core/#artifactmanagerfactory) extension that was added to Jenkins core as of the 2.118 release. The CloudBees developed [Artifact Manager on S3 plugin](https://github.com/jenkinsci/artifact-manager-s3-plugin) integrates transparently with the `archive`/`unarchive` and `stash`/`unstash` Pipeline steps to store those files in an AWS S3 Bucket - with the upload and download happeing on the agent without any overhead for the Jenkins master. And because of the modern, container based architecture of CloudBees Core on Kubernetes - we were able to easily add the necessarry plugins and configuration to the custom Team Master Docker image being used by everyone so this awesome cloud native artifact storage was available for everyones' Team Master as soon as they were provisioned.
+
+ <p><img src="img/more/stash_aws_s3_bucket.png" width=650/>
 
 ## Restartable Stages
 
 Declarative Pipelines support a feature referred to as [***Restartable Stages***](https://jenkins.io/doc/book/pipeline/running-pipelines/#restart-from-a-stage). You can restart any completed Declarative Pipeline from any top-level `stage` which ran in that Pipeline job run. This allows you to re-run a Pipeline from a `stage` which may have failed due to transient or environmental reasons. All inputs to the Pipeline will be the same. This includes SCM information, build parameters, and the contents of any `stash` step calls in the original Pipeline, if specified. Stages which were skipped due to an earlier failure will not be available to be restarted, but `stages` which were skipped due to a `when` condition not being satisfied will be available.
 
-1. As the `submitter` navigate to the **master** branch of your partner's **helloworld-nodejs** job in Blue Ocean.
-2. The last run of that job should have been **aborted** based on the previous exercise and when you open that run it should default to  selecting the 'Deploy' `stage` - if not, select the 'Deploy' `stage` and then click on the ***Restart Deploy*** link. <p><img src="img/more/restart_deploy_link.png" width=600/>
+1. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master.
+2. Select the **Build and Push Image** `stage` if it isn't already selected and then click on the ***Restart Build and Push Image*** link. <p><img src="img/more/restart_build_push_link.png" width=650/>
+3. The **Test** `stage` will be skipped, but the job will fail with the following error: <p><img src="img/more/restart_build_push_fail.png" width=650/>
+4. So what is going on? By default, a `stash` is removed when a Pipeline job completes, regardless of the result of the Pipeline. But in this case we want to **restart** from a `stage` where we `unstash` files. Declarative Pipeline has the ability to **preserve** a `stash` across job runs for this exact reason - but you must declare it by adding the `preserveStashes` job property to the `pipeline` global `options`. Update the global `options` section of your **nodejs-app/Jenkinsfile.template** Pipeline script:
+
+```
+  options { 
+    buildDiscarder(logRotator(numToKeepStr: '2'))
+    skipDefaultCheckout true
+    preserveStashes(buildCount: 2)
+  }
+```
+
+5. By default, the `preserveStashes` step will only preserver 1 run, but provides the `buildCount` parameter to set a range from 1 to 50 runs to preserve. We will preserve 2 to match the `buildDiscarder` policy we have in place. 
+6. Next, navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job from the start. This is necessary for the `preserveStash` to take effect and for the `stash` in the **Test** `stage` to get preserved. 
+7. Once the job has completed, select the **Build and Push Image** `stage` and then click on the ***Restart Build and Push Image*** link. The `unstash` step in the **Build and Push Image** `stage` will be successful and the job will complete successfully. <p><img src="img/more/restart_build_push_success.png" width=650/>
 
 ## Next Lesson
 
