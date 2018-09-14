@@ -1,4 +1,4 @@
-# More Declarative Syntax with CloudBees Core
+# Pipeline Approvals and More with CloudBees Core
 
 ## Interactive Input
 
@@ -70,7 +70,7 @@ input {
 }
 ```
 
-2. So, we added one additonal configuration option for our `input` directive: `submitterParameter`. Setting the  `submitterParameter` option will result in a Pipeline environmental variable named `APPROVER` being set with the value being the username of the user that submitted the `input`. In this case it will either be **beedemo-ops** or **system** if it timeouts before it is submitted. Update the `echo` step in your `nodejs-app/Jenkinsfile.template` Pipeline script to print the `APPROVER` environmental variable and commit the changes:
+2. So, we added one additonal configuration option for our `input` directive: `submitterParameter`. Setting the  `submitterParameter` option will result in a Pipeline environmental variable named `APPROVER` being set with the value being the username of the user that submitted the `input`. In this case it will either be **beedemo-ops** or **SYSTEM** if it timeouts before it is submitted. Update the `echo` step in your `nodejs-app/Jenkinsfile.template` Pipeline script to print the `APPROVER` environmental variable and commit the changes:
 
 ```
 echo "Continuing with deployment - approved by ${APPROVER}"
@@ -86,30 +86,31 @@ echo "Continuing with deployment - approved by ${APPROVER}"
 
 ## Post Actions
 
-What happens if your `input` step times out or if the *approver* clicks the **Abort** button? There is a special `post` section for Delcarative Pipelines that allows you to define one or more additional steps that are run upon the completion of the `pipeline` or `stage` execution and are designed to handle a variety of conditions (not only **aborted**) that could occur outside the standard pipeline flow.
+What happens if your `input` step times out or if the *approver* clicks the **Abort** button? There is a special [`post` section for Delcarative Pipelines](https://jenkins.io/doc/book/pipeline/syntax/#post) that allows you to define one or more additional steps that are run upon the completion of the entire `pipeline` or an individual `stage` execution and are designed to [handle a variety of conditions](https://jenkins.io/doc/book/pipeline/syntax/#post-conditions) (not only **aborted**) that could occur outside the standard Pipeline flow.
 
-In this example we will add a `post` section to our **Deploy** stage to handle a timeout (aborted run). 
+In this example we will add a `post` section to our **Deploy** stage to handle a timeout or disapproval by our submitter (aborted run). 
 
->NOTE: The [`post` section](https://jenkins.io/doc/book/pipeline/syntax/#post) is available at either the global `pipeline` level or at individual `stage` levels.
-
-1. Add the following to the bottom of your `pipeline` - right before the close curly brace for the entire `pipeline` using the GitHub editor:
+1. Add the following `post` section just below the `options` directive a the root of your Pipeline using the GitHub editor and commit your changes:
 
 ```
+pipeline {
+  agent { label 'nodejs-app' }
+  options { 
+    buildDiscarder(logRotator(numToKeepStr: '2'))
+  }
   post {
     aborted {
-      echo 'Why didn\'t you push my button?'
+      echo "Why didn't you push my button?"
     }
   }
 ```
 
-2. Commit your changes.
 3. Run your pipeline from the **Branches** view of the Blue Ocean Activity View for your pipeline.
-4. Wait for 30 seconds and you should see the following line in your console output: `Why didn't you push my button?` **OR** you could just click the **Abort** button.<p><img src="img/2-post-action-abort.png" width=550/>
-5. Finally, remove the `Deploy` stage from your pipeline so that you will not have to manually approve the job each time it runs for the rest of the workshop.
+4. Let the job timeout or have your `submitter` click the **Abort** button. You will see the following output: <p><img src="img/more/input_post_abort.png" width=550/>
 
 ## Restartable Stages
 
-Declarative Pipelines support a feature referred to as [***Restartable Stages***](https://jenkins.io/doc/book/pipeline/running-pipelines/#restart-from-a-stage). You can restart any completed Declarative Pipeline from any top-level `stage` which ran in that Pipeline job run. This allows you to re-run a Pipeline from a `stage` which may have failed due to transient or environmental reasons - among other reasons. All inputs to the Pipeline will be the same. This includes SCM information, build parameters, and the contents of any `stash` step calls in the original Pipeline, if specified. Stages which were skipped due to an earlier failure will not be available to be restarted, but `stages` which were skipped due to a `when` condition not being satisfied will be available.
+Declarative Pipelines support a feature referred to as [***Restartable Stages***](https://jenkins.io/doc/book/pipeline/running-pipelines/#restart-from-a-stage). You can restart any completed Declarative Pipeline from any top-level `stage` which ran in that Pipeline job run. This allows you to re-run a Pipeline from a `stage` which may have failed due to transient or environmental reasons. All inputs to the Pipeline will be the same. This includes SCM information, build parameters, and the contents of any `stash` step calls in the original Pipeline, if specified. Stages which were skipped due to an earlier failure will not be available to be restarted, but `stages` which were skipped due to a `when` condition not being satisfied will be available.
 
 1. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job.
 2. 
