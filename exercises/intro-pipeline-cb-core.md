@@ -207,7 +207,7 @@ In this exercise we will edit the `nodejs-app/Jenkinsfile.template` Pipeline scr
 >**NOTE:** Even though we are adding the conditional logic to the `nodejs-app/Jenkinsfile.template` Pipeline script in the **custom-marker-pipelines** repository we are actually creating a new branch in the **helloworld-nodejs** repository which is the one configured as the SCM source for the **helloworld-nodejs** Multibranch Pipeline project on your Team Master.  <p><img src="img/intro/conditional_multibranch_config.png" width=600/>
 
 1. Navigate to and open the GitHub editor for the **nodejs-app/Jenkinsfile.template** file in your forked **customer-marker-pipelines** repository
-2. Insert the following stage after the existing **Test** stage and commit the change:
+2. Insert the following stage after the existing **Test** stage and commit the change and note the `beforeAgent true` :
 
 ```
       stage('Build and Push Image') {
