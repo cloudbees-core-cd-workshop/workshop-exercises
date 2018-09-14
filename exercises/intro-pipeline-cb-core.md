@@ -91,7 +91,7 @@ WorkflowScript: 1: Missing required section "agent" @ line 1, column 1.
 
 1. We will use the GitHub file editor to update the `nodejs-app/Jenkinsfile.template` file in your forked **customer-marker-pipelines** repository. Navigate to the `custom-marker-pipelines/nodejs-app/Jenkinsfile.template` file in your forked repository and then click on the pencil icon to the upper right to edit that file. <p><img src="img/intro/basic_snytax_edit_github.png" width=550/>
 
-> NOTE: Remember we are using a CloudBees Core feature that allows us to specifcy a Pipeline script from a different source code repository that the one where the application code is committed.
+> NOTE: Remember we are using a CloudBees Core feature that allows us to specify a Pipeline script from a different source code repository that the one where the application code is committed.
 
 2. Replace the contents of that file with the following Declarative Pipeline:
 ```

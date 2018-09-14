@@ -1,4 +1,4 @@
-# Pipeline Approvals and More with CloudBees Core
+# Pipeline Approvals, Post Actions and Stash with CloudBees Core
 
 ## Interactive Input
 
@@ -108,12 +108,18 @@ pipeline {
 3. Run your pipeline from the **Branches** view of the Blue Ocean Activity View for your pipeline.
 4. Let the job timeout or have your `submitter` click the **Abort** button. You will see the following output: <p><img src="img/more/input_post_abort.png" width=550/>
 
+## Stash and Unstash
+
+Sometimes you may need to share certain files between `stages` of a `pipeline` but not actually need to archive those files for use one the job run has completed. That is precisely the purpose of the [`stash`](https://jenkins.io/doc/pipeline/steps/workflow-basic-steps/#stash-stash-some-files-to-be-used-later-in-the-build) and [`unstash`](https://jenkins.io/doc/pipeline/steps/workflow-basic-steps/#unstash-restore-files-previously-stashed) steps.
+
+
+
 ## Restartable Stages
 
 Declarative Pipelines support a feature referred to as [***Restartable Stages***](https://jenkins.io/doc/book/pipeline/running-pipelines/#restart-from-a-stage). You can restart any completed Declarative Pipeline from any top-level `stage` which ran in that Pipeline job run. This allows you to re-run a Pipeline from a `stage` which may have failed due to transient or environmental reasons. All inputs to the Pipeline will be the same. This includes SCM information, build parameters, and the contents of any `stash` step calls in the original Pipeline, if specified. Stages which were skipped due to an earlier failure will not be available to be restarted, but `stages` which were skipped due to a `when` condition not being satisfied will be available.
 
-1. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job.
-2. 
+1. As the `submitter` navigate to the **master** branch of your partner's **helloworld-nodejs** job in Blue Ocean.
+2. The last run of that job should have been **aborted** based on the previous exercise and when you open that run it should default to  selecting the 'Deploy' `stage` - if not, select the 'Deploy' `stage` and then click on the ***Restart Deploy*** link. <p><img src="img/more/restart_deploy_link.png" width=600/>
 
 ## Parallel Stages
 
