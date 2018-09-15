@@ -5,6 +5,7 @@ The ability to define stages to run in parallel is an important feature of Jenki
 >**Starting Here or Catching Up?**
 >
 >If you are starting with this set of exercises or just need to catch up, you may get the the correct version of the  **nodejs-app/Jenkinsfile.template** Pipeline script for starting these exercises [from this branch](https://github.com/cloudbees-cd-acceleration-workshop/custom-marker-pipelines/blob/after-approvals/nodejs-app/Jenkinsfile.template).
+>
 
 ## Kubernetes Pod Templates Defined in Pipeline Script
 
