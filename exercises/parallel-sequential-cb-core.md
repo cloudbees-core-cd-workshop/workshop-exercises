@@ -186,7 +186,7 @@ Fortunately, Pipeline has built-in functionality for executing portions of Scrip
     }
 ```
 
-3. We are duplicating the `agent` section and executing the `nodejs` steps twice. That doesn't seem efficient - but it is because the `parallel` block for Declarative syntax does not allow you to define an `agent` section and a `parallel` block at the same level. More specifically, **you can have ONLY ONE of either `agent`, `parallel` or `stages` as a child of the `stage` directive**. 
+3. We are duplicating the `agent` section and the `post` sections for capturing test results with the `junit` step. We are also executing the `nodejs` steps twice. That doesn't seem efficient - but it is because the `parallel` block for Declarative syntax does not allow you to define an `agent` section and a `parallel` block at the same level. More specifically, **you can have ONLY ONE of either `agent`, `parallel` or `stages` as a child of the `stage` directive**. 
 4. Commit the changes and navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run your job. It will complete successfully, and note the nice visualization of the parallel stages in Blue Ocean:  <p><img src="img/parallel/parallel_success.png" width=850/> <p>Also note that even though the **Firefox** `stage` is selected, the restart stage link text is **Restart Test** - that is because you can only [restart top-level stages](https://jenkins.io/doc/book/pipeline/running-pipelines/#restart-from-a-stage) and not parallel or nested stages.
 
 ## Sequential Stages
@@ -342,7 +342,7 @@ spec:
 ```
 
 3. We now have one stage and have enclosed the parallel tests in a `script` block. Also note that we added an additional **testcafe** container - even we only used one then the **firefox** tests would have to wait for the **chrome** tests to complete. We also had to sprecify a different set of ports for the `testcafe-firefox` `container` so it doesn't conflict with the `testcafe-chrome` `container` ports as the containers in a [Kubernetes Pod share a network namespace to include network ports](https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/#networking). Despite a bit of wackiness in Blue Ocean and , the final output once the job completes actually looks ok in Blue Ocean:  <p><img src="img/parallel/parallel_scipted_success.png" width=850/>
-4. Another issue is that we lose the build logs in Blue Ocean for the **nodejs** steps. Let's see if we can combine sequentials stage with the parallel tests in a `script` block to get the logs back for the `nodejs` steps and still have parallelization for our tests.  Replace the entire **Test** `stage` with the version below:
+4. Another issue is that we lose the build logs in Blue Ocean for the **nodejs** steps. Their still available in the classic UI, but it would be nice to have them in Blue Ocean as well. Let's see if we can combine sequential stages with the parallel tests in a `script` block to get the logs back for the `nodejs` steps and still have parallelization for our tests.  Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **customer-marker-pipelines** repository and replace the entire **Test** `stage` with the version below:
 
 ```groovy
     stage('Test') {
@@ -418,7 +418,7 @@ spec:
       }    
     }
 ```
-5. Now we have logs for the **App Setup** nested `stage` and our job runs a bit faster than before:  <p><img src="img/parallel/sequential_with_scripted_parallel.png" width=850/>
+5. We have accomplished everything we wanted - albeit with the use of the `script` block - 1 Pod Template, the `nodejs` steps only run once, the tests are run in parallel and just one `post` section. And now we have logs for the **App Setup** nested `stage`, nice visualization of our Pipeline in Blue Ocean and our job runs a bit faster than before:  <p><img src="img/parallel/sequential_with_scripted_parallel.png" width=850/>
 
 ## Next Lesson
 
