@@ -46,7 +46,7 @@ spec:
 
 ## Tests with Testcafe
 
-So far, we have a **Test** `stage` that doesn't really do anything. We are going to change that by executing a [Testcafe](http://devexpress.github.io/testcafe/) driven browser tests for the **helloworld-nodejs** app in our Pipeline.
+So far, we have a **Test** `stage` that doesn't really do anything. We are going to change that by executing [Testcafe](http://devexpress.github.io/testcafe/) driven browser tests for the **helloworld-nodejs** app in our Pipeline.
 
 1. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **custom-marker-pipelines** repository.
 2. Update the `steps` section of the **Test** `stage` to match the following:
@@ -81,13 +81,13 @@ So far, we have a **Test** `stage` that doesn't really do anything. We are going
 
 4. Commit those changes and run the **helloworld-nodejs** **master** branch job and it will fail. It failed because the **Testcafe** test did not pass. We can see the exact error under the [**Tests** tab of the Blue Ocean Pipeline Run Details view](https://jenkins.io/doc/book/blueocean/pipeline-run-details/#tests) for this run: <p><img src="img/parallel/test_failure.png" width=850/>
 5. So it appears that we have a slight typo in our **helloworld-nodejs** app. Use the GitHub editor to open the `hello.js` file on the **master** branch of your forked copy of the **helloworld-nodejs** repository, fix the misspelling of **Worlld** to **World** and then commit the changes. 
-6. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and your job should already be running as a GitHub webhook triggered it when you commited the changes for the `hello.js` file in the **helloworld-nodejs** repository. The test will be pass and the job will complete successfully: <p><img src="img/parallel/test_success.png" width=850/>
+6. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and your job should already be running as a GitHub webhook triggered it when you commited the changes for the `hello.js` file in the **helloworld-nodejs** repository. The tests will be pass and the job will complete successfully: <p><img src="img/parallel/test_success.png" width=850/>
 
 ## Parallel Stages
 
-The example in the section above runs tests across two different browsers - Chromium and Firefox - linearlly. In practice, if the tests took 30 minutes to complete, the "Test" stage would take 60 minutes to complete! Of course these tests are rather simple and don't take that long, but it would certainly be valualbe to understand how to parallelize certain steps when there are longer running tests.
+The example in the section above runs tests across two different browsers - Chromium and Firefox - linearlly. In practice, if the tests took 30 minutes to complete, the "Test" stage would take 60 minutes to complete! Of course these tests are rather simple and don't take that long, but it would certainly be valualbe to understand how to parallelize certain steps when there are longer running tests or other long running steps that can be parallelized.
 
-Fortunately, Pipeline has built-in functionality for executing portions of Scripted Pipeline in parallel, implemented in the aptly named `parallel` step. We will refactor the example above to use the [`parallel` block for Declarative Pipelines](https://jenkins.io/doc/book/pipeline/syntax/#parallel).
+Fortunately, Pipeline has built-in functionality for executing Pipeline steps in parallel, implemented in the aptly named `parallel` step. We will refactor the example above to use the [`parallel` block for Declarative Pipelines](https://jenkins.io/doc/book/pipeline/syntax/#parallel).
 
 1. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **custom-marker-pipelines** repository.
 2. Replace the entire **Test** `stage` with the parallel stages version below (I know, it is very long):
@@ -191,7 +191,7 @@ Fortunately, Pipeline has built-in functionality for executing portions of Scrip
 
 ## Sequential Stages
 
-Running in parallel does not make a lot sense for our **helloworld-nodejs** app. With as fast as these browser tests our it doesn't really make sense to run the `nodejs` `container` steps twice and having two separate, identical Kuberentes Pods running. But nested sequential stages might make sense.
+Running in parallel does not make a lot sense for our **helloworld-nodejs** app. It doesn't make sense to run the `nodejs` `container` steps twice, having two separate and identical Kuberentes Pods running, and duplicating the `junit` step. Perhaps nested sequential stages would be a better solution.
 
 1. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **custom-marker-pipelines** repository.
 2. Replace the entire **Test** `stage` with the sequential stages version below:
@@ -259,7 +259,7 @@ spec:
     }
 ```
 
-4. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. It will complete successfully: <p><img src="img/parallel/sequential_nested_success.png" width=850/> <p>So we have one set of `nodejs` steps, 1 agent and 1 `post` section. But we no longer have parallel tests and if you open the **Tests** tab of the Blue Ocean Pipeline Run Details view you will see that we only have 1 test result. It seems that the **firefox** test overwrote the **chrome** results. Also note that just like with parallel stages you can only restart from the top-level **Test** `stage`.
+4. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. It will complete successfully: <p><img src="img/parallel/sequential_nested_success.png" width=850/> <p>So we have one set of `nodejs` steps, 1 agent and 1 `post` section - in 3 nested stages. But we no longer have parallel tests and if you open the **Tests** tab of the Blue Ocean Pipeline Run Details view you will see that we only have 1 test result. It seems that the **firefox** test results overwrote the **chrome** test results. Also note that, just like with parallel stages, you can only restart from the top-level **Test** `stage`.
 
 ## Parallel Stages with Scripted Syntax
 
