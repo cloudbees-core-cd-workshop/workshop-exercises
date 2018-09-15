@@ -1,6 +1,6 @@
 # Parallel and Sequential Stages with CloudBees Core
 
-## Kubernetes Pod Templates Defined in Pipeline
+## Kubernetes Pod Templates Defined in Pipeline Script
 
 So far we have been using the **nodejs-app** Kubernetes Pod Template defined for us on CloudBees Jenkins Operations Center. However, for the next stage we will need an additional container for executing tests and we also want to use a different vesion of the **node** Docker image than the one provided: `node:8.12.0-alpine`. So we will update the **nodejs-app/Jenkinsfile.template** Pipeline script with an *inline* Kubernetes Pod Template definition.
 
