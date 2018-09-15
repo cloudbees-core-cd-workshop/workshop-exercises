@@ -2,7 +2,7 @@
 
 ## Kubernetes Pod Templates Defined in Pipeline Script
 
-So far we have been using the **nodejs-app** [Kubernetes *Pod Template* defined for us on **CloudBees Jenkins Operations Center (CJCO)**](https://go.cloudbees.com/docs/cloudbees-core/cloud-admin-guide/agents/#_globally_editing_pod_templates_in_operations_center" target="_blank). However, for the next updates to the **nodejs-app/Jenkinsfile.template** Pipeline script we will need an additional Docker *container* for executing tests and we also want to use a different vesion of the **node** Docker image than the one provided by the CJOC *Kubernetes Shared Cloud*: `node:8.12.0-alpine`. So we will update the **nodejs-app/Jenkinsfile.template** Pipeline script with an *inline* Kubernetes Pod Template definition.
+So far we have been using the **nodejs-app** [Kubernetes *Pod Template* defined for us on **CloudBees Jenkins Operations Center (CJCO)**](https://go.cloudbees.com/docs/cloudbees-core/cloud-admin-guide/agents/#_globally_editing_pod_templates_in_operations_center){target="_blank"}. However, for the next updates to the **nodejs-app/Jenkinsfile.template** Pipeline script we will need an additional Docker *container* for executing tests and we also want to use a different vesion of the **node** Docker image than the one provided by the CJOC *Kubernetes Shared Cloud*: `node:8.12.0-alpine`. So we will update the **nodejs-app/Jenkinsfile.template** Pipeline script with an *inline* Kubernetes Pod Template definition.
 
 1. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **customer-marker-pipelines** repository.
 2. Replace the `agent` section of the **Test** `stage` with the following:
