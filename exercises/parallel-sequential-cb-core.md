@@ -2,7 +2,7 @@
 
 ## Kubernetes Pod Templates Defined in Pipeline Script
 
-So far we have been using the **nodejs-app** Kubernetes Pod Template defined for us on **CloudBees Jenkins Operations Center (CJCO)**. However, for the next stage we will need an additional container for executing tests and we also want to use a different vesion of the **node** Docker image than the one provided by the CJOC Kubernetes Shared Cloud: `node:8.12.0-alpine`. So we will update the **nodejs-app/Jenkinsfile.template** Pipeline script with an *inline* Kubernetes Pod Template definition.
+So far we have been using the **nodejs-app** Kubernetes *Pod Template* defined for us on **CloudBees Jenkins Operations Center (CJCO)**. However, for the next updates to the **nodejs-app/Jenkinsfile.template** Pipeline script we will need an additional Docker *container* for executing tests and we also want to use a different vesion of the **node** Docker image than the one provided by the CJOC *Kubernetes Shared Cloud*: `node:8.12.0-alpine`. So we will update the **nodejs-app/Jenkinsfile.template** Pipeline script with an *inline* Kubernetes Pod Template definition.
 
 1. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **customer-marker-pipelines** repository.
 2. Replace the `agent` section of the **Test** `stage` with the following:
@@ -18,12 +18,12 @@ metadata:
 spec:
   containers:
   - name: nodejs
-    image: node:10.9.0-alpine
+    image: node:10.10.1-alpine
     command:
     - cat
     tty: true
   - name: testcafe
-    image: beedemo/testcafe@sha256:7cae1a73327d2ef2db61a4fe523bd8ee1697c104e928c1de05f207e0220c890c
+    image: 946759952272.dkr.ecr.us-east-1.amazonaws.com/kypseli/testcafe:alpha-1
     command:
     - cat
     tty: true
@@ -32,7 +32,10 @@ spec:
       }
 ```
 
-3. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. Note the output of the `sh 'node --version'` step - it is `v10.9.0` instead of `v8.12.0`: <p><img src="img/parallel/pipeline_pod_template.png" width=850/>
+3. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will queue indefinitely, but why? The answer is provided by the [CloudBees Kube Agent Management plugin](https://go.cloudbees.com/docs/cloudbees-core/cloud-admin-guide/agents/#monitoring-kubernetes-agents). Exit to the classic UI on your Team Master and navigate up to the **helloworld-nodejs** Multibranch folder. On the bottom left of of the sreen there is a dedicated widget that provides information about the ongoing provisioning of Kubernetes agents. It also highlights failures, allowing you to determine the root cause of a provisioning failure. Click on the link for the failed or pending pod template. <p><img src="img/parallel/pipeline_pod_template_failure.png" width=850/>
+4. You will see that the **nodejs** container has an error - it looks like there is not a **node** Docker image available with that tag. If you goto [Docker Hub and look at the tags availalbe for the **node** image](https://hub.docker.com/r/library/node/tags/) you will see there is a **10.10.0-alpine** but not **10.10.1-alpine**: <p><img src="img/parallel/pipeline_pod_template_containers_error.png" width=850/> 
+5. Abort the current run and open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **customer-marker-pipelines** repository. Update the `image` for the **nodejs** `container` to be `node:10.10.0-alpine`.
+6. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will run successfully. Also, note the output of the `sh 'node --version'` step - it is `v10.10.0` instead of `v8.12.0`: <p><img src="img/parallel/pipeline_pod_template_node_version.png" width=850/>
 
 ## Tests
 
@@ -52,7 +55,7 @@ So far, we have a **Test** `stage` that doesn't really do anything. We are going
           '''
         }
         container('testcafe') {
-          sh '/opt/testcafe/docker/testcafe-docker.sh "chromium --no-sandbox" tests/*.js -r xunit:res.xml'
+          sh '/opt/testcafe/docker/testcafe-docker.sh "chromium --no-sandbox,firefox" tests/*.js -r xunit:res.xml'
         }
       }
 ```
@@ -75,6 +78,359 @@ So far, we have a **Test** `stage` that doesn't really do anything. We are going
 
 ## Parallel Stages
 
+The example in the section above runs tests across two different browsers - Chromium and Firefox - linearlly. In practice, if the tests took 30 minutes to complete, the "Test" stage would take 60 minutes to complete! Of course these tests are rather simple
 
+Fortunately, Pipeline has built-in functionality for executing portions of Scripted Pipeline in parallel, implemented in the aptly named parallel step.
+
+Refactoring the example above to use the parallel step:
+
+```groovy
+    stage('Test') {
+      parallel {
+        stage('Chrome') {
+          agent {
+            kubernetes {
+              label 'nodejs-app-inline'
+              yaml """
+    kind: Pod
+    metadata:
+      name: nodejs-app
+    spec:
+      containers:
+      - name: nodejs
+        image: node:10.9.0-alpine
+        command:
+        - cat
+        tty: true
+      - name: testcafe
+        image: 946759952272.dkr.ecr.us-east-1.amazonaws.com/kypseli/testcafe:alpha-1
+        command:
+        - cat
+        tty: true
+              """
+            }
+          }          
+          steps {
+            checkout scm
+            container('nodejs') {
+              sh '''
+                npm install express
+                npm install pug --save
+                node ./hello.js &
+              '''
+            }
+            container('testcafe') {
+              sh '/opt/testcafe/docker/testcafe-docker.sh "chromium --no-sandbox" tests/*.js -r xunit:res.xml'
+            }
+          }
+          post {
+            success {
+              stash name: 'app', includes: '*.js, public/**, views/*, Dockerfile'
+            }
+            always {
+              junit 'res.xml'
+            }
+          } 
+        }
+        stage('Firefox') {
+          agent {
+            kubernetes {
+              label 'nodejs-app-inline'
+              yaml """
+    kind: Pod
+    metadata:
+      name: nodejs-app
+    spec:
+      containers:
+      - name: nodejs
+        image: node:10.9.0-alpine
+        command:
+        - cat
+        tty: true
+      - name: testcafe
+        image: 946759952272.dkr.ecr.us-east-1.amazonaws.com/kypseli/testcafe:alpha-1
+        command:
+        - cat
+        tty: true
+              """
+            }
+          }
+          steps {
+            checkout scm
+            container('nodejs') {
+              sh '''
+                npm install express
+                npm install pug --save
+                node ./hello.js &
+              '''
+            }
+            container('testcafe') {
+              sh '/opt/testcafe/docker/testcafe-docker.sh firefox tests/*.js -r xunit:res.xml'
+            }
+          }
+          post {
+            always {
+              junit 'res.xml'
+            }
+          }          
+        }
+      }
+    }
+```
 
 ## Sequential Stages
+
+Running in parallel does not make a lot sense for our **helloworld-nodejs** app. With as fast as these browser tests our it doesn't really make sense to set-up the node.js app twice. But nested sequential stages may nice
+
+1. Update agent to have two **testcafe** containers:
+
+```
+      agent {
+        kubernetes {
+          label 'nodejs-app-inline'
+          yaml """
+kind: Pod
+metadata:
+  name: nodejs-app
+spec:
+  containers:
+  - name: nodejs
+    image: node:10.9.0-alpine
+    command:
+    - cat
+    tty: true
+  - name: testcafe-chrome
+    image: 946759952272.dkr.ecr.us-east-1.amazonaws.com/kypseli/testcafe:alpha-1
+    command:
+    - cat
+    tty: true
+  - name: testcafe-firefox
+    image: 946759952272.dkr.ecr.us-east-1.amazonaws.com/kypseli/testcafe:alpha-1
+    command:
+    - cat
+    tty: true
+          """
+        }
+      }
+```
+
+2. Use sequential stages to run the node.js setup just once and then the browser tests in parallel:
+
+```groovy
+    stage('Test') {
+      agent {
+        kubernetes {
+          label 'nodejs-app-inline'
+          yaml """
+kind: Pod
+metadata:
+  name: nodejs-app
+spec:
+  containers:
+  - name: nodejs
+    image: node:10.9.0-alpine
+    command:
+    - cat
+    tty: true
+  - name: testcafe-chrome
+    image: 946759952272.dkr.ecr.us-east-1.amazonaws.com/kypseli/testcafe:alpha-1
+    command:
+    - cat
+    tty: true
+  - name: testcafe-firefox
+    image: 946759952272.dkr.ecr.us-east-1.amazonaws.com/kypseli/testcafe:alpha-1
+    command:
+    - cat
+    tty: true
+          """
+        }
+      }
+      stages {
+        stage('Node Setup') {
+          steps {
+            checkout scm
+            container('nodejs') {
+              sh '''
+                npm install express
+                npm install pug --save
+                node ./hello.js &
+              '''
+            }
+          }
+        }
+        stage('Chrome') {
+          steps {
+            container('testcafe-chrome') {
+              sh '/opt/testcafe/docker/testcafe-docker.sh "chromium --no-sandbox" tests/*.js -r xunit:res.xml'
+            }
+          }
+        }
+        stage('Firefox') {
+          steps {
+            container('testcafe-firefox') {
+              sh '/opt/testcafe/docker/testcafe-docker.sh firefox tests/*.js -r xunit:res.xml'
+            }
+          }
+        }
+      }
+      post {
+        success {
+          stash name: 'app', includes: '*.js, public/**, views/*, Dockerfile'
+        }
+        always {
+          junit 'res.xml'
+        }
+      }    
+    }
+```
+3. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. <p><img src="img/parallel/sequential_nested_success.png" width=850/>
+
+## Parallel Stages with Scripted Syntax
+
+What we really want to do above is
+
+```groovy
+    stage('Test') {
+      agent {
+        kubernetes {
+          label 'nodejs-app-inline'
+          yaml """
+kind: Pod
+metadata:
+  name: nodejs-app
+spec:
+  containers:
+  - name: nodejs
+    image: node:10.9.0-alpine
+    command:
+    - cat
+    tty: true
+  - name: testcafe-chrome
+    image: 946759952272.dkr.ecr.us-east-1.amazonaws.com/kypseli/testcafe:alpha-1
+    command:
+    - cat
+    tty: true
+  - name: testcafe-firefox
+    image: 946759952272.dkr.ecr.us-east-1.amazonaws.com/kypseli/testcafe:alpha-1
+    command:
+    - cat
+    tty: true
+    ports:
+    - name: firefox1
+      containerPort: 1339
+    - name: firefox2
+      containerPort: 1340
+          """
+        }
+      }
+      steps {
+        checkout scm
+        container('nodejs') {
+          sh '''
+            npm install express
+            npm install pug --save
+            node ./hello.js &
+          '''
+        }
+        script {
+          parallel chrome: {
+            container('testcafe-chrome') {
+              sh '/opt/testcafe/docker/testcafe-docker.sh "chromium --no-sandbox" tests/*.js -r xunit:res-chrome.xml'
+            }
+          }, 
+          firefox: {
+              container('testcafe-firefox') {
+                sh '/opt/testcafe/docker/testcafe-docker.sh firefox --ports 1339,1340 tests/*.js -r xunit:res-firefox.xml'
+              }
+          }
+        }
+      }
+      post {
+        success {
+          stash name: 'app', includes: '*.js, public/**, views/*, Dockerfile'
+        }
+        always {
+          junit 'res*.xml'
+        }
+      }    
+    }
+```
+
+2. Despite a bit of wackiness in Blue Ocean, the final output once the job completes actually looks nice:  <p><img src="img/parallel/parallel_scipted_success.png" width=850/>
+3. Another issue is that we lose the build logs in Blue Ocean for the **nodejs** steps. 
+
+```groovy
+    stage('Test') {
+      agent {
+        kubernetes {
+          label 'nodejs-app-inline'
+          yaml """
+kind: Pod
+metadata:
+  name: nodejs-app
+spec:
+  containers:
+  - name: nodejs
+    image: node:10.9.0-alpine
+    command:
+    - cat
+    tty: true
+  - name: testcafe-chrome
+    image: 946759952272.dkr.ecr.us-east-1.amazonaws.com/kypseli/testcafe:alpha-1
+    command:
+    - cat
+    tty: true
+  - name: testcafe-firefox
+    image: 946759952272.dkr.ecr.us-east-1.amazonaws.com/kypseli/testcafe:alpha-1
+    command:
+    - cat
+    tty: true
+    ports:
+    - name: firefox1
+      containerPort: 1339
+    - name: firefox2
+      containerPort: 1340
+          """
+        }
+      }
+      stages {
+        stage('App Setup') {
+          steps {
+            checkout scm
+            container('nodejs') {
+              sh '''
+                npm install express
+                npm install pug --save
+                node ./hello.js &
+              '''
+            }
+          }
+        }
+        stage('Browser Tests') {
+          steps {
+            script {
+              parallel chrome: {
+                container('testcafe-chrome') {
+                  sh '/opt/testcafe/docker/testcafe-docker.sh "chromium --no-sandbox" tests/*.js -r xunit:res-chrome.xml'
+                }
+              }, 
+              firefox: {
+                  container('testcafe-firefox') {
+                    sh '/opt/testcafe/docker/testcafe-docker.sh firefox --ports 1339,1340 tests/*.js -r xunit:res-firefox.xml'
+                  }
+              }
+            }
+          }
+        }
+      }
+      post {
+        success {
+          stash name: 'app', includes: '*.js, public/**, views/*, Dockerfile'
+        }
+        always {
+          junit 'res*.xml'
+        }
+      }    
+    }
+```
+2. Now we have logs for the **App Setup** nested `stage` and our job runs a bit faster than before:  <p><img src="img/parallel/sequential_with_scripted_parallel.png" width=850/>
