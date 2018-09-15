@@ -42,9 +42,21 @@ So far, we have a **Test** `stage` that doesn't really do anything. We are going
 2. Update the `steps` section of the **Test** `stage` to match the following:
 
 ```
-
+      steps {
+        checkout scm
+        container('nodejs') {
+          sh '''
+            npm install express
+            npm install pug --save
+            node ./hello.js &
+          '''
+        }
+        container('testcafe') {
+          sh '/opt/testcafe/docker/testcafe-docker.sh "chromium --no-sandbox" tests/*.js -r xunit:res.xml'
+        }
+      }
 ```
-
+3. Notice how we now have 2 `container` blocks - with both containers being provided by our inline Pod Template.
 
 ## Parallel Stages
 
