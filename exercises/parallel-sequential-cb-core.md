@@ -191,7 +191,7 @@ Fortunately, Pipeline has built-in functionality for executing portions of Scrip
 
 ## Sequential Stages
 
-Running in parallel does not make a lot sense for our **helloworld-nodejs** app. With as fast as these browser tests our it doesn't really make sense to set-up the node.js app twice and having two separate, identical Kuberentes Pods running. But nested sequential stages might make sense.
+Running in parallel does not make a lot sense for our **helloworld-nodejs** app. With as fast as these browser tests our it doesn't really make sense to run the `nodejs` `container` steps twice and having two separate, identical Kuberentes Pods running. But nested sequential stages might make sense.
 
 1. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **customer-marker-pipelines** repository.
 2. Replace the entire **Test** `stage` with the sequential stages version below:
@@ -263,7 +263,9 @@ spec:
       }    
     }
 ```
-3. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. It will complete successfully: <p><img src="img/parallel/sequential_nested_success.png" width=850/> <p>Note also that just like with parallel stages you can only restart from the top-level **Test** `stage`.
+
+3. Note that we added an additional **testcafe** container - one for the running the tests in Chrome and one for Firefox.  If we only used one **testcafe** container then the **firefox** tests would have to wait for the **chrome** tests to complete. We also had to sprecify a different set of ports for the `testcafe-firefox` `container` so it doesn't conflict with the `testcafe-chrome` `container` ports as the containers in a [Kubernetes Pod share a network namespace to include network ports](https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/#networking).
+4. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. It will complete successfully: <p><img src="img/parallel/sequential_nested_success.png" width=850/> <p>So we have Also note also that just like with parallel stages you can only restart from the top-level **Test** `stage`.
 
 ## Parallel Stages with Scripted Syntax
 
@@ -341,7 +343,7 @@ spec:
     }
 ```
 
-3. We now have one stage and have enclosed the parallel tests in a `script` block. Also note that we added an additional **testcafe** container - even we only used one then the **firefox** tests would have to wait for the **chrome** tests to complete. We also had to sprecify a different set of ports for the `testcafe-firefox` `container` so it doesn't conflict with the `testcafe-chrome` `container` ports as the containers in a [Kubernetes Pod share a network namespace to include network ports](https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/#networking). Despite a bit of wackiness in Blue Ocean and , the final output once the job completes actually looks ok in Blue Ocean:  <p><img src="img/parallel/parallel_scipted_success.png" width=850/>
+3. We now have one stage and have enclosed the parallel tests in a `script` block. Despite a bit of wackiness in Blue Ocean and , the final output once the job completes actually looks ok in Blue Ocean:  <p><img src="img/parallel/parallel_scipted_success.png" width=850/>
 4. Another issue is that we lose the build logs in Blue Ocean for the **nodejs** steps. Their still available in the classic UI, but it would be nice to have them in Blue Ocean as well. Let's see if we can combine sequential stages with the parallel tests in a `script` block to get the logs back for the `nodejs` steps and still have parallelization for our tests.  Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **customer-marker-pipelines** repository and replace the entire **Test** `stage` with the version below:
 
 ```groovy
