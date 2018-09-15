@@ -32,7 +32,7 @@ spec:
       }
 ```
 
-3. Next, navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. Note the output of the `sh 'node --version'` step - it is `v10.9.0` instead of `v8.12.0`: <p><img src="img/parallel/pipeline_pod_template.png" width=850/>
+3. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. Note the output of the `sh 'node --version'` step - it is `v10.9.0` instead of `v8.12.0`: <p><img src="img/parallel/pipeline_pod_template.png" width=850/>
 
 ## Tests
 
