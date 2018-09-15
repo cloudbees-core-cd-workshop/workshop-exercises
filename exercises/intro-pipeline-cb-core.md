@@ -89,7 +89,7 @@ WorkflowScript: 1: Missing required section "agent" @ line 1, column 1.
 
 [Declarative Pipelines](https://jenkins.io/doc/book/pipeline/syntax/#declarative-pipeline) must be enclosed within a `pipeline` block - which we have. But Declarative Pipelines must also contain a top-level `agent` declaration, and must contain exactly one `stages` block. The `stages` block must have at least one `stage` block but can have an unlimited number of additional `stage` blocks. Each `stage` block must have exactly one `steps` block. 
 
-1. We will use the GitHub file editor to update the `nodejs-app/Jenkinsfile.template` file in your forked **customer-marker-pipelines** repository. Navigate to the `custom-marker-pipelines/nodejs-app/Jenkinsfile.template` file in your forked repository and then click on the pencil icon to the upper right to edit that file. <p><img src="img/intro/basic_snytax_edit_github.png" width=850/>
+1. We will use the GitHub file editor to update the `nodejs-app/Jenkinsfile.template` file in your forked **custom-marker-pipelines** repository. Navigate to the `custom-marker-pipelines/nodejs-app/Jenkinsfile.template` file in your forked repository and then click on the pencil icon to the upper right to edit that file. <p><img src="img/intro/basic_snytax_edit_github.png" width=850/>
 
 > NOTE: Remember we are using a CloudBees Core feature that allows us to specify a Pipeline script from a different source code repository that the one where the application code is committed.
 
@@ -151,9 +151,9 @@ openjdk version "1.8.0_171"
 
 ## The options Directive
 
-The [`options` directive](https://jenkins.io/doc/book/pipeline/syntax/#options) allows configuring Pipeline-specific options from within the Pipeline itself. We are going to add the `buildDiscarder` `option` to the `nodejs-app/Jenkinsfile.template` file in your forked **customer-marker-pipelines** repository. As a centrally managed CD service, that will provide easy managment of the *Discard old builds* strategy across all of the jobs that use the `nodejs-app/Jenkinsfile.template` so that storage doesn't become an issue on the CloudBees Team Masters.
+The [`options` directive](https://jenkins.io/doc/book/pipeline/syntax/#options) allows configuring Pipeline-specific options from within the Pipeline itself. We are going to add the `buildDiscarder` `option` to the `nodejs-app/Jenkinsfile.template` file in your forked **custom-marker-pipelines** repository. As a centrally managed CD service, that will provide easy managment of the *Discard old builds* strategy across all of the jobs that use the `nodejs-app/Jenkinsfile.template` so that storage doesn't become an issue on the CloudBees Team Masters.
 
-1. Use the GitHub file editor to update the `nodejs-app/Jenkinsfile.template` file in your forked **customer-marker-pipelines** repository - adding the following `options` directive below the `agent` section:
+1. Use the GitHub file editor to update the `nodejs-app/Jenkinsfile.template` file in your forked **custom-marker-pipelines** repository - adding the following `options` directive below the `agent` section:
 
 ```groovy 
   options { 
@@ -210,7 +210,7 @@ In this exercise we will edit the `nodejs-app/Jenkinsfile.template` Pipeline scr
 
 >**NOTE:** Even though we are adding the conditional logic to the `nodejs-app/Jenkinsfile.template` Pipeline script in the **custom-marker-pipelines** repository we are actually creating a new branch in the **helloworld-nodejs** repository which is the one configured as the **Repository** for the **helloworld-nodejs** Multibranch Pipeline project on your Team Master.  <p><img src="img/intro/conditional_multibranch_config.png" width=800/>
 
-1. Navigate to and open the GitHub editor for the **nodejs-app/Jenkinsfile.template** file in your forked **customer-marker-pipelines** repository
+1. Navigate to and open the GitHub editor for the **nodejs-app/Jenkinsfile.template** file in your forked **custom-marker-pipelines** repository
 2. Insert the following stage after the existing **Test** stage, commit the change and note the `beforeAgent true` option - this setting will result in the `when` condition being evaluated before acquiring an `agent` for the `stage`:
 
 ```
@@ -236,7 +236,7 @@ In this exercise we will edit the `nodejs-app/Jenkinsfile.template` Pipeline scr
 
 Up to this point we only had one global `agent` defined that is being used by all `stages` of our `pipeline`. However, we don't need an agent for the **Build and Push Image** `stage` (we will be adding Pipeline shared library steps later that will provide agents for that and other additional stages). We will update the Pipeline to have no global `agent` and to have the same 'nodejs-app' `agent` just for the 'Test' `stage`.
 
-1. Navigate to and open the GitHub editor for the **nodejs-app/Jenkinsfile.template** file in the **master** branch of your forked **customer-marker-pipelines** repository.
+1. Navigate to and open the GitHub editor for the **nodejs-app/Jenkinsfile.template** file in the **master** branch of your forked **custom-marker-pipelines** repository.
 2. Replace the global `agent` section with the following:
 
 ```
@@ -272,11 +272,11 @@ Perhaps you forgot to surround the code with a step that provides this, such as:
 Attempted to execute a step that requires a node context while ‘agent none’ was specified. Be sure to specify your own ‘node { ... }’ blocks when using ‘agent none’.
 ```
 
-6. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** file in the **master** branch of your forked **customer-marker-pipelines** repository and remove the `sh 'node --version'` step from the **Build and Push Image** `stage` and commit the changes.
+6. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** file in the **master** branch of your forked **custom-marker-pipelines** repository and remove the `sh 'node --version'` step from the **Build and Push Image** `stage` and commit the changes.
 7. Run the **helloworld-nodejs** **master** branch job again and it will complete successfully.
 
 ## Next Lesson
 
-Before moving on to the next lesson you can make sure that your **nodejs-app/Jenkinsfile.template** Pipeline script is correct by comparing to or copying from the **after-intro** branch of your forked **customer-marker-pipelines** repository.
+Before moving on to the next lesson you can make sure that your **nodejs-app/Jenkinsfile.template** Pipeline script is correct by comparing to or copying from the **after-intro** branch of your forked **custom-marker-pipelines** repository.
 
 You may proceed to the next set of exercises - **[Pipeline Approvals and Artifact Management with CloudBees Core](./approvals-artifacts-cb-core.md)** - when your instructor tells you. By default, the Pipeline script runs on the Jenkins master, using a lightweight executor (often referred to as a flyweight executor) and is expected to use very few resources.

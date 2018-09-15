@@ -10,7 +10,7 @@ The ability to define stages to run in parallel is an important feature of Jenki
 
 So far we have been using the **nodejs-app** [Kubernetes *Pod Template* defined for us on **CloudBees Jenkins Operations Center (CJCO)**](https://go.cloudbees.com/docs/cloudbees-core/cloud-admin-guide/agents/#_globally_editing_pod_templates_in_operations_center). However, for the next set of changes to the **nodejs-app/Jenkinsfile.template** Pipeline script we will need an additional Docker *container* for executing tests and we also want to use a different vesion of the **node** Docker image than the one provided by the CJOC *Kubernetes Shared Cloud* which is `node:8.12.0-alpine`. So we will update the **nodejs-app/Jenkinsfile.template** Pipeline script with an [*inline* Kubernetes Pod Template definition](https://github.com/jenkinsci/kubernetes-plugin#declarative-pipeline).
 
-1. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **customer-marker-pipelines** repository.
+1. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **custom-marker-pipelines** repository.
 2. Replace the `agent` section of the **Test** `stage` with the following:
 
 ```
@@ -41,14 +41,14 @@ spec:
 3. The [Kubernetes plugin allows you to use standard Kubernetes Pod yaml configuration](https://github.com/jenkinsci/kubernetes-plugin#using-yaml-to-define-pod-templates) to define Pod Templates directly in your Pipeline script. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will queue indefinitely, but why? 
 4. The answer is provided by the [CloudBees Kube Agent Management plugin](https://go.cloudbees.com/docs/cloudbees-core/cloud-admin-guide/agents/#monitoring-kubernetes-agents). Exit to the classic UI on your Team Master and navigate up to the **helloworld-nodejs** Multibranch folder. On the bottom left of of the sreen there is a dedicated widget that provides information about the ongoing provisioning of Kubernetes agents. It also highlights failures, allowing you to determine the root cause of a provisioning failure. Click on the link for the failed or pending pod template. <p><img src="img/parallel/pipeline_pod_template_failure.png" width=400/>
 4. You will see that the **nodejs** container has an error - it looks like there is not a **node** Docker image available with that tag. If you goto [Docker Hub and look at the tags availalbe for the **node** image](https://hub.docker.com/r/library/node/tags/) you will see there is a **10.10.0-alpine** but not **10.10.1-alpine**: <p><img src="img/parallel/pipeline_pod_template_containers_error.png" width=850/> 
-5. Abort the current run and open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **customer-marker-pipelines** repository. Update the `image` for the **nodejs** `container` to be `node:10.10.0-alpine`.
+5. Abort the current run and open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **custom-marker-pipelines** repository. Update the `image` for the **nodejs** `container` to be `node:10.10.0-alpine`.
 6. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will run successfully. Also, note the output of the `sh 'node --version'` step - it is `v10.10.0` instead of `v8.12.0`: <p><img src="img/parallel/pipeline_pod_template_node_version.png" width=850/>
 
 ## Tests with Testcafe
 
 So far, we have a **Test** `stage` that doesn't really do anything. We are going to change that by executing a [Testcafe](http://devexpress.github.io/testcafe/) driven browser tests for the **helloworld-nodejs** app in our Pipeline.
 
-1. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **customer-marker-pipelines** repository.
+1. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **custom-marker-pipelines** repository.
 2. Update the `steps` section of the **Test** `stage` to match the following:
 
 ```groovy
@@ -89,7 +89,7 @@ The example in the section above runs tests across two different browsers - Chro
 
 Fortunately, Pipeline has built-in functionality for executing portions of Scripted Pipeline in parallel, implemented in the aptly named `parallel` step. We will refactor the example above to use the [`parallel` block for Declarative Pipelines](https://jenkins.io/doc/book/pipeline/syntax/#parallel).
 
-1. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **customer-marker-pipelines** repository.
+1. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **custom-marker-pipelines** repository.
 2. Replace the entire **Test** `stage` with the parallel stages version below (I know, it is very long):
 
 ```groovy
@@ -193,7 +193,7 @@ Fortunately, Pipeline has built-in functionality for executing portions of Scrip
 
 Running in parallel does not make a lot sense for our **helloworld-nodejs** app. With as fast as these browser tests our it doesn't really make sense to run the `nodejs` `container` steps twice and having two separate, identical Kuberentes Pods running. But nested sequential stages might make sense.
 
-1. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **customer-marker-pipelines** repository.
+1. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **custom-marker-pipelines** repository.
 2. Replace the entire **Test** `stage` with the sequential stages version below:
 
 ```groovy
@@ -267,7 +267,7 @@ What we really want to do in the **Test** `stage` is set-up the **helloworld-nod
 
 Does that mean that we have to rewrite our entire Pipeline script with scripted syntax? The answer is no, becuase the Declarative syntax provides a handy `script` step that allows you to define a block of **scripted** Pipeline anywhere inside of any of the `steps` sections of your Declarative script.
 
-1. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **customer-marker-pipelines** repository.
+1. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **custom-marker-pipelines** repository.
 2. Replace the entire **Test** `stage` with the version below:
 
 ```groovy
@@ -339,7 +339,7 @@ spec:
 
 3. Note that we added an additional **testcafe** container - one for the running the tests in Chrome and one for Firefox.  If we only used one **testcafe** container then the **firefox** tests would have to wait for the **chrome** tests to complete - event though they are in a `parallel` block. We also had to sprecify a different set of ports for the `testcafe-firefox` `container` so it doesn't conflict with the `testcafe-chrome` `container` ports as the containers in a [Kubernetes Pod share a network namespace to include network ports](https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/#networking).
 We now have one stage and have enclosed the parallel tests in a `script` block. We also updated the `testcafe` steps to output diffent `xunit` files and updated the `junit` step to use a wildcard to match both files: `junit 'res*.xml` - so we will have both the Chrome and Firefox test results. Despite a bit of wackiness in Blue Ocean and , the final output once the job completes actually looks ok in Blue Ocean:  <p><img src="img/parallel/parallel_scipted_success.png" width=850/>
-5. We are close to what we want but we lose the build logs in Blue Ocean for the **nodejs** steps. Their still available in the classic UI, but it would be nice to have them in Blue Ocean as well. Let's see if we can combine sequential stages with the parallel tests in a `script` block to get the logs back for the `nodejs` steps and still have parallelization for our tests.  Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **customer-marker-pipelines** repository and replace the entire **Test** `stage` with the version below:
+5. We are close to what we want but we lose the build logs in Blue Ocean for the **nodejs** steps. Their still available in the classic UI, but it would be nice to have them in Blue Ocean as well. Let's see if we can combine sequential stages with the parallel tests in a `script` block to get the logs back for the `nodejs` steps and still have parallelization for our tests.  Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **custom-marker-pipelines** repository and replace the entire **Test** `stage` with the version below:
 
 ```groovy
     stage('Test') {
@@ -419,6 +419,6 @@ spec:
 
 ## Next Lesson
 
-Before moving on to the next lesson you can make sure that your **nodejs-app/Jenkinsfile.template** Pipeline script is correct by comparing to or copying from the **after-parallel** branch of your forked **customer-marker-pipelines** repository.
+Before moving on to the next lesson you can make sure that your **nodejs-app/Jenkinsfile.template** Pipeline script is correct by comparing to or copying from the **after-parallel** branch of your forked **custom-marker-pipelines** repository.
 
 You may proceed to the next set of exercises - **[Advanced Pipelines with CloudBees Core](./advanced-pipeline-cb-core.md)** - when your instructor tells you.
