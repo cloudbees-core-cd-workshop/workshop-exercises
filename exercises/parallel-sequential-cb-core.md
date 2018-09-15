@@ -1,5 +1,10 @@
 # Parallel and Sequential Stages with CloudBees Core
 
+The ability to define stages to run in parallel is an important feature of Jenkins Pipeline jobs. The Declarative Pipeline syntax has extended support for [parallel stages](https://jenkins.io/doc/book/pipeline/syntax/#parallel), [sequential stages](https://jenkins.io/doc/book/pipeline/syntax/#sequential-stages) and nested stages - and all of these features are nicely visualized in the Blue Ocean UI.
+
+#### Starting Here or Catching Up?
+If you are starting with this set of exercises or just need to catch up, you may get the the correct version of the  **nodejs-app/Jenkinsfile.template** Pipeline script for starting these exercises [from this branch](https://github.com/cloudbees-cd-acceleration-workshop/custom-marker-pipelines/blob/after-approvals/nodejs-app/Jenkinsfile.template).
+
 ## Kubernetes Pod Templates Defined in Pipeline Script
 
 So far we have been using the **nodejs-app** [Kubernetes *Pod Template* defined for us on **CloudBees Jenkins Operations Center (CJCO)**](https://go.cloudbees.com/docs/cloudbees-core/cloud-admin-guide/agents/#_globally_editing_pod_templates_in_operations_center). However, for the next set of changes to the **nodejs-app/Jenkinsfile.template** Pipeline script we will need an additional Docker *container* for executing tests and we also want to use a different vesion of the **node** Docker image than the one provided by the CJOC *Kubernetes Shared Cloud* which is `node:8.12.0-alpine`. So we will update the **nodejs-app/Jenkinsfile.template** Pipeline script with an *inline* Kubernetes Pod Template definition.
