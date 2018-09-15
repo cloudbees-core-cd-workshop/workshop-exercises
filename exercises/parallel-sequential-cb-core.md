@@ -63,7 +63,7 @@ So far, we have a **Test** `stage` that doesn't really do anything. We are going
         success {
           stash name: 'app', includes: '*.js, public/**, views/*, Dockerfile'
         }
-        always {
+        always {[^1]
           junit 'res.xml'
         }
       }
