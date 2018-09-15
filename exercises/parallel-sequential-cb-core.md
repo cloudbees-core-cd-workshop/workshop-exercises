@@ -191,7 +191,7 @@ Fortunately, Pipeline has built-in functionality for executing portions of Scrip
 
 ## Sequential Stages
 
-Running in parallel does not make a lot sense for our **helloworld-nodejs** app. With as fast as these browser tests our it doesn't really make sense to set-up the node.js app twice with two separate Pod Templates running. But nested sequential stages might make sense.
+Running in parallel does not make a lot sense for our **helloworld-nodejs** app. With as fast as these browser tests our it doesn't really make sense to set-up the node.js app twice and having two separate, identical Kuberentes Pods running. But nested sequential stages might make sense.
 
 1. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **customer-marker-pipelines** repository.
 2. Replace the entire **Test** `stage` with the sequential stages version below:
@@ -267,7 +267,12 @@ spec:
 
 ## Parallel Stages with Scripted Syntax
 
-What we really want to do above is
+What we really want to do in the **Test** `stage` is set-up the **helloworld-nodejs** just once - to incluce only running one Kubernetes Pod. We want to define the `agent` once for the entire **Test** `stage`, and then run the `nodejs` `container` block once but in the same workspace as what will be used by the **testcafe** containers. Unfortunatley this is not possible with [Delcarative syntax](https://jenkins.io/doc/book/pipeline/syntax/#declarative-pipeline) - but it would be possible with [scripted syntax](https://jenkins.io/doc/book/pipeline/syntax/#scripted-pipeline). 
+
+Does that mean that we have to rewrite our entire Pipeline script with scripted syntax? The answer is no, becuase the Declarative syntax provides a handy `script` step that allows you to define a block of **scripted** Pipeline anywhere inside of any of the `steps` sections of your Declarative script.
+
+1. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **customer-marker-pipelines** repository.
+2. Replace the entire **Test** `stage` with the version below:
 
 ```groovy
     stage('Test') {
@@ -336,8 +341,8 @@ spec:
     }
 ```
 
-2. Despite a bit of wackiness in Blue Ocean, the final output once the job completes actually looks nice:  <p><img src="img/parallel/parallel_scipted_success.png" width=850/>
-3. Another issue is that we lose the build logs in Blue Ocean for the **nodejs** steps. 
+3. We now have one stage and have enclosed the parallel tests in a `script` block. Also note that we added an additional **testcafe** container - even we only used one then the **firefox** tests would have to wait for the **chrome** tests to complete. We also had to sprecify a different set of ports for the `testcafe-firefox` `container` so it doesn't conflict with the `testcafe-chrome` `container` ports as the containers in a [Kubernetes Pod share a network namespace to include network ports](https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/#networking). Despite a bit of wackiness in Blue Ocean and , the final output once the job completes actually looks ok in Blue Ocean:  <p><img src="img/parallel/parallel_scipted_success.png" width=850/>
+4. Another issue is that we lose the build logs in Blue Ocean for the **nodejs** steps. Let's see if we can combine sequentials stage with the parallel tests in a `script` block to get the logs back for the `nodejs` steps and still have parallelization for our tests.  Replace the entire **Test** `stage` with the version below:
 
 ```groovy
     stage('Test') {
@@ -413,4 +418,10 @@ spec:
       }    
     }
 ```
-2. Now we have logs for the **App Setup** nested `stage` and our job runs a bit faster than before:  <p><img src="img/parallel/sequential_with_scripted_parallel.png" width=850/>
+5. Now we have logs for the **App Setup** nested `stage` and our job runs a bit faster than before:  <p><img src="img/parallel/sequential_with_scripted_parallel.png" width=850/>
+
+## Next Lesson
+
+Before moving on to the next lesson you can make sure that your **nodejs-app/Jenkinsfile.template** Pipeline script is correct by comparing to or copying from the **after-parallel** branch of your forked **customer-marker-pipelines** repository.
+
+You may proceed to the next set of exercises - **[Advanced Pipelines with CloudBees Core](./advanced-pipeline-cb-core.md)** - when your instructor tells you.
