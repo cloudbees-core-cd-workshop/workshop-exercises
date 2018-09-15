@@ -88,7 +88,9 @@ So far, we have a **Test** `stage` that doesn't really do anything. We are going
 The example in the section above runs tests across two different browsers - Chromium and Firefox - linearlly. In practice, if the tests took 30 minutes to complete, the "Test" stage would take 60 minutes to complete! Of course these tests are rather simple and don't take that long, but it would certainly be valualbe to understand how to parallelize certain steps when there are longer running tests.
 
 Fortunately, Pipeline has built-in functionality for executing portions of Scripted Pipeline in parallel, implemented in the aptly named `parallel` step. We will refactor the example above to use the [`parallel` block for Declarative Pipelines](https://jenkins.io/doc/book/pipeline/syntax/#parallel).
-c (I know - it is long):
+
+1. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **customer-marker-pipelines** repository.
+2. Replace the entire **Test** `stage` with the parallel stages version below (I know, it is very long):
 
 ```groovy
     stage('Test') {
@@ -192,7 +194,7 @@ c (I know - it is long):
 Running in parallel does not make a lot sense for our **helloworld-nodejs** app. With as fast as these browser tests our it doesn't really make sense to set-up the node.js app twice with two separate Pod Templates running. But nested sequential stages might make sense.
 
 1. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **customer-marker-pipelines** repository.
-2. Replace the entire **Test** `stage` with the sequential stages version below
+2. Replace the entire **Test** `stage` with the sequential stages version below:
 
 ```groovy
     stage('Test') {
@@ -261,7 +263,7 @@ spec:
       }    
     }
 ```
-3. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. It will complete successfully: <p><img src="img/parallel/sequential_nested_success.png" width=850/>
+3. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. It will complete successfully: <p><img src="img/parallel/sequential_nested_success.png" width=850/> <p>Note also that just like with parallel stages you can only restart from the top-level **Test** `stage`.
 
 ## Parallel Stages with Scripted Syntax
 
