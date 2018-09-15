@@ -56,7 +56,7 @@ So far, we have a **Test** `stage` that doesn't really do anything. We are going
         }
       }
 ```
-3. Notice how we now have 2 `container` blocks - with both containers being provided by our inline Pod Template.
+3. Notice how we now have 2 `container` blocks - with both containers being provided by our inline Pod Template. Also notice the `xunit:res.xml` part of the **testcafe** `sh` step.
 
 ## Parallel Stages
 
