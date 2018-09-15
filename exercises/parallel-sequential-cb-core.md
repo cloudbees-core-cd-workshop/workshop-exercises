@@ -187,7 +187,7 @@ Fortunately, Pipeline has built-in functionality for executing portions of Scrip
 ```
 
 3. We are duplicating the `agent` section and executing the `nodejs` steps twice. That doesn't seem efficient - but it is because the `parallel` block for Declarative syntax does not allow you to define an `agent` section and a `parallel` block at the same level. More specifically, **you can have ONLY ONE of either `agent`, `parallel` or `stages` as a child of the `stage` directive**. 
-4. Commit the changes and navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run your job. It will complete successfully, but not the nice visualization of the parallel stages:  <p><img src="img/parallel/test_success.png" width=850/>
+4. Commit the changes and navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run your job. It will complete successfully, and note the nice visualization of the parallel stagesin Blue Ocean:  <p><img src="img/parallel/parallel_success.png" width=850/> <p>Also note that even though the **Firefox** `stage` is selected, the restart stage link text is **Restart Test** - that is because you can only [restart top-level stages](https://jenkins.io/doc/book/pipeline/running-pipelines/#restart-from-a-stage) and not parallel or nested stages.
 
 ## Sequential Stages
 
