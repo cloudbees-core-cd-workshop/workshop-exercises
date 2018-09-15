@@ -263,12 +263,12 @@ spec:
 
 ## Parallel Stages with Scripted Syntax
 
-What we really want to do in the **Test** `stage` is set-up the **helloworld-nodejs** just once - to incluce only running one Kubernetes Pod. We want to define the `agent` once for the entire **Test** `stage`, and then run the `nodejs` `container` block once but in the same workspace as what will be used by the **testcafe** containers. Unfortunatley this is not possible with [Delcarative syntax](https://jenkins.io/doc/book/pipeline/syntax/#declarative-pipeline) - but it would be possible with [scripted syntax](https://jenkins.io/doc/book/pipeline/syntax/#scripted-pipeline). 
+What we really want to do in the **Test** `stage` is set-up the **helloworld-nodejs** just once - to incluce only running one Kubernetes Pod. We want to define the `agent` once for the entire **Test** `stage`, and then run the `nodejs` `container` block once but in the same workspace as what will be used by the **testcafe** containers. And we want to capture all of the test results. Unfortunatley this is not possible with [Delcarative syntax](https://jenkins.io/doc/book/pipeline/syntax/#declarative-pipeline) - but it would be possible with [scripted syntax](https://jenkins.io/doc/book/pipeline/syntax/#scripted-pipeline). 
 
 Does that mean that we have to rewrite our entire Pipeline script with scripted syntax? The answer is no, becuase the Declarative syntax provides a handy `script` step that allows you to define a block of **scripted** Pipeline anywhere inside of any of the `steps` sections of your Declarative script.
 
 1. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **custom-marker-pipelines** repository.
-2. Replace the entire **Test** `stage` with the version below:
+2. Replace the entire **Test** `stage` with the *sequential stage with scripted parallel* version below:
 
 ```groovy
     stage('Test') {
@@ -337,7 +337,7 @@ spec:
     }
 ```
 
-3. Note that we added an additional **testcafe** container - one for the running the tests in Chrome and one for Firefox.  If we only used one **testcafe** container then the **firefox** tests would have to wait for the **chrome** tests to complete - event though they are in a `parallel` block. We also had to sprecify a different set of ports for the `testcafe-firefox` `container` so it doesn't conflict with the `testcafe-chrome` `container` ports as the containers in a [Kubernetes Pod share a network namespace to include network ports](https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/#networking).
+3. Note that we added an additional **testcafe** container - one for the running the tests in Chrome and one for Firefox.  If we only used one **testcafe** container then the **firefox** tests would have to wait for the **chrome** tests to complete - even though they are in a `parallel` block. We also had to sprecify a different set of ports for the `testcafe-firefox` `container` so it doesn't conflict with the `testcafe-chrome` `container` ports as the containers in a [Kubernetes Pod share a network namespace to include network ports](https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/#networking).
 We now have one stage and have enclosed the parallel tests in a `script` block. We also updated the `testcafe` steps to output diffent `xunit` files and updated the `junit` step to use a wildcard to match both files: `junit 'res*.xml` - so we will have both the Chrome and Firefox test results. Despite a bit of wackiness in Blue Ocean and , the final output once the job completes actually looks ok in Blue Ocean:  <p><img src="img/parallel/parallel_scipted_success.png" width=850/>
 5. We are close to what we want but we lose the build logs in Blue Ocean for the **nodejs** steps. Their still available in the classic UI, but it would be nice to have them in Blue Ocean as well. Let's see if we can combine sequential stages with the parallel tests in a `script` block to get the logs back for the `nodejs` steps and still have parallelization for our tests.  Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **custom-marker-pipelines** repository and replace the entire **Test** `stage` with the version below:
 
