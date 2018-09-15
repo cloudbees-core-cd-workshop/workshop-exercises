@@ -41,7 +41,7 @@ So far, we have a **Test** `stage` that doesn't really do anything. We are going
 1. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **customer-marker-pipelines** repository.
 2. Update the `steps` section of the **Test** `stage` to match the following:
 
-```
+```groovy
       steps {
         checkout scm
         container('nodejs') {
@@ -56,7 +56,22 @@ So far, we have a **Test** `stage` that doesn't really do anything. We are going
         }
       }
 ```
-3. Notice how we now have 2 `container` blocks - with both containers being provided by our inline Pod Template. Also notice the `xunit:res.xml` part of the **testcafe** `sh` step.
+3. Notice how we now have 2 `container` blocks - with both containers being provided by our inline Pod Template. Also notice the `xunit:res.xml` part of the **testcafe** `sh` step. **Testcafe**  provides JUnit compatible output and it is useful to have Jenkins record that output for reporting and visualization. We will use the `junit` step from the the JUnit plugin to captured and display test results in Jenkins. We will add the `always` condition block to our `post` section of the `test` `stage` - because we want to capture both successful tests and failures:
+
+```groovy
+      post {
+        success {
+          stash name: 'app', includes: '*.js, public/**, views/*, Dockerfile'
+        }
+        always {
+          junit 'res.xml'
+        }
+      }
+```
+
+4. Commit those changes and run the **helloworld-nodejs** **master** branch job and it will fail. It failed because the **Testcafe** test did not pass. We can see the exact error under the ["Tests" tab of the Blue Ocean Pipeline Run Details view](https://jenkins.io/doc/book/blueocean/pipeline-run-details/#tests) for this run: <p><img src="img/parallel/test_failure.png" width=850/>
+5. So it appears that we have a slight typo in our **helloworld-nodejs** app. Use the GitHub editor to open the `hello.js` file on the **master** brancy of your forked copy of the **helloworld-nodejs** repository, fix the misspelling of **Worlld** to **World** and then commmit the changes. 
+6. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and your job should already be running as a GitHub webhook triggered it when you commited the changes for the `hello.js` file. The test will be successful and the job will complete successfully: <p><img src="img/parallel/test_success.png" width=850/>
 
 ## Parallel Stages
 

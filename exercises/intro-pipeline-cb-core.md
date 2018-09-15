@@ -71,7 +71,7 @@ For the purposes of this workshop everyone is creating and updating their own fo
 
 ## Basic Declarative Syntax Structure
 
-In the previous lesson your Pipeline should have run and should have failed. <p><img src="img/intro/basic_syntax_failed.png" width=850/>
+In the previous lesson your Pipeline should have run and will have failed. <p><img src="img/intro/basic_syntax_failed.png" width=850/>
 
 In this exercise we will update the `nodejs-app/Jenkinsfile.template` Declarative Pipeline using the GitHub editor so that it will actually do something as opposed to resulting in the following errors:
 
@@ -94,7 +94,8 @@ WorkflowScript: 1: Missing required section "agent" @ line 1, column 1.
 > NOTE: Remember we are using a CloudBees Core feature that allows us to specify a Pipeline script from a different source code repository that the one where the application code is committed.
 
 2. Replace the contents of that file with the following Declarative Pipeline:
-```
+
+```groovy
 pipeline {
    agent any
    stages {
@@ -107,6 +108,7 @@ pipeline {
    }
 }
 ```
+
 3. Add a commit description and then click the **Commit Changes** button with the default selection of *Commit directly to the master branch* selected.
 4. Navigate back to the **helloworld-nodejs** *master* branch job on your Team Master and click the **Build Now** button in the left menu. <p><img src="img/intro/basic_syntax_build_now.png" width=550/>
 5. Your job should complete successfully. Note some things from the log:
@@ -153,7 +155,7 @@ The [`options` directive](https://jenkins.io/doc/book/pipeline/syntax/#options) 
 
 1. Use the GitHub file editor to update the `nodejs-app/Jenkinsfile.template` file in your forked **customer-marker-pipelines** repository - adding the following `options` directive below the `agent` section:
 
-```
+```groovy 
   options { 
     buildDiscarder(logRotator(numToKeepStr: '2'))
   }
@@ -180,7 +182,8 @@ We will use the [Pipeline `container` block](https://jenkins.io/doc/pipeline/ste
   agent { label 'nodejs-app' }
 ```
 4. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. <p><img src="img/intro/k8s_agent_run_from_bo.png" width=800/> <p>The build logs should be almost the same as before - we are still using the default `jnlp` container. Let's change that by replacing the **Say Hello** `stage` with the following **Test** `stage`:
-```
+
+```groovy
       stage('Test') {
         steps {
           container('nodejs') {
@@ -190,7 +193,8 @@ We will use the [Pipeline `container` block](https://jenkins.io/doc/pipeline/ste
         }
       }
 ```
-  All of the Pipeline steps within that `container` block will run in the container specified by the **Name** of the **Container Template** - and in this case that **Container Template** is using the `node:8.12.0-alpine` Docker image. Run the **helloworld-nodejs** job again - it should result in an error because the `nodejs` container does not have Java installed. <p><img src="img/intro/k8s_agent_java_error.png" width=800/>
+
+  All of the Pipeline steps within that `container` block will run in the container specified by the **Name** of the **Container Template** - and in this case that **Container Template** is using the `node:8.12.0-alpine` Docker image. Run the **helloworld-nodejs** job again - it will result in an error because the `nodejs` container does not have Java installed. <p><img src="img/intro/k8s_agent_java_error.png" width=800/>
 
 >NOTE: If you waited for your job to complete in Blue Ocean before you navigated to the [Pipeline Runs Details View](https://jenkins.io/doc/book/blueocean/pipeline-run-details/#pipeline-run-details-view) you will discover a nice feature where if a particular step fails, the tab with the failed step will be automatically expanded, showing the console log for the failed step as you can see in the image above.
 
