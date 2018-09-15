@@ -70,7 +70,7 @@ So far, we have a **Test** `stage` that doesn't really do anything. We are going
 ```
 
 4. Commit those changes and run the **helloworld-nodejs** **master** branch job and it will fail. It failed because the **Testcafe** test did not pass. We can see the exact error under the ["Tests" tab of the Blue Ocean Pipeline Run Details view](https://jenkins.io/doc/book/blueocean/pipeline-run-details/#tests) for this run: <p><img src="img/parallel/test_failure.png" width=850/>
-5. So it appears that we have a slight typo in our **helloworld-nodejs** app. Use the GitHub editor to open the `hello.js` file on the **master** brancy of your forked copy of the **helloworld-nodejs** repository, fix the misspelling of **Worlld** to **World** and then commmit the changes. 
+5. So it appears that we have a slight typo in our **helloworld-nodejs** app. Use the GitHub editor to open the `hello.js` file on the **master** branch of your forked copy of the **helloworld-nodejs** repository, fix the misspelling of **Worlld** to **World** and then commmit the changes. 
 6. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and your job should already be running as a GitHub webhook triggered it when you commited the changes for the `hello.js` file. The test will be successful and the job will complete successfully: <p><img src="img/parallel/test_success.png" width=850/>
 
 ## Parallel Stages
