@@ -1,5 +1,15 @@
 # Advanced Pipelines with CloudBees Core
 
+In this set of exercise we are going to explore Pipeline Shared Libraries and use shared library *steps* to build a Docker image for the **helloworld-nodejs** app, push it to AWS ECR and deploy the **helloworld-nodejs** app to Kubernetes. But before we do all of that we will update the **nodejs-app/Jenkinsfile.template** Pipeline script to be more dynamic.
+
+>**Starting Here or Catching Up?**
+>
+>If you are starting with this set of exercises or just need to catch up, you may get the the correct version of the  **nodejs-app/Jenkinsfile.template** Pipeline script for starting these exercises [from this branch](https://github.com/cloudbees-cd-acceleration-workshop/custom-marker-pipelines/blob/after-parallel/nodejs-app/Jenkinsfile.template).
+
+## Properties Files for Pipelines
+
+In the **Kubernetes Pod Templates Defined in Pipeline Script** exercise from the previous section we changed the version of Node.js we are using by chaning the Docker image for the Pod Template.
+
 ## Shared Libraries
 
 In this exercise we are going to add a *step* to our Pipeline from a [**Pipeline Shared Library**](https://jenkins.io/doc/book/pipeline/shared-libraries/), providing functionality to set default values based on default Jenkins environmental variables. But first, you will fork the Pipeline Shared Library for this exercise from https://github.com/cloudbees-cd-acceleration-workshop/pipeline-library into the GitHub Organization you created in **[Setup - Create a GitHub Organization](./Setup.md#create-a-github-organization)**.

@@ -337,9 +337,9 @@ spec:
     }
 ```
 
-3. Note that we added an additional **testcafe** container - one for the running the tests in Chrome and one for Firefox.  If we only used one **testcafe** container then the **firefox** tests would have to wait for the **chrome** tests to complete - even though they are in a `parallel` block. We also had to sprecify a different set of ports for the `testcafe-firefox` `container` so it doesn't conflict with the `testcafe-chrome` `container` ports as the containers in a [Kubernetes Pod share a network namespace to include network ports](https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/#networking).
-We now have one stage and have enclosed the parallel tests in a `script` block. We also updated the `testcafe` steps to output diffent `xunit` files and updated the `junit` step to use a wildcard to match both files: `junit 'res*.xml` - so we will have both the Chrome and Firefox test results. Despite a bit of wackiness in Blue Ocean and , the final output once the job completes actually looks ok in Blue Ocean:  <p><img src="img/parallel/parallel_scipted_success.png" width=850/>
-5. We are close to what we want but we lose the build logs in Blue Ocean for the **nodejs** steps. Their still available in the classic UI, but it would be nice to have them in Blue Ocean as well. Let's see if we can combine sequential stages with the parallel tests in a `script` block to get the logs back for the `nodejs` steps and still have parallelization for our tests.  Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **custom-marker-pipelines** repository and replace the entire **Test** `stage` with the version below:
+3. Note that we added an additional **testcafe** container - one for the running the tests in Chrome and one for Firefox.  If we only used one **testcafe** container then the **firefox** tests would have to wait for the **chrome** tests to complete - even though they are in a `parallel` block. We also had to sprecify a different set of ports for the `testcafe-firefox` `container` so it doesn't conflict with the `testcafe-chrome` `container` ports as the containers in a [Kubernetes Pod share a network namespace which includes container network ports](https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/#networking).
+We now have one stage and have enclosed the parallel tests in a `script` block. We also updated the `testcafe` steps to output diffent `xunit` files and updated the `junit` step to use a wildcard to match both files: `junit 'res*.xml` - so we will have both the Chrome and Firefox test results. Despite a bit of wackiness in Blue Ocean, the final output once the job completes actually looks ok in Blue Ocean:  <p><img src="img/parallel/parallel_scipted_success.png" width=850/>
+4. We are close to what we want but we lose the build logs in Blue Ocean for the **nodejs** steps. Their still available in the classic UI, but it would be nice to have them in Blue Ocean as well. Let's see if we can combine sequential stages with the parallel tests in a `script` block to get the logs back for the `nodejs` steps and still have parallelization for our tests.  Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **custom-marker-pipelines** repository and replace the entire **Test** `stage` with the version below:
 
 ```groovy
     stage('Test') {
@@ -415,10 +415,10 @@ spec:
       }    
     }
 ```
-6. We have accomplished everything we wanted - albeit with the use of the `script` block - 1 Pod Template, the `nodejs` steps only run once, the tests are run in parallel and just one `post` section. And now we have logs for the **App Setup** nested `stage`, nice visualization of our Pipeline in Blue Ocean and our job runs a bit faster than before:  <p><img src="img/parallel/sequential_with_scripted_parallel.png" width=850/>
+5. We have accomplished everything we wanted - albeit with the use of the `script` block - 1 Pod Template, the `nodejs` steps only run once, the tests are run in parallel, we have just one `post` section and we capture all of the test results. We also have logs for the **App Setup** nested `stage` in Blue Ocean and nice visualization of our Pipeline in Blue Ocean:  <p><img src="img/parallel/sequential_with_scripted_parallel.png" width=850/>
 
 ## Next Lesson
 
-Before moving on to the next lesson you can make sure that your **nodejs-app/Jenkinsfile.template** Pipeline script is correct by comparing to or copying from the **after-parallel** branch of your forked **custom-marker-pipelines** repository.
+Before moving on to the next lesson you can make sure that your **nodejs-app/Jenkinsfile.template** Pipeline script is correct by comparing to or copying the one from the **after-parallel** branch of your forked **custom-marker-pipelines** repository.
 
 You may proceed to the next set of exercises - **[Advanced Pipelines with CloudBees Core](./advanced-pipeline-cb-core.md)** - when your instructor tells you.
