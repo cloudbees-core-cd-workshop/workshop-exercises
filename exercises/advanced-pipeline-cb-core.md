@@ -1,8 +1,14 @@
 # Advanced Pipelines with CloudBees Core
 
-In this set of exercise we are going to explore [Pipeline Shared Libraries](https://jenkins.io/doc/book/pipeline/shared-libraries/) and use a Shared Library of **custom steps** and **resources** to make our Declartive Pipeline more readable, build a Docker image for the **helloworld-nodejs** app, push that Docker image to an [AWS ECR](https://aws.amazon.com/ecr/) and deploy the **helloworld-nodejs** app to Kubernetes. But before we do all of that we will update the **nodejs-app/Jenkinsfile.template** Pipeline script to be more dynamic.
+In this set of exercise we are going to explore [Pipeline Shared Libraries](https://jenkins.io/doc/book/pipeline/shared-libraries/) and use a Shared Library of **custom steps** and **resources** to:
+- make our Declarative Pipeline more readable
+- build a Docker image for the **helloworld-nodejs** app
+- push that Docker image to an [AWS ECR](https://aws.amazon.com/ecr/)
+- deploy the **helloworld-nodejs** app to Kubernetes. 
 
-We will also take a look at the [CloudBees Core Cross Team Collaboration feature](https://go.cloudbees.com/docs/cloudbees-core/cloud-admin-guide/cross-team-collaboration/#) and how it can improve team collaboration by connecting Team Pipelines to deliver software faster. 
+But before we do all of that we will update the **nodejs-app/Jenkinsfile.template** Pipeline script to be more dynamic - and then build a Shared Library **custom step** to improve on that example.
+
+We will also take a look at the [CloudBees Core Cross Team Collaboration feature](https://go.cloudbees.com/docs/cloudbees-core/cloud-admin-guide/cross-team-collaboration/#) and how it can improve team collaboration by connecting Team Pipelines across Masters to deliver software faster. 
 
 >**Starting Here or Catching Up?**
 >
