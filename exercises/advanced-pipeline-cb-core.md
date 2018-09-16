@@ -54,11 +54,11 @@ In this exercise we are going to add a *step* to our Pipeline from a [**Pipeline
 
 Once you have forked the ***pipeline-library*** repository into your GitHub Organization you will need to configure it as a Pipeline Shared Library configuration for your Team Master. Pipeline Shared Libraries may be configured at the Jenkins Master level or the Jenkins folder level. The GitHub Oranization project that you created earlier is actually a special type of folder, so we will add the ***pipeline-library*** to that folder.
 
-1. In the ***Github Organization** folder Jenkins project you started to create in the previous exercise scroll down to the **Pipeline Libraries** section and click the **Add** button. <p><img src="img/advanced/shared_lib_add.png" width=550/>
+1. In the ***Github Organization** folder Jenkins project you started to create in the previous exercise scroll down to the **Pipeline Libraries** section and click the **Add** button. <p><img src="img/advanced/shared_lib_add.png" width=850/>
 2. Enter `cd-accel` for the Library **Name** and `master` for the **Default version**.
 3. Next for the **Retrieval method** select **Modern SCM**.
 4. Then, for the **Source Code Management** select **GitHub**.
-5. Select the GitHub **Credentials** you created earlier, enter your GitHub Organization name as the **Owner**, select **pipeline-library** for the **Repository** and then click the **Save** button. <p><img src="img/advanced/shared_lib_config.png" width=600/>
+5. Select the GitHub **Credentials** you created earlier, enter your GitHub Organization name as the **Owner**, select **pipeline-library** for the **Repository** and then click the **Save** button. <p><img src="img/advanced/shared_lib_config.png" width=800/>
 
 If you navigate back to your fork of the **pipeline-library** repository you will notice that all it has a *LICENSE* and *README.md* files. We need to create a specific direction structure in your forked **pipeline-library** repositories and then we will create our first shared library script.
 
@@ -80,39 +80,87 @@ Shared Libraries have a very specific directory structure as follows:
 |       +- foo
 |           +- bar.json    # static helper data for org.foo.Bar
 ```
-*The following is an excerpt from https://jenkins.io/doc/book/pipeline/shared-libraries/#directory-structure:*
-    The `src` directory should look like standard Java source directory structure. This directory is added to the classpath when executing Pipelines.
 
-    The `vars` directory hosts scripts that define global variables accessible from Pipeline. The basename of each `.groovy` file should be a Groovy (~ Java) identifier, conventionally `camelCased`. The matching `.txt`, if present, can contain documentation, processed through the system’s configured markup formatter (so may really be HTML, Markdown, etc., though the `txt` extension is required).
+The `src` directory should look like standard Java source directory structure and will contain Java `Classes` written in `Groovy`. This directory is added to the classpath when executing Pipelines.
 
-    The Groovy source files in these directories get the same “CPS transformation” as in Scripted Pipeline.
+The `vars` directory hosts scripts that define global variables accessible from Pipeline. The basename of each `.groovy` file should be a Groovy (~ Java) identifier, conventionally `camelCased`. The matching `.txt`, if present, can contain documentation, processed through the system’s configured markup formatter (so may really be HTML, Markdown, etc., though the `txt` extension is required).
 
-    A `resources` directory allows the `libraryResource` step to be used from an external library to load associated non-Groovy files. Currently this feature is not supported for internal libraries.
+The Groovy source files in these directories get the same “CPS transformation” as in Scripted Pipeline.
 
+A `resources` directory allows the `libraryResource` step to be used from an external library to load associated non-Groovy files. Currently this feature is not supported for internal libraries.
 
+### Create a Custom Step
 
-Now that the **Pipeline Shared Library** is configured for your Team Master we will use it in the `nodejs-app/Jenkinsfile.template` Pipeline in your forked **customer-marker-pipelines** repository.
+For this workshop we will only be using the simpler and more straight-forward **global variables**, and we will also work with `resources` and the `libraryResource` step. But before we create a new **global variable** we need to decide what it needs to do. Pipeline Shared Libraries are like any other shared framework or utility - the purpose being to reduce redundant code and to aheare to [DRY](https://en.wikipedia.org/wiki/Don't_repeat_yourself). Also, with the advent of two different syntaxes for Pipelines - Declarative and Scripted - it is sometimes useful to use Shared Library [**custom steps**](https://jenkins.io/doc/book/pipeline/shared-libraries/#defining-custom-steps) to encapsulted Scripted syntax to use in a Declarative Pipeline. We will do just that for the `readProperties` `script` block that we added above. We will call it `defineProps` - we can't use `readProperties` because then our new **custom step** would override and replace the `readProperties` step from the Pipeline Utilities plugin and we will actually use that step in our custom step.
 
-1. Add the following line after the top level the `agent` directive:
+1. In the **master** branch of your forked **pipeline-library** repostiory click on the **Create new file** button and enter `vars/defineProps.groovy`.
+2. We will implement a `call` method as the `call` method allows the global variable to be invoked in a manner similar to a step:
 
-```
-  libraries {
-    lib("SharedLibs")
+```groovy
+// vars/defineProps.groovy
+def call(String file, Map defaults) {
+  //use the Pipeline Utility Steps plugin readProperties step to read the .nodejs-app custom marker file 
+  def props = readProperties defaults: defaults, file: file
+  for ( e in props ) {
+    env.setProperty(e.key, e.value)
   }
+}
 ```
 
-2. Then add the following stage after the stage you created in **Exercise 3.1**:
+4. Commit the `defineProps.groovy` file. 
+3. Next we will create a `defineProps.txt` file in the `vars` directory. This will provide dynamically generated documentation on whatever Jenkins instance the Shared Library is installed for our custom stepx`:
+
+```html
+<h2>defineProps step</h2>
+<p>
+A custom step for using the <pre>readProperties</pre> step from the Pipeline Utilities plugin with a Declarative Pipeline. 
+</p>
+<h3>Configuration</h3>
+<dl>
+	<dt>name</dt>
+	<dd><pre>String</pre><b>REQUIRED</b> the path to the properties file to be read from the workspace</dd>
+	<dt>defaults</dt>
+	<dd><pre>Map</pre><b>OPTIONAL</b> default values for passed in properties file</dd>
+</dl>
+
+<h3>Example:</h3>
+<pre>
+	defineProps('.nodejs-app', [npmPackages: 'express pug'])
+</pre>
+```
+
+5. Commit the `defineProps.txt` file.
+
+### Use a Custom Step
+
+Now that the **Pipeline Shared Library** is configured for your Team Master and we have a **global variable** to use, we will use it in the `nodejs-app/Jenkinsfile.template` Pipeline script.
+
+1. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **custom-marker-pipelines** repository.
+2. Add the following line to the very top of the Pipeline script, above the `pipeline` block - remember that we named the Shared Library **cd-accel** when we added it to our GitHub Organization project on our Team Masters:
 
 ```
-      stage('Shared Lib') {
-         steps {
-             helloWorld("Jenkins")
-         }
-      }
+library 'cd-accel'
 ```
 
->The `helloWorld` function we are calling can be seen at: https://github.com/PipelineHandsOn/shared-libraries/blob/master/vars/helloWorld.groovy
+3. Next we will replace the `script` block where we are using the `readProperties` step with our new custom step. Update the  **App Setup** `stage` of the **Test** `stage` to match the following:
 
+```groovy
+        stage('App Setup') {
+          steps {
+            checkout scm
+            defineProps('.nodejs-app', [npmPackages: 'express pug'])
+            container('nodejs') {
+              sh """
+                npm i -S ${npmPackages}
+                node ./hello.js &
+              """
+            }
+          }
+        }
+```
+
+4. Not only have we created a reusable custom step, we have also made our Declartive Pipeline script much more readable. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will run successfully. Note in **Console Output** in the classic UI the checkout of the our Shared Library: <p><img src="img/advanced/shared_lib_checkout.png" width=800/>
+5. Exit to the class UI and click on the **Pipeline Syntax** link in the left navigation menu. Then click on the **Global Variables Reference** link and scroll to the bottom of the page. You will find the documentation that we created for our `defineProps` custom step: <p><img src="img/advanced/shared_lib_syntax_link.png" width=800/>
 
 ## Cross Team Collaboration
 In this exercise we are going to set-up two Pipeline jobs (using the Jenkins classic UI) that demonstrate CloudBee's Cross Team Collaboration feature. We will need two separate Pipelines - one that publishes an event - and another that is triggered by an event.
