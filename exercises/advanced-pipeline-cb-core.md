@@ -95,7 +95,7 @@ A `resources` directory allows the `libraryResource` step to be used from an ext
 
 For this workshop we will only be using the simpler and more straight-forward **global variables**, and we will also work with `resources` and the `libraryResource` step. But before we create a new **global variable** we need to decide what it needs to do. Pipeline Shared Libraries are like any other shared framework or utility - the purpose being to reduce redundant code and to aheare to [DRY](https://en.wikipedia.org/wiki/Don't_repeat_yourself). Also, with the advent of two different syntaxes for Pipelines - Declarative and Scripted - it is sometimes useful to use Shared Library [**custom steps**](https://jenkins.io/doc/book/pipeline/shared-libraries/#defining-custom-steps) to encapsulted Scripted syntax to use in a Declarative Pipeline. We will do just that for the `readProperties` `script` block that we added above. We will call it `defineProps` - we can't use `readProperties` because then our new **custom step** would override and replace the `readProperties` step from the Pipeline Utilities plugin and we will actually use that step in our custom step.
 
-1. In the **master** branch of your forked **pipeline-library** repostiory click on the **Create new file** button and enter `vars/defineProps.groovy`.
+1. In the **master** branch of your forked **pipeline-library** repostiory click on the **Create new file** button and enter `vars/defineProps.groovy`. <p><img src="img/advanced/shared_lib_global_var_defineProps.png" width=800/>
 2. We will implement a `call` method as the `call` method allows the global variable to be invoked in a manner similar to a step:
 
 ```groovy
@@ -110,7 +110,7 @@ def call(String file, Map defaults) {
 ```
 
 4. Commit the `defineProps.groovy` file. 
-3. Next we will create a `defineProps.txt` file in the `vars` directory. This will provide dynamically generated documentation on whatever Jenkins instance the Shared Library is installed for our custom stepx`:
+3. Next we will create a `defineProps.txt` file in the `vars` directory. This will provide dynamically generated documentation on whatever Jenkins instance the Shared Library is installed for our custom step:
 
 ```html
 <h2>defineProps step</h2>
@@ -132,6 +132,8 @@ A custom step for using the <pre>readProperties</pre> step from the Pipeline Uti
 ```
 
 5. Commit the `defineProps.txt` file.
+
+>**NOTE:** Global Variable Documentation for custom steps will only be availale under a Pipeline job that uses that step and has run successfully.
 
 ### Use a Custom Step
 
