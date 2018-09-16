@@ -23,7 +23,7 @@ We have been installing two specific Node.js packages - `express` and `pug` - fo
             }
 ```
 
-3. Next replace the `npm i -S express pug` of the `nodejs` `sh` step with the value of the `npmPackages` property - we also need to use triple double-quotes instead of triple single-quotes to [support the interpolation](https://jenkins.io/doc/book/pipeline/jenkinsfile/#string-interpolation) of our `props['npmPackages']` variable. The entire `nodejs` `container` block will be:
+3. Next replace the `npm i -S express pug` of the `nodejs` `sh` step with the value of the `npmPackages` property - we also need to use triple double-quotes instead of triple single-quotes to [support the interpolation](https://jenkins.io/doc/book/pipeline/jenkinsfile/#string-interpolation) of our `npmPackages` variable. The entire `nodejs` `container` block will be:
 
 ```
             container('nodejs') {
@@ -34,7 +34,7 @@ We have been installing two specific Node.js packages - `express` and `pug` - fo
             }
 ```
 
-4. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The browser tests will both fail because we didn't add `npmPackages` property to the `.nodejs-app` marker file in the **helloworld-nodejs** repository: <p><img src="img/advanced/props_failure.png" width=850/>  <p>But the **express** framework and **pug** templating are what the majority of the dev teams use for Node.js development. So what we really want to do is have to set a default value. Lucky for us, the `readProperties` step includes a parameter aptly named `defaults` that allows us to provide a map containing default key/values. We will update the `readProperties` script block with a map of default values and add the `defaults` parameter set to that map:
+4. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The browser tests will both fail because we didn't add `npmPackages` property to the `.nodejs-app` marker file in the **helloworld-nodejs** repository: <p><img src="img/advanced/props_failure.png" width=850/>  <p>However, the **express** framework and **pug** templating are what the majority of the dev teams use for Node.js development. So what we really want is to have a default value set, and then allow different dev teams to override that value if they are using different packages. Lucky for us, the `readProperties` step includes a parameter aptly named `defaults` that allows us to provide a map containing default key/values. We will update the `readProperties` script block with a map of default values and add the `defaults` parameter set to that map:
 
 ```
             script {
