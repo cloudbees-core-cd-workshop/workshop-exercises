@@ -1,6 +1,6 @@
 # Advanced Pipelines with CloudBees Core
 
-In this set of exercise we are going to explore [Pipeline Shared Libraries](https://jenkins.io/doc/book/pipeline/shared-libraries/) and use a shared set of Shared Library **custom steps** and **resources** to make our Declartive Pipeline more readable, build a Docker image for the **helloworld-nodejs** app, push that Docker image to an [AWS ECR](https://aws.amazon.com/ecr/) and deploy the **helloworld-nodejs** app to Kubernetes. But before we do all of that we will update the **nodejs-app/Jenkinsfile.template** Pipeline script to be more dynamic.
+In this set of exercise we are going to explore [Pipeline Shared Libraries](https://jenkins.io/doc/book/pipeline/shared-libraries/) and use a Shared Library of **custom steps** and **resources** to make our Declartive Pipeline more readable, build a Docker image for the **helloworld-nodejs** app, push that Docker image to an [AWS ECR](https://aws.amazon.com/ecr/) and deploy the **helloworld-nodejs** app to Kubernetes. But before we do all of that we will update the **nodejs-app/Jenkinsfile.template** Pipeline script to be more dynamic.
 
 We will also take a look at the [CloudBees Core Cross Team Collaboration feature](https://go.cloudbees.com/docs/cloudbees-core/cloud-admin-guide/cross-team-collaboration/#) and how it can improve team collaboration by connecting Team Pipelines to deliver software faster. 
 
@@ -320,13 +320,13 @@ We will now update the **Deploy** `stage` to use the `kubeDeploy` **custom step*
         submitterParameter "APPROVER"
       }
       steps {
-        kubeDeploy(env.IMAGE_REPO, env.IMAGE_NAME, env.IMAGE_TAG)
+        kubeDeploy(env.IMAGE_NAME, env.IMAGE_TAG)
       }
     }
 ```
 
 3. Some interesting things to note are:
-4. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will run successfully. <p><img src="img/advanced/deploy_app_screenshot.png" width=750/>
+4. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will run successfully and there is a clickable link to your deployed app in the last step of the **Deploy** `stage`: <p><img src="img/advanced/deploy_echo_url.png" width=850/><p>In your app, notice the 'Build Number' and 'Commit' id in the footer: <p><img src="img/advanced/deploy_app_screenshot.png" width=750/>
 
 ## Cross Team Collaboration
 In this exercise we are going to demonstrate CloudBee's Core Cross Team Collaboration feature.
