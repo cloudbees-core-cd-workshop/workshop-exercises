@@ -234,6 +234,7 @@ So the **Test** `stage` of our Pipeline is fairly interesting but the **Build an
 |   +- defineProps.groovy         # readProperties helper for Declarative Pipelines
 |   +- defineProps.txt            # help text for 'defineProps' custom step
 |   +- dockerBuildPush.groovy     # custom step for 'Build and Push Image' stage
+|   +- gitShortCommit.groovy      # sets an environment variable with specified length of full commmit sha - defaults to 7
 |   +- imageNameTag.groovy        # custom step to dynamically provide name and tag of image based on GitHub org/repo:branch
 |   +- kubeDeploy.groovy          # custom step for the 'Deploy' stage
 |   +- setECRLifecyclePolicy.groovy # custom step used by the dockerBuildPush custom step to set ECR Lifecycle Policy for all pushed Docker images
@@ -265,7 +266,7 @@ Before we can use the the additional *custom steps** and library `resources` des
 library 'cd-accel@completed' 
 ```
 
-3. It doesn't get much easier than that. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will run successfully - but the `cd-accel` Shared Library will not come from the `completed` branch.
+3. It doesn't get much easier than that. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will run successfully - but the `cd-accel` Shared Library will now come from the `completed` branch.
 
 #### Update 'Build and Push Image' Stage
 
