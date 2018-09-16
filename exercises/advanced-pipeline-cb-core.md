@@ -36,7 +36,7 @@ We have been installing two specific Node.js packages - `express` and `pug` - fo
             }
 ```
 
-4. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The browser tests will both fail because we didn't add `npmPackages` property to the `.nodejs-app` marker file in the **helloworld-nodejs** repository: <p><img src="img/advanced/props_failure.png" width=850/>  <p>However, the **express** framework and **pug** templating are what the majority of the dev teams use for Node.js development. So what we really want is to have a default value set, and then allow different dev teams to override that value if they are using different packages. Lucky for us, the `readProperties` step includes a parameter aptly named `defaults` that allows us to provide a map containing default key/values. We will update the `readProperties` script block with a map of default values and add the `defaults` parameter set to that map:
+4. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The browser tests will both fail because we didn't add an `npmPackages` property to the `.nodejs-app` marker file in the **helloworld-nodejs** repository: <p><img src="img/advanced/props_failure.png" width=850/>  <p>However, the **express** framework and **pug** templating are what the majority of the dev teams use for Node.js development. So what we really want is to have a default value set, and then allow different dev teams to override that value if they are using different packages. Lucky for us, the `readProperties` step includes a parameter aptly named `defaults` that allows us to provide a map containing default key/values. We will update the `readProperties` script block with a map of default values and add the `defaults` parameter set to that map:
 
 ```
             script {
@@ -224,130 +224,84 @@ def testPodYaml = libraryResource 'podtemplates/nodejs-app/test-pod.yml'
 
 7. Wow, that really makes our Pipeline much more readable. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will run successfull using the `yaml` definition from our Shared Library.
 
+### Shared Library Steps for 'Build and Push Image' and 'Deploy'
+
+So the **Test** `stage` of our Pipeline is fairly interesting but the **Build and Push Image** and **Deploy** `stages` still don't do much. Let's change that by using some Shared Library **custom steps** that have already been created for everyone. If you open your **pipeline-library** repostiory in GitHub and switch to the `completed` branch you will notice a number of additional `groovy` files in the `vars` directory and a number of additional `resources` - including the `vars/defineProps.groovy` file and `resources/podtemplates/nodejs-app/test-pod.yml` file that we added above.
+
+```
+(root)
++- vars
+|   +- defineProps.groovy         # readProperties helper for Declarative Pipelines
+|   +- defineProps.txt            # help text for 'defineProps' custom step
+|   +- dockerBuildPush.groovy     # custom step for 'Build and Push Image' stage
+|   +- imageNameTag.groovy        # custom step to dynamically provide name and tag of image based on GitHub org/repo:branch
+|   +- kubeDeploy.groovy          # custom step for the 'Deploy' stage
+|   +- setECRLifecyclePolicy.groovy # custom step used by the dockerBuildPush custom step to set ECR Lifecycle Policy for all pushed Docker images
++- resources                      # resource files (external libraries only)
+|   +- podtemplates
+|       +- awsCli.yml             # Pod Template with container that has the AWS CLI installed
+|       +- dockerBuildPush.yml    # Pod Template with a tool called Kaniko - used to build and push Docker images to ECR without Docker
+|       +- kubeDeploy.yml         # Pod Template with container for k8s deployments
+|       +- nodejs-app
+|           +- test-pod.yml       # k8s Pod config for **Node.js** app testing
+|   +- k8s
+|       +- basicDeploy.yml        # k8s configuration to deploy basic apps with ingress
+|   +- aws
+|       +- ecr
+|           +- lifecycle-policy
+|               +- tempImagePolicy.json #AWS ECR Image Lifecycle Policy for all Docker images pushed to ECR
+```
+
+As you can see, there are quite a few additional custom steps and resources, and rather than spend all the time creating them together we are going to use them.
+
+#### Update Team Master 'cb-accel' Shared Library
+
+Before we can use the the additional *custom steps** and library `resources` described above we need get access to them. We could just merge the `completed` branch of your forked **pipeline-library** repository to the `master` branch. But we won't waste our time with that, as a simple update to the `library` step in your **nodejs-app/Jenkinsfile.template** Pipeline script will allow us to target a different branch. That is because when we first configured the Shared Library, we left the ***Allow default version to be overridden*** property checked.
+
+1. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **custom-marker-pipelines** repository.
+2. Update the `library` step to match the following:
+
+```groovy
+library 'cd-accel@completed' 
+```
+
+3. It doesn't get much easier than that. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will run successfully - but the `cd-accel` Shared Library will not come from the `completed` branch.
+
+#### Update 'Build and Push Image' Stage
+
+We will now update the **Build and Push Image** `stage` to use the `dockerBuildPush` **custom step** described above.
+
+1. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **custom-marker-pipelines** repository.
+2. Replace the entire **Build and Push Imag** `stage` with the version below:
+
+```
+    stage('Build and Push Image') {
+      when {
+        beforeAgent true
+        branch 'master'
+      }
+      steps {
+        dockerBuildPush(env.IMAGE_NAME, env.IMAGE_TAG) {
+          unstash 'app'
+        }
+      }
+    }
+```
+
+3. Some interesting things to note are:
+    1. We no longer have an `agent` defined. If you look at the `dockerBuildPush.groovy` in the `completed` branch of your **pipeline-library** repopsitory you will see that it defines a `node`.
+    2. The `unstash` step is inside of the `dockerBuildPush` step block. This is called a `closure` LINK and allows you to run addition, arbritary steps inside of a **custom step**.
+4. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will run successfully and everyone will have a brand new Docker Image in the Amazon Elastic Container Registry we are using for this workshop.
+
 ## Cross Team Collaboration
-In this exercise we are going to set-up two Pipeline jobs (using the Jenkins classic UI) that demonstrate CloudBee's Cross Team Collaboration feature. We will need two separate Pipelines - one that publishes an event - and another that is triggered by an event.
+In this exercise we are going to demonstrate CloudBee's Core Cross Team Collaboration feature.
 
-### Master Events
+### Cross-Team Master Events
 
-For the first part of **Cross Team Collaboration** we will create an event that is only published on your master.
-
-#### Publish Event
-
-First you have to publish an event from a Pipeline - any other Pipeline may set a trigger to listen for this event. Create a Pipeline job named `notify-event` with the following content, but replace `<username>Event` with your username so my event would be `beedemoEvent`:
-
-```
-pipeline {
-    agent none
-    stages {
-        stage('Publish Event') {
-            steps {
-                publishEvent simpleEvent('<username>Event')
-            }
-        }
-    }
-}
-```
-
-#### Event Trigger
-
-Next, create a Pipeline job name `notify-trigger` and set a `trigger` to listen for the event you created above with the following content, again don't forget to edit `<username>Event`:
-
-```
-pipeline {
-    agent none
-    triggers {
-        eventTrigger simpleMatch('<username>Event')
-    }
-    stages {
-        stage('Event Trigger') {
-            when {
-                expression { 
-                    return currentBuild.rawBuild.getCause(com.cloudbees.jenkins.plugins.pipeline.events.EventTriggerCause)
-                }
-            }
-            steps {
-                echo 'triggered by published event'
-            }
-        }
-    }
-}
-```
-
-After creating both of these Pipeline jobs you will need to run the **Event Trigger** job once so that the trigger is registered (similar to what was necessary for job parameters). Once that is complete, click on **Build Now** to run the **Publish Event** job. Once that job has completed, the **Event Trigger** job will be triggered after a few seconds. The logs will show that the job was triggered by an `Event Trigger` and the `when` expression will be true.
-
->**NOTE**:  If your *trigger* job does not fire, you may need to enable the **Cross Team Collaboration** feature on your master.  Navigate to the top level of your master, select **Manage Jenkins** and then **Configure Notification**.  Next, select **Enable** and choose **Local only** and then click **Save**.
-
-### Cross-Master Events
-
-For the second part of **Cross Team Collaboration** we will create an event that will be published **across Team Masters** via CloudBees Operations Center. The Cross Team Collaboration feature has a configurable router for routing events and we will change the router used for this exercise. You will need to select a partner to work with - one person will be the notifier and the other person will update their **event-trigger** job to be triggered when the notifier's job is run.
+For the second part of **Cross Team Collaboration** we will create an event that will be published **across Team Masters** via CloudBees Operations Center. The Cross Team Collaboration feature has a configurable router for routing events and we will configure the Notification router for this exercise.
 
 1. First you need to update the **Notification Router Implementation** to use the **Operations Center Messaging** router by clicking on the **Manage Jenkins** link - on the left side at the root of your Team Master (classic ui).
 2. Next, scroll down and click on **Configure Notification** link.
-3. Under **Notification Router Implementation** select the **Operations Center Messaging** option as opposed to the currently selected **Local only** option.
+3. Under **Notification Router Implementation** select the **Operations Center Messaging** option as opposed to the currently selected **Local only** option. ADD SCREENSHOT
 4. Now, the trigger job of the second partner needs to be updated to listen for the notifier's `event` string - ask your partner what their event string is - and then run the job once to register the trigger.
 5. Next, the notifier will run their `notify-event` job and you will see the `notify-trigger` job get triggered.
-
-## Advanced Jenkins Kubernetes Agents
-
-In this exercise we will explore the [Jenkins Kubernetes plugin](https://github.com/jenkinsci/kubernetes-plugin) and will create a new pipeline job to use the `podTemplate` and `container` directives in your Declarative Pipeline. The plugin creates a [Kubernetes Pod](https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/) for each agent requested by a Jenkins job, with at least one Docker container running as the JNLP agent, and stops the pod and all containers after the build is complete (or after a set amount of time as is the case here).
-
->NOTE: The **Jenksin Kubernetes Plugin** is automatically installed and configured to provision dynamic ephemeral agents by CloudBees Jenkins Enterprise on Kubernetes. 
-
-1. Create a "New Item" and give it a name like "Advanced K8s Example" - choose the Pipeline type click OK.
-2. Copy and paste the following code into the **Pipeline Script** text box near the bottom of the page:
-
-```
-pipeline {
-  agent {
-    kubernetes {
-      label 'kubernetes'
-      containerTemplate {
-        name 'go'
-        image 'golang:1.10.1-alpine'
-        ttyEnabled true
-        command 'cat'
-      }
-    }
-  }
-  stages {
-    stage('golang in k8s') {
-        steps {
-            container('go') {
-                sh 'go version'
-            }
-        }
-    }
-  }
-}
-```
-**Note:** Notice the use of the **container** directive.  This tells Jenkins which container in a Pod to use for the steps in the stage.  In this exercise a single container (golang) was explicitly defined in the pipeline, however a second container is implicitly created to handle the JNLP communiction between Jenkins and the Pod.
-
-```
-pipeline {
-  agent {
-    kubernetes {
-      label 'kubernetes'
-      containerTemplate {
-        name 'go'
-        image 'golang:1.10.1-alpine'
-        ttyEnabled true
-        command 'cat'
-      }
-    }
-  }
-  stages {
-    stage('golang in k8s') {
-        steps {
-            container('go') {
-                sh 'go version'
-            }
-            container('jnlp') {
-                sh 'java -version'
-            }
-        }
-     }
-  }
-}
-```
-**Note:** In the above example you were able to execute a java command in the implicitly defined **jnlp** container in the Pod.  The JNLP container is a part of every Pod created by the Jenkins Kubernetes plugin.
-
