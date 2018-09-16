@@ -266,7 +266,16 @@ Before we can use the the additional *custom steps** and library `resources` des
 library 'cd-accel@completed' 
 ```
 
-3. It doesn't get much easier than that. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will run successfully - but the `cd-accel` Shared Library will now come from the `completed` branch.
+3. It doesn't get much easier than that. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will run successfully - but the `cd-accel` Shared Library will now come from the `completed` branch as can be seen in the **Console Ouput** in the classic UI:
+
+```
+[Pipeline] library
+Loading library cd-accel@completed
+20:42:16 GitHub API Usage: Current quota has 53 remaining (5 under budget). Next quota of 60 in 51 min
+Examining bee-cd/pipeline-library
+Attempting to resolve completed as a branch
+Resolved completed as branch completed at revision 7fe7310cf0f05bfa7d61164f9dc9fdbc4c381198
+```
 
 #### Update 'Build and Push Image' Stage
 
@@ -275,7 +284,7 @@ We will now update the **Build and Push Image** `stage` to use the `dockerBuildP
 1. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **custom-marker-pipelines** repository.
 2. Replace the entire **Build and Push Imag** `stage` with the version below:
 
-```
+```groovy
     stage('Build and Push Image') {
       when {
         beforeAgent true
@@ -292,7 +301,32 @@ We will now update the **Build and Push Image** `stage` to use the `dockerBuildP
 3. Some interesting things to note are:
     1. We no longer have an `agent` defined. If you look at the `dockerBuildPush.groovy` in the `completed` branch of your **pipeline-library** repopsitory you will see that it defines a `node`.
     2. The `unstash` step is inside of the `dockerBuildPush` step block. This is called a `closure` LINK and allows you to run addition, arbritary steps inside of a **custom step**.
-4. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will run successfully and everyone will have a brand new Docker Image in the Amazon Elastic Container Registry we are using for this workshop.
+4. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will run successfully and everyone will have a brand new Docker Image in the Amazon Elastic Container Registry we are using for this workshop. All in all, as you can see below, there is a lot more going on in the **Build and Push Image** `stage` now: <p><img src="img/advanced/build_push_finished.png" width=850/>
+
+#### Update 'Deploy' Stage
+
+We will now update the **Deploy** `stage` to use the `kubeDeploy` **custom step** described above.
+
+1. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **custom-marker-pipelines** repository.
+2. Replace the entire **Deploy** `stage` with the version below:
+
+```groovy
+    stage('Deploy') {
+      options {
+        timeout(time: 60, unit: 'SECONDS') 
+      }
+      input {
+        message "Should we deploy?"
+        submitterParameter "APPROVER"
+      }
+      steps {
+        kubeDeploy(env.IMAGE_REPO, env.IMAGE_NAME, env.IMAGE_TAG)
+      }
+    }
+```
+
+3. Some interesting things to note are:
+4. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will run successfully. <p><img src="img/advanced/deploy_app_screenshot.png" width=750/>
 
 ## Cross Team Collaboration
 In this exercise we are going to demonstrate CloudBee's Core Cross Team Collaboration feature.
