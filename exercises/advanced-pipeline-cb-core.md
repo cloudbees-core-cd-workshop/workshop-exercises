@@ -12,10 +12,10 @@ We will also take a look at the [CloudBees Core Cross Team Collaboration feature
 
 The **Custom Marker** feature of CloudBees Core provides a lot of control and easy management of Pipelines for you dev teams' Pipelines. But it does not give individual teams a lot of flexibility. In this exercise we are going to update the **nodejs-app/Jenkinsfile.template** Pipeline script to read in the `.nodejs-app` marker file from the  **helloworld-nodejs** repository as a properties file using the [`readProperties` step](https://jenkins.io/doc/pipeline/steps/pipeline-utility-steps/#readproperties-read-properties-from-files-in-the-workspace-or-text) of [Pipeline Utilities plugin](https://jenkins.io/doc/pipeline/steps/pipeline-utility-steps/). This will allow individual dev teams to override certain properties of the **nodejs-app/Jenkinsfile.template**.
 
-We have been installing two specific Node.js packages - `express` and `pug` - for everyone but what if there are dev teams that want to use different or additional packages. We can allow individual teams to set a `npmPackages` propety in the `.nodejs-app` marker file and then load that file with `readProperties` step and then use that value to override the packages installed in the `nodejs` `container` steps.
+We have been installing two specific Node.js packages - `express` and `pug` - for everyone but what if there are dev teams that want to use different or additional packages. We can allow individual teams to set a `npmPackages` propety in the `.nodejs-app` marker file and then load that file with `readProperties` step. We can then use that value to override the packages installed by default in the `nodejs` `container` steps.
 
 1. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **custom-marker-pipelines** repository.
-2. The `readProperties` step will read a file in the current working directory and return a map of String keys and values. Therefore we will have to define a Groovy variable to caputre this returned map, but the Declarative syntax does not allow defining or assigning values to variables. So we will once again use the `script` block so that we can assign the output of the `readProperties` step to use in our `nodejs` steps. Add the following `script` block right after the `checkout scm` step of the **Test** `stage`:
+2. The `readProperties` step will read a file in the current working directory and return a map of String keys and values. In order to use this map of key/value pairs in our Pipeine scritp we will have assign it as a value of a newly defined  Groovy variable. However, the Declarative syntax does not allow defining or assigning values to variables. So we will need to use the `script` block again - this time so that we can assign the output of the `readProperties` step to use in our `nodejs` steps. Add the following `script` block right after the `checkout scm` step of the **Test** `stage`:
 
 ```
             script {
@@ -25,7 +25,7 @@ We have been installing two specific Node.js packages - `express` and `pug` - fo
             }
 ```
 
-3. Next replace the `npm i -S express pug` of the `nodejs` `sh` step with the value of the `npmPackages` property - we also need to use triple double-quotes instead of triple single-quotes to [support the interpolation](https://jenkins.io/doc/book/pipeline/jenkinsfile/#string-interpolation) of our `npmPackages` variable. The entire `nodejs` `container` block will be:
+3. Next replace the `npm i -S express pug` of the `nodejs` `sh` step with the value of the `npmPackages` property - note the use of **triple double-quotes** instead of **triple single-quotes** - this is required to [support the interpolation](https://jenkins.io/doc/book/pipeline/jenkinsfile/#string-interpolation) of our `npmPackages` variable. The entire `nodejs` `container` block should match the following:
 
 ```
             container('nodejs') {
