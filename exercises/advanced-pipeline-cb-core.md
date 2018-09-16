@@ -201,7 +201,7 @@ spec:
       containerPort: 1340
 ```
 
-<p><img src="img/advanced/shared_lib_resource_test_pod_yaml.png" width=800/>
+<p><img src="img/advanced/shared_lib_resource_test_pod_yaml.png" width=850/>
 
 3. Commit the changes.
 4. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **custom-marker-pipelines** repository.
