@@ -70,7 +70,7 @@ Once you have forked the ***pipeline-library*** repository into your GitHub Orga
 6. For the **Source Code Management** select **GitHub**.
 7. Select the GitHub **Credentials** you created earlier, enter your GitHub Organization name as the **Owner**, select **pipeline-library** for the **Repository** and then click the **Save** button. <p><img src="img/advanced/shared_lib_config.png" width=900/>
 
-If you navigate back to your fork of the **pipeline-library** repository you will notice that all it has a *LICENSE* and *README.md* files. We need to create a specific direction structure in your forked **pipeline-library** repositories and then we will create our first shared library script.
+If you navigate back to your fork of the **pipeline-library** repository you will notice that all it has a *LICENSE* and *README.md* files. For a Pipeline Shared Library, we need to create a very specific directory structure in your forked **pipeline-library** repositories and then we will be able to create our first Shared Library script.
 
 ### Pipeline Directory Structure
 
@@ -91,13 +91,13 @@ Shared Libraries have a very specific directory structure as follows:
 |           +- bar.json    # static helper data for org.foo.Bar
 ```
 
-The `src` directory should look like standard Java source directory structure and will contain Java `Classes` written in `Groovy`. This directory is added to the classpath when executing Pipelines.
+The `src` directory should look like standard Java source directory structure and will contain Java `Classes` written in `Groovy`. This directory is added to the classpath when executing Pipelines. We won't be going over using Groovy source files for Shared Libraries today, but you can find more information about them [here](https://jenkins.io/doc/book/pipeline/shared-libraries/#accessing-steps).
 
 The `vars` directory hosts scripts that define global variables accessible from Pipeline. The basename of each `.groovy` file should be a Groovy (~ Java) identifier, conventionally `camelCased`. The matching `.txt`, if present, can contain documentation, processed through the system’s configured markup formatter (so may really be HTML, Markdown, etc., though the `txt` extension is required).
 
 The Groovy source files in these directories get the same “CPS transformation” as in Scripted Pipeline.
 
-A `resources` directory allows the `libraryResource` step to be used from an external library to load associated non-Groovy files. Currently this feature is not supported for internal libraries.
+A `resources` directory allows the `libraryResource` step to be used to load associated non-Groovy files as a String value in your Pipeline script.
 
 ### Create a Custom Step
 
