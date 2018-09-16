@@ -3,7 +3,7 @@
 In this set of exercise we are going to explore [Pipeline Shared Libraries](https://jenkins.io/doc/book/pipeline/shared-libraries/) and use a Shared Library of **custom steps** and **resources** to:
 - make our Declarative Pipeline more readable
 - build a Docker image for the **helloworld-nodejs** app
-- push that Docker image to an [AWS ECR](https://aws.amazon.com/ecr/)
+- push that Docker image to an [Amazon Elastic Container Registry](https://aws.amazon.com/ecr/)
 - deploy the **helloworld-nodejs** app to Kubernetes. 
 
 But before we do all of that we will update the **nodejs-app/Jenkinsfile.template** Pipeline script to be more dynamic - and then build a Shared Library **custom step** to improve on that example.
@@ -239,7 +239,7 @@ So the **Test** `stage` of our Pipeline is fairly interesting but the **Build an
 +- vars
 |   +- defineProps.groovy         # readProperties helper for Declarative Pipelines
 |   +- defineProps.txt            # help text for 'defineProps' custom step
-|   +- dockerBuildPush.groovy     # custom step for 'Build and Push Image' stage
+|   +- dockerBuildPush.groovy     # custom step for 'Build and Push Image' stage to build an image with Kaniko and pust it to an ECR
 |   +- gitShortCommit.groovy      # sets an environment variable with specified length of full commmit sha - defaults to 7
 |   +- imageNameTag.groovy        # custom step to dynamically provide name and tag of image based on GitHub org/repo:branch
 |   +- kubeDeploy.groovy          # custom step for the 'Deploy' stage
