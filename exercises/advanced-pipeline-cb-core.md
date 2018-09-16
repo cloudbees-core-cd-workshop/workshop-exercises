@@ -70,7 +70,7 @@ Once you have forked the ***pipeline-library*** repository into your GitHub Orga
 6. For the **Source Code Management** select **GitHub**.
 7. Select the GitHub **Credentials** you created earlier, enter your GitHub Organization name as the **Owner**, select **pipeline-library** for the **Repository** and then click the **Save** button. <p><img src="img/advanced/shared_lib_config.png" width=900/>
 
-If you navigate back to your fork of the **pipeline-library** repository you will notice that all it has a *LICENSE* and *README.md* files. For a Pipeline Shared Library, we need to create a very specific directory structure in your forked **pipeline-library** repositories and then we will be able to create our first Shared Library script.
+If you navigate back to your fork of the **pipeline-library** repository you will notice that all it contains is the *LICENSE* and *README.md* files. For a Pipeline Shared Library, we need to create a very specific directory structure in your forked **pipeline-library** repositories and then we will be able to create our first Shared Library script.
 
 ### Pipeline Directory Structure
 
@@ -93,7 +93,7 @@ Shared Libraries have a very specific directory structure as follows:
 
 The `src` directory should look like standard Java source directory structure and will contain Java `Classes` written in `Groovy`. This directory is added to the classpath when executing Pipelines. We won't be going over using Groovy source files for Shared Libraries today, but you can find more information about them [here](https://jenkins.io/doc/book/pipeline/shared-libraries/#accessing-steps).
 
-The `vars` directory hosts scripts that define global variables accessible from Pipeline. The basename of each `.groovy` file should be a Groovy (~ Java) identifier, conventionally `camelCased`. The matching `.txt`, if present, can contain documentation, processed through the system’s configured markup formatter (so may really be HTML, Markdown, etc., though the `txt` extension is required).
+The `vars` directory hosts scripts that define global variables accessible from Pipeline. The basename of each `.groovy` file should be a Groovy (~ Java) identifier, conventionally `camelCased`. The matching `.txt`, if present, can contain documentation, processed through the system’s configured markup formatter (so it may really be HTML, Markdown, etc., though the `txt` extension is required).
 
 The Groovy source files in these directories get the same “CPS transformation” as in Scripted Pipeline.
 
@@ -101,15 +101,15 @@ A `resources` directory allows the `libraryResource` step to be used to load ass
 
 ### Create a Custom Step
 
-For this workshop we will only be using the simpler and more straight-forward **global variables**, and we will also work with `resources` and the `libraryResource` step. But before we create a new **global variable** we need to decide what it needs to do. Pipeline Shared Libraries are like any other shared framework or utility - the purpose being to reduce redundant code and to aheare to [DRY](https://en.wikipedia.org/wiki/Don't_repeat_yourself). Also, with the advent of two different syntaxes for Pipelines - Declarative and Scripted - it is sometimes useful to use Shared Library [**custom steps**](https://jenkins.io/doc/book/pipeline/shared-libraries/#defining-custom-steps) to encapsulted Scripted syntax to use in a Declarative Pipeline. We will do just that for the `readProperties` `script` block that we added above. We will call it `defineProps` - we can't use `readProperties` because then our new **custom step** would override and replace the `readProperties` step from the Pipeline Utilities plugin and we will actually use that step in our custom step.
+For this workshop we will only be using the simpler and more straight-forward **global variables**, and we will also work with `resources` and the `libraryResource` step. But before we create a new **global variable** we need to decide what it needs to do. Pipeline Shared Libraries are like any other shared framework or utility - the purpose being to reduce redundant code and to adhere to [DRY](https://en.wikipedia.org/wiki/Don't_repeat_yourself) principle of software development. Also, with the advent of two different syntaxes for Pipelines - Declarative and Scripted - it is sometimes useful to use Shared Library [**custom steps**](https://jenkins.io/doc/book/pipeline/shared-libraries/#defining-custom-steps) to encapsulate Scripted syntax making Declarative Pipelines much more readalbe. We will do just that for the `readProperties` `script` block that we added above. We will call our **custom step** `defineProps` - we can't use `readProperties` because then our new **custom step** would override and replace the `readProperties` step from the Pipeline Utilities plugin and we will actually use that step in our **custom step** as you will see below.
 
 1. In the **master** branch of your forked **pipeline-library** repostiory click on the **Create new file** button and enter `vars/defineProps.groovy`. <p><img src="img/advanced/shared_lib_global_var_defineProps.png" width=800/>
-2. We will implement a `call` method as the `call` method allows the global variable to be invoked in a manner similar to a step:
+2. We will implement a `call` method as [the `call` method allows the global variable to be invoked in a manner similar to a regular Pipeline step](https://jenkins.io/doc/book/pipeline/shared-libraries/#defining-custom-steps):
 
 ```groovy
 // vars/defineProps.groovy
 def call(String file, Map defaults) {
-  //use the Pipeline Utility Steps plugin readProperties step to read the .nodejs-app custom marker file 
+  //use the Pipeline Utility Steps plugin readProperties step to read the file
   def props = readProperties defaults: defaults, file: file
   for ( e in props ) {
     env.setProperty(e.key, e.value)
@@ -118,7 +118,7 @@ def call(String file, Map defaults) {
 ```
 
 4. Commit the `defineProps.groovy` file. 
-3. Next we will create a `defineProps.txt` file in the `vars` directory. This will provide dynamically generated documentation on whatever Jenkins instance the Shared Library is installed for our custom step:
+3. Next we will create a `defineProps.txt` file in the `vars` directory. We will format it as HTML as we are using the ***Safe HTML*** **Markup Formatter** that is configured for all the Team Masters via CJOC.  <p><img src="img/advanced/cjoc_configured_markup_formatter.png" width=800/><p>This will provide dynamically generated documentation on whatever Jenkins instance the Shared Library is installed for our custom step:
 
 ```html
 <h2>defineProps step</h2>
