@@ -2,6 +2,8 @@
 
 In this set of exercise we are going to explore [Pipeline Shared Libraries](https://jenkins.io/doc/book/pipeline/shared-libraries/) and use shared library *steps* to build a Docker image for the **helloworld-nodejs** app, push it to AWS ECR and deploy the **helloworld-nodejs** app to Kubernetes. But before we do all of that we will update the **nodejs-app/Jenkinsfile.template** Pipeline script to be more dynamic.
 
+We will also take a look at the CloudBees Core Cross Team Collaboration feature. 
+
 >**Starting Here or Catching Up?**
 >
 >If you are starting with this set of exercises or just need to catch up, you may get the the correct version of the  **nodejs-app/Jenkinsfile.template** Pipeline script for starting these exercises [from this branch](https://github.com/cloudbees-cd-acceleration-workshop/custom-marker-pipelines/blob/after-parallel/nodejs-app/Jenkinsfile.template).
