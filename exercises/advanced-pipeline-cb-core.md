@@ -1,6 +1,6 @@
 # Advanced Pipelines with CloudBees Core
 
-In this set of exercise we are going to explore [Pipeline Shared Libraries](https://jenkins.io/doc/book/pipeline/shared-libraries/) and use a shared set of **custom steps** to make our Declartive Pipeline more readable, build a Docker image for the **helloworld-nodejs** app, push that Docker image to an [AWS ECR](https://aws.amazon.com/ecr/) and deploy the **helloworld-nodejs** app to Kubernetes. But before we do all of that we will update the **nodejs-app/Jenkinsfile.template** Pipeline script to be more dynamic.
+In this set of exercise we are going to explore [Pipeline Shared Libraries](https://jenkins.io/doc/book/pipeline/shared-libraries/) and use a shared set of Shared Library **custom steps** and **resources** to make our Declartive Pipeline more readable, build a Docker image for the **helloworld-nodejs** app, push that Docker image to an [AWS ECR](https://aws.amazon.com/ecr/) and deploy the **helloworld-nodejs** app to Kubernetes. But before we do all of that we will update the **nodejs-app/Jenkinsfile.template** Pipeline script to be more dynamic.
 
 We will also take a look at the [CloudBees Core Cross Team Collaboration feature](https://go.cloudbees.com/docs/cloudbees-core/cloud-admin-guide/cross-team-collaboration/#) and how it can improve team collaboration by connecting Team Pipelines to deliver software faster. 
 
@@ -10,7 +10,7 @@ We will also take a look at the [CloudBees Core Cross Team Collaboration feature
 
 ## Dyanmic Properties for Pipelines
 
-The **Custom Marker** feature of CloudBees Core provides a lot of control and easy management of Pipelines for you dev teams' Pipelines. But it does not give individual teams a lot of flexibility. In this exercise we are going to update the **nodejs-app/Jenkinsfile.template** Pipeline script to read in the `.nodejs-app` marker file from the  **helloworld-nodejs** repository as a properties file using the [`readProperties` step](https://jenkins.io/doc/pipeline/steps/pipeline-utility-steps/#readproperties-read-properties-from-files-in-the-workspace-or-text) of [Pipeline Utilities plugin](https://jenkins.io/doc/pipeline/steps/pipeline-utility-steps/).
+The **Custom Marker** feature of CloudBees Core provides a lot of control and easy management of Pipelines for you dev teams' Pipelines. But it does not give individual teams a lot of flexibility. In this exercise we are going to update the **nodejs-app/Jenkinsfile.template** Pipeline script to read in the `.nodejs-app` marker file from the  **helloworld-nodejs** repository as a properties file using the [`readProperties` step](https://jenkins.io/doc/pipeline/steps/pipeline-utility-steps/#readproperties-read-properties-from-files-in-the-workspace-or-text) of [Pipeline Utilities plugin](https://jenkins.io/doc/pipeline/steps/pipeline-utility-steps/). This will allow individual dev teams to override certain properties of the **nodejs-app/Jenkinsfile.template**.
 
 We have been installing two specific Node.js packages - `express` and `pug` - for everyone but what if there are dev teams that want to use different or additional packages. We can allow individual teams to set a `npmPackages` propety in the `.nodejs-app` marker file and then load that file with `readProperties` step and then use that value to override the packages installed in the `nodejs` `container` steps.
 
