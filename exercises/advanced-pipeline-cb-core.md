@@ -80,14 +80,14 @@ Shared Libraries have a very specific directory structure as follows:
 |       +- foo
 |           +- bar.json    # static helper data for org.foo.Bar
 ```
-*The following is an exerpt from https://jenkins.io/doc/book/pipeline/shared-libraries/#directory-structure:*
-  The `src` directory should look like standard Java source directory structure. This directory is added to the classpath when executing Pipelines.
+*The following is an excerpt from https://jenkins.io/doc/book/pipeline/shared-libraries/#directory-structure:*
+    The `src` directory should look like standard Java source directory structure. This directory is added to the classpath when executing Pipelines.
 
-  The `vars` directory hosts scripts that define global variables accessible from Pipeline. The basename of each `.groovy` file should be a Groovy (~ Java) identifier, conventionally `camelCased`. The matching `.txt`, if present, can contain documentation, processed through the system’s configured markup formatter (so may really be HTML, Markdown, etc., though the `txt` extension is required).
+    The `vars` directory hosts scripts that define global variables accessible from Pipeline. The basename of each `.groovy` file should be a Groovy (~ Java) identifier, conventionally `camelCased`. The matching `.txt`, if present, can contain documentation, processed through the system’s configured markup formatter (so may really be HTML, Markdown, etc., though the `txt` extension is required).
 
-  The Groovy source files in these directories get the same “CPS transformation” as in Scripted Pipeline.
+    The Groovy source files in these directories get the same “CPS transformation” as in Scripted Pipeline.
 
-  A `resources` directory allows the `libraryResource` step to be used from an external library to load associated non-Groovy files. Currently this feature is not supported for internal libraries.
+    A `resources` directory allows the `libraryResource` step to be used from an external library to load associated non-Groovy files. Currently this feature is not supported for internal libraries.
 
 
 
