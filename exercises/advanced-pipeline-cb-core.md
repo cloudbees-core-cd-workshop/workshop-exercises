@@ -63,11 +63,12 @@ In this exercise we are going to add a **custom step** to our Pipeline from a [*
 Once you have forked the ***pipeline-library*** repository into your GitHub Organization you will need to configure it as a Pipeline Shared Library for your Team Master. Pipeline Shared Libraries may be configured at the Jenkins Master level or the Jenkins folder level. The GitHub Oranization project that you created earlier is actually a special type of folder, so we will add the configuration for ***pipeline-library*** to that folder.
 
 1. In the classic UI, navigate into the **GitHub Organization** folder project that you created earlier and click on the **Configure** link in the left navigation menu. Note the breadcrumbs - my **GitHub Organization** folder project is named **bee-cd**. <p><img src="img/advanced/shared_lib_org_folder_config.png" width=850/>
-2. In the ***Github Organization** folder configuration screen scroll down to the **Pipeline Libraries** section and click the **Add** button. <p><img src="img/advanced/shared_lib_add.png" width=850/>
+2. In the **Github Organization** folder configuration screen scroll down to the **Pipeline Libraries** section and click the **Add** button. <p><img src="img/advanced/shared_lib_add.png" width=900/>
 3. Enter `cd-accel` for the Library **Name** and `master` for the **Default version**.
-4. Next for the **Retrieval method** select **Modern SCM**.
-5. Then, for the **Source Code Management** select **GitHub**.
-6. Select the GitHub **Credentials** you created earlier, enter your GitHub Organization name as the **Owner**, select **pipeline-library** for the **Repository** and then click the **Save** button. <p><img src="img/advanced/shared_lib_config.png" width=800/>
+4. Make sure that you leave **Allow default version to be overridden** checked - more on this later.
+5. For the **Retrieval method** select **Modern SCM**.
+6. For the **Source Code Management** select **GitHub**.
+7. Select the GitHub **Credentials** you created earlier, enter your GitHub Organization name as the **Owner**, select **pipeline-library** for the **Repository** and then click the **Save** button. <p><img src="img/advanced/shared_lib_config.png" width=900/>
 
 If you navigate back to your fork of the **pipeline-library** repository you will notice that all it has a *LICENSE* and *README.md* files. We need to create a specific direction structure in your forked **pipeline-library** repositories and then we will create our first shared library script.
 
