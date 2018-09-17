@@ -424,3 +424,7 @@ spec:
 Before moving on to the next lesson you can make sure that your **nodejs-app/Jenkinsfile.template** Pipeline script is correct by comparing to or copying the one from the **after-parallel** branch of your forked **custom-marker-pipelines** repository.
 
 You may proceed to the next set of exercises - **[Advanced Pipelines with CloudBees Core](./advanced-pipeline-cb-core.md)** - when your instructor tells you.
+
+## Extra Credit
+
+Using the Sequential Stages feature, place the **Build and Push Image**  and **Deploy** into nested `stages` sharing a top-level `when` block. The [answer is here](https://github.com/cloudbees-cd-acceleration-workshop/custom-marker-pipelines/blob/extra-credit-nested-stages/nodejs-app/Jenkinsfile.template).
