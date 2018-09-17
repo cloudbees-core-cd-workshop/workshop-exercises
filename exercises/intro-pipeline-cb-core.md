@@ -41,8 +41,8 @@ In this exercise we are going to demonstrate how you can use the **[Custom Marke
 
 In order to complete the following exercise you should have [forked the following repositories](../Setup.md#fork-the-workshop-repositories) into the Github Organization you created in **[Setup - Create a GitHub Organization](../Setup.md#create-a-github-organization)**:
 
-1. https://github.com/cloudbees-cd-acceleration-workshop/custom-marker-pipelines 
-2. https://github.com/cloudbees-cd-acceleration-workshop/helloworld-nodejs 
+1. https://github.com/cloudbees-cd-acceleration-workshop/helloworld-nodejs  
+2. https://github.com/cloudbees-cd-acceleration-workshop/custom-marker-pipelines 
 
 Your GitHub Organization should look like the following with those two forked repositories:
 <p><img src="img/intro/fork_repos_into_org.png" width=800/>
