@@ -1,4 +1,5 @@
 # CD Acceleration with CloudBees Workshop
+# https://github.com/cloudbees-cd-acceleration-workshop
 
 ## https://github.com/cloudbees-cd-acceleration-workshop/cloudbees-cd-acceleration-workshop-exercises
 
