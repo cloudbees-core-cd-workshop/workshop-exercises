@@ -37,12 +37,6 @@ In order to follow along with the hands on portion of the workshop students shou
   
 Detailed set-up instructions are available at **[Setup](Setup.md)**
 
-# Revision History
-
- See: [Releases](https://github.com/PipelineHandsOn/intro-to-declarative-pipeline/releases)
-
-**Important Note**: The ```CD-Acceleration-with-CloudBees-Workshop.pdf``` file contains corporate identify materials that are proprietary to CloudBees, Inc. that cannot be reused without written permission from CloudBees, Inc. 
-
 # Disclaimer
 
 Although the code in this repository was originally created by employees of CloudBees, Inc. to use in training customers your use of this material is not sponsored or supported by CloudBees, Inc.
