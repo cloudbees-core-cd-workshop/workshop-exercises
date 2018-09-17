@@ -123,12 +123,12 @@ def call(String file, Map defaults) {
 ```html
 <h2>defineProps step</h2>
 <p>
-A custom step for using the <pre>readProperties</pre> step from the Pipeline Utilities plugin with a Declarative Pipeline. 
+A custom step for using the <pre>readProperties</pre> step from the Pipeline Utilities plugin specifically from a Declarative Pipeline. 
 </p>
 <h3>Configuration</h3>
 <dl>
 	<dt>name</dt>
-	<dd><pre>String</pre><b>REQUIRED</b> the path to the properties file to be read from the workspace</dd>
+	<dd><pre>String</pre><b>REQUIRED</b> the file, including path, to be read from the workspace as the properties file</dd>
 	<dt>defaults</dt>
 	<dd><pre>Map</pre><b>OPTIONAL</b> default values for passed in properties file</dd>
 </dl>
@@ -139,9 +139,9 @@ A custom step for using the <pre>readProperties</pre> step from the Pipeline Uti
 </pre>
 ```
 
-5. Commit the `defineProps.txt` file.
+5. Even though we wrote it as HTML, we still have to save it with a `.txt` extension as mentioned above. Commit the `defineProps.txt` file.
 
->**NOTE:** Global Variable Documentation for custom steps will only be availale under a Pipeline job that uses that step and has run successfully.
+>**NOTE:** Global Variable Documentation for custom steps will only be availale under a Pipeline job that uses it and has run successfully.
 
 ### Use a Custom Step
 
@@ -154,7 +154,7 @@ Now that the **Pipeline Shared Library** is configured for your Team Master and 
 library 'cd-accel'
 ```
 
-3. Next we will replace the `script` block where we are using the `readProperties` step with our new custom step. Update the  **App Setup** `stage` of the **Test** `stage` to match the following:
+3. Next we will replace the `script` block where we are using the `readProperties` step with our new custom step. Update the  **App Setup** `stage` nested in the **Test** `stage` to match the following:
 
 ```groovy
         stage('App Setup') {
@@ -171,12 +171,12 @@ library 'cd-accel'
         }
 ```
 
-4. Not only have we created a reusable custom step, we have also made our Declartive Pipeline script much more readable. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will run successfully. Note in **Console Output** in the classic UI the checkout of the our Shared Library: <p><img src="img/advanced/shared_lib_checkout.png" width=800/>
+4. Not only have we created a reusable **custom step**, we have also made our Declartive Pipeline script much more readable. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will run successfully. Note in **Console Output** in the classic UI the checkout of the our `cd-accel` Shared Library: <p><img src="img/advanced/shared_lib_checkout.png" width=800/>
 5. Exit to the class UI and click on the **Pipeline Syntax** link in the left navigation menu. Then click on the **Global Variables Reference** link and scroll to the bottom of the page. You will find the documentation that we created for our `defineProps` custom step: <p><img src="img/advanced/shared_lib_syntax_link.png" width=800/>
 
 ### Using Resource Files from a Shared Library
 
-One of the Shared Library directories mentioned above was the `resource` directory. Shared Libraries will make files from the `resources/` directory available to be loaded in your Pipeline script using the `libraryResource` step. The argument is a relative pathname in the `resource` directory. The file is loaded as a string, suitable for passing to certain APIs or using as a the value for a `String` parameter of a Pipeline `step`. We are going to use such a `resource` for the latter use case - as a `String` of a Pipeline step. With our previous example, we made our Pipeline script more readable by replacing a `script` block with the `defineProps` **custom step**. Let's do something similar by replacing the inline yaml definition of our `kubernetes` agent with a `resource` from our Shared Library.
+One of the Shared Library directories mentioned above was the `resource` directory. Shared Libraries will make files from the `resources/` directory available to be loaded in your Pipeline script using the `libraryResource` step. The argument is a relative pathname in the `resource` directory. The file is loaded as a string, suitable for passing to certain APIs or using as a the value for a `String` parameter of a Pipeline `step`. We are going to use such a `resource` for the latter use case - as a `String` of a Pipeline step. With our previous example, we made our Pipeline script more readable by replacing a `script` block with the `defineProps` **custom step**. Let's do something similar by replacing the inline yaml definition of our `kubernetes` agent `yaml` parameter with the `String` output of a `resource` from our `cd-accel` Shared Library.
 
 1. In the **master** branch of your forked **pipeline-library** repostiory click on the **Create new file** button and enter `resources/podtemplates/nodejs-app/test-pod.yml`. 
 2. The contents of this file will be the `Pod` configuration from the `yaml` parameter of the `kubernetes` block in the **Test** `stage` of our Pipeline script. Copy and paste that as the content of this new `test-pod.yml` `resource` file: 
@@ -230,11 +230,14 @@ def testPodYaml = libraryResource 'podtemplates/nodejs-app/test-pod.yml'
       }
 ```
 
-7. Wow, that really makes our Pipeline much more readable. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will run successfull using the `yaml` definition from our Shared Library.
+7. Wow, that really makes our Pipeline much more readable. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will run successfully using the `yaml` definition from our Shared Library.
 
-### Shared Library Steps for 'Build and Push Image' and 'Deploy'
+### Shared Library Steps for the 'Build and Push Image' and 'Deploy' Stages
 
-So the **Test** `stage` of our Pipeline is fairly interesting but the **Build and Push Image** and **Deploy** `stages` still don't do much. Let's change that by using some Shared Library **custom steps** that have already been created for everyone. If you open your **pipeline-library** repostiory in GitHub and switch to the `completed` branch you will notice a number of additional `groovy` files in the `vars` directory and a number of additional `resources` - including the `vars/defineProps.groovy` file and `resources/podtemplates/nodejs-app/test-pod.yml` file that we added above.
+So the **Test** `stage` of our Pipeline executes some real **Testcafe** tests but the **Build and Push Image** and **Deploy** `stages` still don't do much. Let's change that by using some Shared Library **custom steps** that have already been created for everyone. If you open your **pipeline-library** repostiory in GitHub and switch to the `completed` branch you will notice a number of additional `groovy` files in the `vars` directory and a number of additional `resources` - including the `vars/defineProps.groovy` file and `resources/podtemplates/nodejs-app/test-pod.yml` file that we added above. 
+<p><img src="img/advanced/shared_lib_completed_branch.png" width=800/> 
+
+The `completed` branch contains the following **global variables** and `resource` files:
 
 ```
 (root)
@@ -261,11 +264,11 @@ So the **Test** `stage` of our Pipeline is fairly interesting but the **Build an
 |               +- tempImagePolicy.json #AWS ECR Image Lifecycle Policy for all Docker images pushed to ECR
 ```
 
-As you can see, there are quite a few additional custom steps and resources, and rather than spend all the time creating them together we are going to use them.
+As you can see, there are quite a few additional **custom steps** and `resources`, and rather than waste time creating them together we are going to use them right away in the next exercise.
 
-#### Update Team Master 'cb-accel' Shared Library
+#### Update Your Team Master's 'cd-accel' Shared Library
 
-Before we can use the the additional *custom steps** and library `resources` described above we need get access to them. We could just merge the `completed` branch of your forked **pipeline-library** repository to the `master` branch. But we won't waste our time with that, as a simple update to the `library` step in your **nodejs-app/Jenkinsfile.template** Pipeline script will allow us to target a different branch. That is because when we first configured the Shared Library, we left the ***Allow default version to be overridden*** property checked.
+Before we can use the the additional *custom steps** and library `resources` described above we need get access to them. We could just merge the `completed` branch of your forked **pipeline-library** repository to the `master` branch. But we won't waste our time with that, as a simple update to the `library` step in your **nodejs-app/Jenkinsfile.template** Pipeline script will allow us to target a different branch. That is because when we first configured the Shared Library in our GitHub Organization project folder, we left the ***Allow default version to be overridden*** property checked - [this will allow us to override the version of the Shared Library directly in our Pipeline script](https://jenkins.io/doc/book/pipeline/shared-libraries/#library-versions).
 
 1. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **custom-marker-pipelines** repository.
 2. Update the `library` step to match the following:
@@ -274,7 +277,7 @@ Before we can use the the additional *custom steps** and library `resources` des
 library 'cd-accel@completed' 
 ```
 
-3. It doesn't get much easier than that. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will run successfully - but the `cd-accel` Shared Library will now come from the `completed` branch as can be seen in the **Console Ouput** in the classic UI:
+3. Notice that we appended `@completed` to the name of our Shared Library. It doesn't get much easier than that. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will run successfully - but the `cd-accel` Shared Library will now come from the `completed` branch as can be seen in the **Console Ouput** in the classic UI:
 
 ```
 [Pipeline] library
@@ -285,7 +288,7 @@ Attempting to resolve completed as a branch
 Resolved completed as branch completed at revision 7fe7310cf0f05bfa7d61164f9dc9fdbc4c381198
 ```
 
-#### Update 'Build and Push Image' Stage
+#### Update the 'Build and Push Image' Stage
 
 We will now update the **Build and Push Image** `stage` to use the `dockerBuildPush` **custom step** described above.
 
@@ -307,13 +310,14 @@ We will now update the **Build and Push Image** `stage` to use the `dockerBuildP
 ```
 
 3. Some interesting things to note are:
-    1. We no longer have an `agent` defined. If you look at the `dockerBuildPush.groovy` in the `completed` branch of your **pipeline-library** repopsitory you will see that it defines a `node`.
-    2. The `unstash` step is inside of the `dockerBuildPush` step block. This is called a `closure` LINK and allows you to run addition, arbritary steps inside of a **custom step**.
+    1. We no longer have an `agent` defined. If you look at the `dockerBuildPush.groovy` in the `completed` branch of your **pipeline-library** repopsitory you will see that it defines a `node` which is basically a more complex version of the `agent` section and is available in both Scripted and Declarative Pipeline syntax whereas `agent` is only available in Declarative.
+    2. The `unstash` step is inside of the `dockerBuildPush` step block. This is called a `closure` and [allows you to run addition, arbritary steps inside of a **custom step**](https://jenkins.io/doc/book/pipeline/shared-libraries/#defining-custom-steps).
+    
 4. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will run successfully and everyone will have a brand new Docker Image in the Amazon Elastic Container Registry we are using for this workshop. All in all, as you can see below, there is a lot more going on in the **Build and Push Image** `stage` now: <p><img src="img/advanced/build_push_finished.png" width=850/>
 
-#### Update 'Deploy' Stage
+#### Update the 'Deploy' Stage
 
-We will now update the **Deploy** `stage` to use the `kubeDeploy` **custom step** described above.
+Now that we have successfully built a Docker image for our **helloworld-nodejs** app we want to deploy it. We will update the **Deploy** `stage` to use the `kubeDeploy` **custom step** described above to deploy our app to Kubernetes.
 
 1. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **custom-marker-pipelines** repository.
 2. Replace the entire **Deploy** `stage` with the version below:
@@ -334,6 +338,8 @@ We will now update the **Deploy** `stage` to use the `kubeDeploy` **custom step*
 ```
 
 3. Some interesting things to note are:
+    1. 
+
 4. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will run successfully and there is a clickable link to your deployed app in the last step of the **Deploy** `stage`: <p><img src="img/advanced/deploy_echo_url.png" width=850/><p>In your app, notice the 'Build Number' and 'Commit' id in the footer: <p><img src="img/advanced/deploy_app_screenshot.png" width=750/>
 
 ## Cross Team Collaboration
