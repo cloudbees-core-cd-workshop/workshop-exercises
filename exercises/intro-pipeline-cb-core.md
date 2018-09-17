@@ -18,7 +18,7 @@ Now, let's add your GitHub credentials to the Jenkins' Credentials manager to be
 4. Click on **Add Credentials** in the left menu <p><img src="img/intro/credential_add_link.png" width=850/>
 5. Fill out the form (**Username with password**)
   - **Username**: The GitHub user name
-  - **Password**: Your GitHub personal access token [created in setup](../Setup.md#create-a-github-personal-access-token)
+  - **Password**: Your GitHub personal access token [created in setup](../Setup.md#create-a-github-personal-access-token) OR [here is the GitHub link to automatically select the required **Personal access token settings**](https://github.com/settings/tokens/new?scopes=repo,read:user,user:email,write:repo_hook,admin:org_hook)
   - **ID**: Create an ID for your credentials (something like **yourorg-github-token**)
   - **Description**: Can be left blank if you want <p><img src="img/intro/credential_github_token_save.png" width=850/>
 6. Click on **OK**
