@@ -111,7 +111,7 @@ pipeline {
 
 3. Add a commit description and then click the **Commit Changes** button with the default selection of *Commit directly to the master branch* selected.
 4. Navigate back to the **helloworld-nodejs** *master* branch job on your Team Master and click the **Build Now** button in the left menu. <p><img src="img/intro/basic_syntax_build_now.png" width=550/>
-5. Your job should complete successfully. Note some things from the log:
+5. Your job will complete successfully. Note some things from the log:
   
    1. The custom marker script - `nodejs-app/Jenkinsfile.template` - is being pulled from your forked **custom-marker-pipelines** forked repository and not from the **helloworld-nodejs** repository:
 
