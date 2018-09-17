@@ -312,7 +312,6 @@ We will now update the **Build and Push Image** `stage` to use the `dockerBuildP
 3. Some interesting things to note are:
     1. We no longer have an `agent` defined. If you look at the `dockerBuildPush.groovy` in the `completed` branch of your **pipeline-library** repopsitory you will see that it defines a `node` which is basically a more complex version of the `agent` section and is available in both Scripted and Declarative Pipeline syntax whereas `agent` is only available in Declarative.
     2. The `unstash` step is inside of the `dockerBuildPush` step block. This is called a `closure` and [allows you to run addition, arbritary steps inside of a **custom step**](https://jenkins.io/doc/book/pipeline/shared-libraries/#defining-custom-steps).
-    
 4. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will run successfully and everyone will have a brand new Docker Image in the Amazon Elastic Container Registry we are using for this workshop. All in all, as you can see below, there is a lot more going on in the **Build and Push Image** `stage` now: <p><img src="img/advanced/build_push_finished.png" width=850/>
 
 #### Update the 'Deploy' Stage
@@ -337,20 +336,34 @@ Now that we have successfully built a Docker image for our **helloworld-nodejs**
     }
 ```
 
-3. Some interesting things to note are:
-    1. 
-
-4. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will run successfully and there is a clickable link to your deployed app in the last step of the **Deploy** `stage`: <p><img src="img/advanced/deploy_echo_url.png" width=850/><p>In your app, notice the 'Build Number' and 'Commit' id in the footer: <p><img src="img/advanced/deploy_app_screenshot.png" width=750/>
+3. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will run successfully and there is a clickable link to your deployed app in the last step of the **Deploy** `stage`: <p><img src="img/advanced/deploy_echo_url.png" width=850/><p>In your app, notice the 'Build Number' and 'Commit' id in the footer: <p><img src="img/advanced/deploy_app_screenshot.png" width=750/>
 
 ## Cross Team Collaboration
-In this exercise we are going to demonstrate CloudBee's Core Cross Team Collaboration feature.
+In this exercise we are going to demonstrate [CloudBee's Core Cross Team Collaboration feature](https://go.cloudbees.com/docs/cloudbees-core/cloud-admin-guide/cross-team-collaboration/).
 
 ### Cross-Team Master Events
 
-For the second part of **Cross Team Collaboration** we will create an event that will be published **across Team Masters** via CloudBees Operations Center. The Cross Team Collaboration feature has a configurable router for routing events and we will configure the Notification router for this exercise.
+We already have a job on the **beedemo-ops** Team Master that will publish an event. <p><img src="img/advanced/cross_team_pub_event_pipeline.png" width=850/>
 
-1. First you need to update the **Notification Router Implementation** to use the **Operations Center Messaging** router by clicking on the **Manage Jenkins** link - on the left side at the root of your Team Master (classic ui).
-2. Next, scroll down and click on **Configure Notification** link.
-3. Under **Notification Router Implementation** select the **Operations Center Messaging** option as opposed to the currently selected **Local only** option. ADD SCREENSHOT
-4. Now, the trigger job of the second partner needs to be updated to listen for the notifier's `event` string - ask your partner what their event string is - and then run the job once to register the trigger.
-5. Next, the notifier will run their `notify-event` job and you will see the `notify-trigger` job get triggered.
+That event will be published **across Team Masters** via the CloudBees Operations Center event router. 
+
+The Cross Team Collaboration feature has a configurable router for routing events and you will need to configure the Notification router on your Team Master before you will be able to receive the event published by the **beedemo-ops** Team Master.
+
+1. First you need to update the **Notification Router Implementation** to use the **Operations Center Messaging** router by clicking on the **Manage Jenkins** link - on the left side at the root of your Team Master (classic ui). <p><img src="img/advanced/cross_team_manage_jenkins.png" width=850/>
+2. Next, scroll down and click on **Configure Notification** link. <p><img src="img/advanced/cross_team_configure_notification.png" width=850/>
+3. Check the **Enabled** checkbox and under **Notification Router Implementation** select the **Operations Center Messaging** option, and the click the **Save** button. <p><img src="img/advanced/cross_team_enable_notification.png" width=850/>
+4. Before the **hello-api** Pipeline's `hello-api-push-event` can trigger our **helloworld-nodejs** Pipeline job we must listen for the event. We do that by adding a `trigger` to our **nodejs-app/Jenkinsfile.template** Pipeline script.
+5. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **custom-marker-pipelines** repository.
+6. Add the following `trigger` block just above the top-leves `stages` block:
+
+```groovy
+  triggers {
+    eventTrigger simpleMatch('hello-api-push-event')
+  }
+```
+
+7. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. 
+
+>**NOTE:**After first adding a new `trigger` you must run the job at least once so that the `trigger` is saved to the Jenkins job configuration (similar to what was necessary for the `buildDiscarder` and `preserveStashes` `options` earlier). 
+
+8. Now I will run the **hello-api** job and everyone should see the **master** branch of their **helloworld-nodejs** job triggered.
