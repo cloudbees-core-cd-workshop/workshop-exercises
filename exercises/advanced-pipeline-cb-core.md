@@ -323,6 +323,10 @@ Now that we have successfully built a Docker image for our **helloworld-nodejs**
 
 ```groovy
     stage('Deploy') {
+      when {
+        beforeAgent true
+        branch 'master'
+      }
       options {
         timeout(time: 60, unit: 'SECONDS') 
       }
@@ -369,5 +373,3 @@ The Cross Team Collaboration feature has a configurable router for routing event
 <p><img src="img/advanced/cross_team_trigger_configured.png" width=850/>
 
 8. Now I will run the **hello-api** job and everyone should see the **master** branch of their **helloworld-nodejs** job triggered. <p><img src="img/advanced/cross_team_triggered_by_event.png" width=850/>
-
-But wait, that means the **Deploy** `stage` will not be skipped when the **master** branch job is triggered by the `hello-api-push-event`. For the sake of this example, let's say we only want our **Test** `stage` to be **triggered** by this event. Lucky for us, we can capture the **cause* of the build and see if it is an **EventTriggerCause**

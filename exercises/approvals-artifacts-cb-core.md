@@ -10,6 +10,10 @@ For this exercise we are going to add a new stage after the **Build and Push Ima
 
 ```
     stage('Deploy') {
+      when {
+        beforeAgent true
+        branch 'master'
+      }
       input {
         message "Should we continue?"
       }
@@ -25,6 +29,10 @@ For this exercise we are going to add a new stage after the **Build and Push Ima
 
 ```
     stage('Deploy') {
+      when {
+        beforeAgent true
+        branch 'master'
+      }
       options {
         timeout(time: 30, unit: 'SECONDS') 
       }
@@ -113,6 +121,10 @@ pipeline {
 
 ```
     stage('Deploy') {
+      when {
+        beforeAgent true
+        branch 'master'
+      }
       options {
         timeout(time: 60, unit: 'SECONDS') 
       }
