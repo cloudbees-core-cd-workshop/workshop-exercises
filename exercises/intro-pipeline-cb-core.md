@@ -25,7 +25,7 @@ Now, let's add your GitHub credentials to the Jenkins' Credentials manager to be
 
 Now let's create the Github Organization project:
 
-1. Click on **New Item** - make sure that you are in the folder with the same name as your team, and not at the root of your Team Master <p><img src="img/intro/org_folder_new_item.png" width=850/> 
+1. Click on **New Item** in the left navigation menu - make sure that you are in the folder with the same name as your team, and not at the root of your Team Master <p><img src="img/intro/org_folder_new_item.png" width=850/> 
 2. Enter your GitHub Organization name as the **Item Name** 
 3. Select **GitHub Organization** <p><img src="img/intro/org_folder_item.png" width=850/>
 4. Click **Ok**
@@ -67,7 +67,7 @@ Once those repositories are forked:
 
 > **NOTE:** The ***custom-marker-files*** repository does not get added to your **Github Organization** project since in doesn't and will never contain a matching marker file: `.nodejs-app`.
 
-For the purposes of this workshop everyone is creating and updating their own fork of the **custom-marker-pipelines** repository and `nodejs-app/Jenkinsfile.template` Pipeline script. However, if you were all part of the same organization and each had one or more Node.js apps - then you would all get instant CD as soon as you added the `.nodjs-app` file to your repository and all of the organizations managed Node.js apps would use the same `nodejs-app/Jenkinsfile.template` Pipeline script.
+For the purposes of this workshop everyone is creating and updating their own fork of the **custom-marker-pipelines** repository and `nodejs-app/Jenkinsfile.template` Pipeline script. However, if you were all part of the same organization and each had one or more Node.js apps - then you would all get instant CD as soon as you added the `.nodjs-app` file to your repository and all of the Organizations' managed Node.js apps would use the same `nodejs-app/Jenkinsfile.template` Pipeline script - and the indivdiual dev teams wouldn't need to know how to create a Jenkins Pipeline.
 
 ## Basic Declarative Syntax Structure
 
@@ -87,7 +87,7 @@ WorkflowScript: 1: Missing required section "agent" @ line 1, column 1.
 2 errors
 ```
 
-[Declarative Pipelines](https://jenkins.io/doc/book/pipeline/syntax/#declarative-pipeline) must be enclosed within a `pipeline` block - which we have. But Declarative Pipelines must also contain a top-level `agent` declaration, and must contain exactly one `stages` block. The `stages` block must have at least one `stage` block but can have an unlimited number of additional `stage` blocks. Each `stage` block must have exactly one `steps` block. 
+[Declarative Pipelines](https://jenkins.io/doc/book/pipeline/syntax/#declarative-pipeline) must be enclosed within a `pipeline` block - which we have. But Declarative Pipelines must also contain a top-level `agent` declaration, and must contain exactly one `stages` block at the top level. The `stages` block must have at least one `stage` block but can have an unlimited number of additional `stage` blocks. Each `stage` block must have exactly one `steps` block. 
 
 1. We will use the GitHub file editor to update the `nodejs-app/Jenkinsfile.template` file in your forked **custom-marker-pipelines** repository. Navigate to the `custom-marker-pipelines/nodejs-app/Jenkinsfile.template` file in your forked repository and then click on the pencil icon to the upper right to edit that file. <p><img src="img/intro/basic_snytax_edit_github.png" width=850/>
 
