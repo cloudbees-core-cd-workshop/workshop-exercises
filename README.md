@@ -1,4 +1,7 @@
 # CD Acceleration with CloudBees Workshop
+# https://github.com/cloudbees-cd-acceleration-workshop
+
+# https://cje.workshop.beedemo.net/cjoc/
 
 ## https://github.com/cloudbees-cd-acceleration-workshop/cloudbees-cd-acceleration-workshop-exercises
 
@@ -10,8 +13,7 @@ This repository contains the instructions and learning materials associated with
   * How to create a simple Jenkins Declarative Pipeline?
   * What are the key features of Declarative Pipelines?
   * How do you create multibranch pipelines?
-  
-A PDF version of the presentation that accompanies this workshop can be found here: [CD-Acceleration-with-CloudBees-Workshop.pdf](CD-Acceleration-with-CloudBees-Workshop.pdf)
+
 
 To get started goto the [**Set-up Instructions**](Setup.md).
 
@@ -37,12 +39,6 @@ In order to follow along with the hands on portion of the workshop students shou
   * Access to a Jenkins server
   
 Detailed set-up instructions are available at **[Setup](Setup.md)**
-
-# Revision History
-
- See: [Releases](https://github.com/PipelineHandsOn/intro-to-declarative-pipeline/releases)
-
-**Important Note**: The ```CD-Acceleration-with-CloudBees-Workshop.pdf``` file contains corporate identify materials that are proprietary to CloudBees, Inc. that cannot be reused without written permission from CloudBees, Inc. 
 
 # Disclaimer
 
