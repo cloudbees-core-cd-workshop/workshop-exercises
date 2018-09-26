@@ -1,8 +1,6 @@
 # CD Acceleration with CloudBees Workshop
 # https://github.com/cloudbees-cd-acceleration-workshop
 
-# https://cje.workshop.beedemo.net/cjoc/
-
 ## https://github.com/cloudbees-cd-acceleration-workshop/cloudbees-cd-acceleration-workshop-exercises
 
 This repository contains the instructions and learning materials associated with a hands-on workshop **CD Acceleration with CloudBees Core** that is designed to teach the following key concepts:
