@@ -265,9 +265,9 @@ spec:
 
 ## Parallel Stages with Scripted Syntax
 
-What we really want to do in the **Test** `stage` is set-up the **helloworld-nodejs** just once - to incluce only running one Kubernetes Pod. We want to define the `agent` once for the entire **Test** `stage`, and then run the `nodejs` `container` block once but in the same workspace as what will be used by the **testcafe** containers. And we want to capture all of the test results. Unfortunatley this is not possible with [Delcarative syntax](https://jenkins.io/doc/book/pipeline/syntax/#declarative-pipeline) - but it would be possible with [scripted syntax](https://jenkins.io/doc/book/pipeline/syntax/#scripted-pipeline). 
+What we really want to do in the **Test** `stage` is set-up the **helloworld-nodejs** just once running only one Kubernetes Pod. We want to define the `agent` once for the entire **Test** `stage`, and then run the `nodejs` `container` block once but in the same workspace as what will be used by the **testcafe** containers. And we want to capture all of the test results. Unfortunatley this is not possible with [Delcarative syntax](https://jenkins.io/doc/book/pipeline/syntax/#declarative-pipeline) - but it would be possible with [scripted syntax](https://jenkins.io/doc/book/pipeline/syntax/#scripted-pipeline). 
 
-Does that mean that we have to rewrite our entire Pipeline script with scripted syntax? The answer is no, becuase the Declarative syntax provides a handy `script` step that allows you to define a block of **scripted** Pipeline anywhere inside of any of the `steps` sections of your Declarative script.
+Does that mean that we have to rewrite our entire Pipeline script with scripted syntax? The answer is no, because the Declarative syntax provides a handy `script` step that allows you to define a block of **scripted** Pipeline anywhere inside of any of the `steps` sections of your Declarative script.
 
 1. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **custom-marker-pipelines** repository.
 2. Replace the entire **Test** `stage` with the *sequential stage with scripted parallel* version below:
