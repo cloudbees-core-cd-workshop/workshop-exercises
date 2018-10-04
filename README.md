@@ -3,7 +3,7 @@
 This repository contains the instructions and learning materials associated with a hands-on workshop **CD with CloudBees Core Workshop** that is designed to teach the following key concepts:
 
   * How specific features of CloudBees Core on Kuberenetes will acclerate your CD?
-  * Why should you *mostly* use [Declarative](https://jenkins.io/doc/book/pipeline/syntax/#declarative-pipeline) vs [Scripted](https://jenkins.io/doc/book/pipeline/syntax/#scripted-pipeline) pipelines?
+  * Why you should *mostly* use [Declarative](https://jenkins.io/doc/book/pipeline/syntax/#declarative-pipeline) vs [Scripted](https://jenkins.io/doc/book/pipeline/syntax/#scripted-pipeline) pipelines?
   * How to create a reusable template for Jenkins Declarative Pipelines?
   * What are the key features of Declarative Pipelines?
 
