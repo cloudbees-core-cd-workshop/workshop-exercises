@@ -2,7 +2,7 @@
 
 The ability to define stages to run in parallel is an important feature of Jenkins Pipeline jobs. The Declarative Pipeline syntax has extended support for [parallel stages](https://jenkins.io/doc/book/pipeline/syntax/#parallel), [sequential stages](https://jenkins.io/doc/book/pipeline/syntax/#sequential-stages) and nested stages - and all of these features are nicely visualized in the Blue Ocean UI. In this set of exercises, we will use sequential `stages` and Pipeline parallelization to speed up the execution of the tests we will add for our **helloworld-nodejs** app.
 
-We will also take a look at a more advanced usage of the Kubernetes plugin by defing `agents` right in our Pipeline.
+We will also take a look at a more advanced usage of the Kubernetes plugin by defing `agents` right in our Pipeline and explore the use of [Pipeline Shared Libraries](https://jenkins.io/doc/book/pipeline/shared-libraries/) [**resources**](https://jenkins.io/doc/book/pipeline/shared-libraries/#loading-resources) to make our `Jenkinsfile` more readable.
 
 >**Starting Here or Catching Up?**
 >
@@ -45,6 +45,107 @@ spec:
 4. You will see that the **nodejs** container has an error - it looks like there is not a **node** Docker image available with that tag. If you goto [Docker Hub and look at the tags availalbe for the **node** image](https://hub.docker.com/r/library/node/tags/) you will see there is a **10.10.0-alpine** but not a **10.10.1-alpine** tag for the **node** image: <p><img src="img/parallel/pipeline_pod_template_containers_error.png" width=850/> 
 5. Abort the current run (or it will keep going forever) and open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **custom-marker-pipelines** repository. Update the `image` for the **nodejs** `container` to be `node:10.10.0-alpine`.
 6. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will run successfully. Also, note the output of the `sh 'node --version'` step - it is `v10.10.0` instead of `v8.12.0`: <p><img src="img/parallel/pipeline_pod_template_node_version.png" width=850/>
+
+## Pipeline Shared Libraries
+
+You will fork an existing Pipeline Shared Library GitHub repository for this exercise from https://github.com/cloudbees-cd-acceleration-workshop/pipeline-library into the GitHub Organization you created in **[Setup - Create a GitHub Organization](./Setup.md#create-a-github-organization)**.
+
+Once you have forked the ***pipeline-library*** repository into your GitHub Organization you will need to configure it as a Pipeline Shared Library for your Team Master. Pipeline Shared Libraries may be configured at the Jenkins Master level or the Jenkins folder level. The GitHub Oranization project that you created earlier is actually a special type of folder, so we will add the configuration for ***pipeline-library*** to that folder.
+
+1. In the classic UI, navigate into the **GitHub Organization** folder project that you created earlier and click on the **Configure** link in the left navigation menu. Note the breadcrumbs - my **GitHub Organization** folder project is named **bee-cd**. <p><img src="img/advanced/shared_lib_org_folder_config.png" width=850/>
+2. In the **Github Organization** folder configuration screen scroll down to the **Pipeline Libraries** section and click the **Add** button. <p><img src="img/advanced/shared_lib_add.png" width=900/>
+3. Enter `cd-accel` for the Library **Name** and `master` for the **Default version**.
+4. Make sure that you leave **Allow default version to be overridden** checked - more on this later.
+5. For the **Retrieval method** select **Modern SCM**.
+6. For the **Source Code Management** select **GitHub**.
+7. Select the GitHub **Credentials** you created earlier, enter your GitHub Organization name as the **Owner**, select **pipeline-library** for the **Repository** and then click the **Save** button. <p><img src="img/advanced/shared_lib_config.png" width=900/>
+
+If you navigate back to your fork of the **pipeline-library** repository you will notice that all it contains is the *LICENSE* and *README.md* files. For a Pipeline Shared Library, we need to create a very specific directory structure in your forked **pipeline-library** repositories and then we will be able to create our first Shared Library script.
+
+### Pipeline Directory Structure
+
+Shared Libraries have a very specific directory structure as follows:
+
+```
+(root)
++- src                     # Groovy source files
+|   +- org
+|       +- foo
+|           +- Bar.groovy  # for org.foo.Bar class
++- vars
+|   +- foo.groovy          # for global 'foo' variable
+|   +- foo.txt             # help for 'foo' variable
++- resources               # resource files (external libraries only)
+|   +- org
+|       +- foo
+|           +- bar.json    # static helper data for org.foo.Bar
+```
+
+The `src` directory should look like standard Java source directory structure and will contain Java `Classes` written in `Groovy`. This directory is added to the classpath when executing Pipelines. We won't be going over using Groovy source files for Shared Libraries today, but you can find more information about them [here](https://jenkins.io/doc/book/pipeline/shared-libraries/#accessing-steps).
+
+The `vars` directory hosts scripts that define global variables accessible from Pipeline. The basename of each `.groovy` file should be a Groovy (~ Java) identifier, conventionally `camelCased`. The matching `.txt`, if present, can contain documentation, processed through the system’s configured markup formatter (so it may really be HTML, Markdown, etc., though the `txt` extension is required).
+
+The Groovy source files in these directories get the same “CPS transformation” as in Scripted Pipeline.
+
+A `resources` directory allows the `libraryResource` step to be used to load associated non-Groovy files as a String value in your Pipeline script.
+
+### Using Resource Files from a Shared Library
+
+One of the Shared Library directories mentioned above was the `resource` directory. Shared Libraries will make files from the `resources/` directory available to be loaded in your Pipeline script using the `libraryResource` step. The argument is a relative pathname in the `resource` directory. The file is loaded as a string, suitable for passing to certain APIs or using as a the value for a `String` parameter of a Pipeline `step`. We are going to use such a `resource` for the latter use case - as a `String` of a Pipeline step. With our previous example, we made our Pipeline script more readable by replacing a `script` block with the `defineProps` **custom step**. Let's do something similar by replacing the inline yaml definition of our `kubernetes` agent `yaml` parameter with the `String` output of a `resource` from our `cd-accel` Shared Library.
+
+1. In the **master** branch of your forked **pipeline-library** repostiory click on the **Create new file** button and enter `resources/podtemplates/nodejs-app/test-pod.yml`. 
+2. The contents of this file will be the `Pod` configuration from the `yaml` parameter of the `kubernetes` block in the **Test** `stage` of our Pipeline script. Copy and paste that as the content of this new `test-pod.yml` `resource` file: 
+
+```
+kind: Pod
+metadata:
+  name: nodejs-app
+spec:
+  containers:
+  - name: nodejs
+    image: node:10.9.0-alpine
+    command:
+    - cat
+    tty: true
+  - name: testcafe-chrome
+    image: 946759952272.dkr.ecr.us-east-1.amazonaws.com/kypseli/testcafe:alpha-1
+    command:
+    - cat
+    tty: true
+  - name: testcafe-firefox
+    image: 946759952272.dkr.ecr.us-east-1.amazonaws.com/kypseli/testcafe:alpha-1
+    command:
+    - cat
+    tty: true
+    ports:
+    - name: firefox1
+      containerPort: 1339
+    - name: firefox2
+      containerPort: 1340
+```
+
+<p><img src="img/advanced/shared_lib_resource_test_pod_yaml.png" width=850/>
+
+3. Commit the changes.
+4. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **custom-marker-pipelines** repository.
+5. Just below the `library 'cd-accel'` step, add the following - *note that we are specifying the relative path to `test-pod.yml` from the `resources` directory*:
+
+```groovy
+def testPodYaml = libraryResource 'podtemplates/nodejs-app/test-pod.yml'
+```
+
+6. Next, update the the `yaml` argument the `kubernetes` so your `agent` for the **Test** `stage` matches the following and commit the changes:
+
+```
+      agent {
+        kubernetes {
+          label 'nodejs-app-inline'
+          yaml testPodYaml
+        }
+      }
+```
+
+7. Wow, that really makes our Pipeline much more readable. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will run successfully using the `yaml` definition from our Shared Library.
 
 ## Tests with Testcafe
 

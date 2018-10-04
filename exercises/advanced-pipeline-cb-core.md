@@ -1,6 +1,6 @@
 # Advanced Pipelines with CloudBees Core
 
-In this set of exercise we are going to explore [Pipeline Shared Libraries](https://jenkins.io/doc/book/pipeline/shared-libraries/) and use a Shared Library of **custom steps** and **resources** to:
+In this set of exercise we will continue to explore [Pipeline Shared Libraries](https://jenkins.io/doc/book/pipeline/shared-libraries/) and use a Shared Library of **custom steps** to:
 - make our Declarative Pipeline more readable
 - build a Docker image for the **helloworld-nodejs** app with [Kaniko](https://github.com/GoogleContainerTools/kaniko)
 - push that Docker image to an [Amazon Elastic Container Registry](https://aws.amazon.com/ecr/)
@@ -56,21 +56,9 @@ We have been installing two specific Node.js packages - `express` and `pug` - fo
 
 5. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will complete successfully using our default values for `npmPackages`. <p><img src="img/advanced/read_properties_with_defaults.png" width=800/>
 
-## Pipeline Shared Libraries
+## More Pipeline Shared Libraries
 
-In this exercise we are going to add a **custom step** to our Pipeline from a [**Pipeline Shared Library**](https://jenkins.io/doc/book/pipeline/shared-libraries/), providing functionality to set default values based on default Jenkins environmental variables that will provide a reusable way of using the `readProperties` step with Delcarative Pipelines and make our Pipeline script more readable. But first, you will fork the Pipeline Shared Library for this exercise from https://github.com/cloudbees-cd-acceleration-workshop/pipeline-library into the GitHub Organization you created in **[Setup - Create a GitHub Organization](./Setup.md#create-a-github-organization)**.
-
-Once you have forked the ***pipeline-library*** repository into your GitHub Organization you will need to configure it as a Pipeline Shared Library for your Team Master. Pipeline Shared Libraries may be configured at the Jenkins Master level or the Jenkins folder level. The GitHub Oranization project that you created earlier is actually a special type of folder, so we will add the configuration for ***pipeline-library*** to that folder.
-
-1. In the classic UI, navigate into the **GitHub Organization** folder project that you created earlier and click on the **Configure** link in the left navigation menu. Note the breadcrumbs - my **GitHub Organization** folder project is named **bee-cd**. <p><img src="img/advanced/shared_lib_org_folder_config.png" width=850/>
-2. In the **Github Organization** folder configuration screen scroll down to the **Pipeline Libraries** section and click the **Add** button. <p><img src="img/advanced/shared_lib_add.png" width=900/>
-3. Enter `cd-accel` for the Library **Name** and `master` for the **Default version**.
-4. Make sure that you leave **Allow default version to be overridden** checked - more on this later.
-5. For the **Retrieval method** select **Modern SCM**.
-6. For the **Source Code Management** select **GitHub**.
-7. Select the GitHub **Credentials** you created earlier, enter your GitHub Organization name as the **Owner**, select **pipeline-library** for the **Repository** and then click the **Save** button. <p><img src="img/advanced/shared_lib_config.png" width=900/>
-
-If you navigate back to your fork of the **pipeline-library** repository you will notice that all it contains is the *LICENSE* and *README.md* files. For a Pipeline Shared Library, we need to create a very specific directory structure in your forked **pipeline-library** repositories and then we will be able to create our first Shared Library script.
+In this exercise we are going to add a **custom step** to our Pipeline from a [**Pipeline Shared Library**](https://jenkins.io/doc/book/pipeline/shared-libraries/), providing functionality to set default values based on default Jenkins environmental variables that will provide a reusable way of using the `readProperties` step with Delcarative Pipelines and make our Pipeline script more readable.
 
 ### Pipeline Directory Structure
 
@@ -173,64 +161,6 @@ library 'cd-accel'
 
 4. Not only have we created a reusable **custom step**, we have also made our Declartive Pipeline script much more readable. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will run successfully. Note in **Console Output** in the classic UI the checkout of the our `cd-accel` Shared Library: <p><img src="img/advanced/shared_lib_checkout.png" width=800/>
 5. Exit to the class UI and click on the **Pipeline Syntax** link in the left navigation menu. Then click on the **Global Variables Reference** link and scroll to the bottom of the page. You will find the documentation that we created for our `defineProps` custom step: <p><img src="img/advanced/shared_lib_syntax_link.png" width=800/>
-
-### Using Resource Files from a Shared Library
-
-One of the Shared Library directories mentioned above was the `resource` directory. Shared Libraries will make files from the `resources/` directory available to be loaded in your Pipeline script using the `libraryResource` step. The argument is a relative pathname in the `resource` directory. The file is loaded as a string, suitable for passing to certain APIs or using as a the value for a `String` parameter of a Pipeline `step`. We are going to use such a `resource` for the latter use case - as a `String` of a Pipeline step. With our previous example, we made our Pipeline script more readable by replacing a `script` block with the `defineProps` **custom step**. Let's do something similar by replacing the inline yaml definition of our `kubernetes` agent `yaml` parameter with the `String` output of a `resource` from our `cd-accel` Shared Library.
-
-1. In the **master** branch of your forked **pipeline-library** repostiory click on the **Create new file** button and enter `resources/podtemplates/nodejs-app/test-pod.yml`. 
-2. The contents of this file will be the `Pod` configuration from the `yaml` parameter of the `kubernetes` block in the **Test** `stage` of our Pipeline script. Copy and paste that as the content of this new `test-pod.yml` `resource` file: 
-
-```
-kind: Pod
-metadata:
-  name: nodejs-app
-spec:
-  containers:
-  - name: nodejs
-    image: node:10.9.0-alpine
-    command:
-    - cat
-    tty: true
-  - name: testcafe-chrome
-    image: 946759952272.dkr.ecr.us-east-1.amazonaws.com/kypseli/testcafe:alpha-1
-    command:
-    - cat
-    tty: true
-  - name: testcafe-firefox
-    image: 946759952272.dkr.ecr.us-east-1.amazonaws.com/kypseli/testcafe:alpha-1
-    command:
-    - cat
-    tty: true
-    ports:
-    - name: firefox1
-      containerPort: 1339
-    - name: firefox2
-      containerPort: 1340
-```
-
-<p><img src="img/advanced/shared_lib_resource_test_pod_yaml.png" width=850/>
-
-3. Commit the changes.
-4. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **custom-marker-pipelines** repository.
-5. Just below the `library 'cd-accel'` step, add the following - *note that we are specifying the relative path to `test-pod.yml` from the `resources` directory*:
-
-```groovy
-def testPodYaml = libraryResource 'podtemplates/nodejs-app/test-pod.yml'
-```
-
-6. Next, update the the `yaml` argument the `kubernetes` so your `agent` for the **Test** `stage` matches the following and commit the changes:
-
-```
-      agent {
-        kubernetes {
-          label 'nodejs-app-inline'
-          yaml testPodYaml
-        }
-      }
-```
-
-7. Wow, that really makes our Pipeline much more readable. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will run successfully using the `yaml` definition from our Shared Library.
 
 ### Shared Library Steps for the 'Build and Push Image' and 'Deploy' Stages
 
