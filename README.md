@@ -1,13 +1,11 @@
-# CD Acceleration with CloudBees Workshop
+# CD with CloudBees Core Workshop
 
-This repository contains the instructions and learning materials associated with a hands-on workshop **CD Acceleration with CloudBees Core** that is designed to teach the following key concepts:
+This repository contains the instructions and learning materials associated with a hands-on workshop **CD with CloudBees Core Workshop** that is designed to teach the following key concepts:
 
-  * How do CloudBees Pipeline features accelerate continuous delivery?
-  * What are Jenkins Pipelines and why should you use them?
-  * Why should you *mostly* use [Declarative](https://jenkins.io/doc/book/pipeline/syntax/#declarative-pipeline) vs [Scripted](https://jenkins.io/doc/book/pipeline/syntax/#scripted-pipeline) pipelines?
-  * How to create a simple Jenkins Declarative Pipeline?
+  * How specific features of CloudBees Core on Kuberenetes will acclerate your CD?
+  * Why you should *mostly* use [Declarative](https://jenkins.io/doc/book/pipeline/syntax/#declarative-pipeline) vs [Scripted](https://jenkins.io/doc/book/pipeline/syntax/#scripted-pipeline) pipelines?
+  * How to create a reusable template for Jenkins Declarative Pipelines?
   * What are the key features of Declarative Pipelines?
-  * How do you create multibranch pipelines?
 
 
 To get started goto the [**Set-up Instructions**](Setup.md).
