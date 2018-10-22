@@ -23,7 +23,7 @@ Next, everyone will get their own Jenkins masters referred to as a Team Master.
 3. **Name this team** - enter a name for your team - use your GitHub username and then click **Next**;
 4. **Choose an icon for this team** - select an icon and color for your team and then click **Next**;
 5. **Add people to this team** - your user will show up as a **Team Admin** and we won't be adding any additional users right now, but feel free to look around and then click **Next**;
-6. **Select team master creation recipe** - click on the drop-down and select the **Java & Web Development** recipe;<p><img src="img/setup-create-team-recipe-2.png" width=450/>
+6. **Select team master creation recipe** - click on the drop-down to see the options, but select the top option: **Workshop Default** recipe;<p><img src="img/setup-create-team-recipe-2.png" width=450/>
 7. Finally, click the **Create team** button. 
 8. While your master is being  created (it takes a few minutes to provision your team), move onto the next section **Create a GitHub.com user account**
 
