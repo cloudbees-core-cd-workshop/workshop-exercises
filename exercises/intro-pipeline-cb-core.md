@@ -12,9 +12,9 @@ We must exit the Blue Ocean UI to the Jenkins classic UI to complete the steps i
 
 Now, let's add your GitHub credentials to the Jenkins' Credentials manager to be used for the *GitHub Organization* project we will create next:
 
-1. Navigate to the top-level of your Team Master - this should be one level-up from where you exit the Blue Ocean UI.
+1. Navigate to the top-level of your Team Master - this should be one level-up from where you exit the Blue Ocean UI. You should see a **Manage Jenkins** link in the left navigation menu.
 2. Click on the **Credentials** link in the left navigation menu. <p><img src="img/intro/credentials_breadcrumbs_left_nav.png" width=850/>
-3. Click on the **(global)** link under **Stores Scoped to [YourFolderName]** (in this case **beedemo-dev**) <p><img src="img/intro/credential_folder_scope.png" width=850/>
+3. Click on the **(global)** link under **Stores scoped to Jenkins** <p><img src="img/intro/credential_folder_scope.png" width=850/>
 4. Click on **Add Credentials** in the left menu <p><img src="img/intro/credential_add_link.png" width=850/>
 5. Fill out the form (**Username with password**)
   - **Username**: The GitHub user name
@@ -25,6 +25,7 @@ Now, let's add your GitHub credentials to the Jenkins' Credentials manager to be
 
 Now let's create the Github Organization project:
 
+1. Navigate back to the top-level of your **Team Master** and click on the folder with the same name as your **Team Master**. <p><img src="img/intro/org_folder_team_folder.png" width=850/> 
 1. Click on **New Item** in the left navigation menu - make sure that you are in the folder with the same name as your team, and not at the root of your Team Master <p><img src="img/intro/org_folder_new_item.png" width=850/> 
 2. Enter your GitHub Organization name as the **Item Name** 
 3. Select **GitHub Organization** <p><img src="img/intro/org_folder_item.png" width=850/>
