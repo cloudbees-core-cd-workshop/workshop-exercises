@@ -12,7 +12,7 @@ We must exit the Blue Ocean UI to the Jenkins classic UI to complete the steps i
 
 Now, let's add your GitHub credentials to the Jenkins' Credentials manager to be used for the *GitHub Organization* project we will create next:
 
-1. Navigate back to your personal folder in Jenkins - it is the folder that has the same name as your Team Master. This is a special folder and only jobs in this folder (or below in a sub-folder) will show up in the Blue Ocean UI.
+1. Navigate to the top-level of your Team Master - this should be one level-up from where you exit the Blue Ocean UI.
 2. Click on the **Credentials** link in the left navigation menu. <p><img src="img/intro/credentials_breadcrumbs_left_nav.png" width=850/>
 3. Click on the **(global)** link under **Stores Scoped to [YourFolderName]** (in this case **beedemo-dev**) <p><img src="img/intro/credential_folder_scope.png" width=850/>
 4. Click on **Add Credentials** in the left menu <p><img src="img/intro/credential_add_link.png" width=850/>
