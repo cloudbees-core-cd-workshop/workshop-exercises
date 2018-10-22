@@ -13,14 +13,14 @@ We must exit the Blue Ocean UI to the Jenkins classic UI to complete the steps i
 Now, let's add your GitHub credentials to the Jenkins' Credentials manager to be used for the *GitHub Organization* project we will create next:
 
 1. Navigate to the top-level of your Team Master - this should be one level-up from where you exit the Blue Ocean UI. You should see a **Manage Jenkins** link in the left navigation menu.
-2. Click on the **Credentials** link in the left navigation menu. <p><img src="img/intro/credentials_breadcrumbs_left_nav.png" width=850/>
-3. Click on the **(global)** link under **Stores scoped to Jenkins** <p><img src="img/intro/credential_folder_scope.png" width=850/>
-4. Click on **Add Credentials** in the left menu <p><img src="img/intro/credential_add_link.png" width=850/>
+2. Click on the **Credentials** link in the left navigation menu. <p><img src="img/intro/credentials_breadcrumbs_left_nav2.png" width=850/>
+3. Click on the **(global)** link under **Stores scoped to Jenkins** <p><img src="img/intro/credential_folder_scope2.png" width=850/>
+4. Click on **Add Credentials** in the left menu <p><img src="img/intro/credential_add_link2.png" width=850/>
 5. Fill out the form (**Username with password**)
   - **Username**: The GitHub user name
   - **Password**: Your GitHub personal access token [created in setup](../Setup.md#create-a-github-personal-access-token) OR [here is the GitHub link to automatically select the required **Personal access token settings**](https://github.com/settings/tokens/new?scopes=repo,read:user,user:email,write:repo_hook,admin:org_hook)
   - **ID**: Create an ID for your credentials (something like **yourorg-github-token**)
-  - **Description**: Can be left blank if you want <p><img src="img/intro/credential_github_token_save.png" width=850/>
+  - **Description**: Can be left blank if you want <p><img src="img/intro/credential_github_token_save2.png" width=850/>
 6. Click on **OK**
 
 Now let's create the Github Organization project:
