@@ -117,6 +117,8 @@ pipeline {
   }
 ```
 
+>**NOTE:** Even though we are putting the `post` section near the top of our Pipeline it will still run after all the `stages` are complete.
+
 3. Run your pipeline from the **Branches** view of the Blue Ocean Activity View for your pipeline.
 4. Let the job timeout or have your `submitter` click the **Abort** button. You will see the following output: <p><img src="img/more/input_post_abort.png" width=850/>
 5. In order to speed up the rest of the workshop, remove the the `submitter` option for the `input` directive by editing the `nodejs-app/Jenkinsfile.template` file in your forked **custom-marker-pipelines** repository and then commit the changes. Your **Deploy** `stage` should match the following and you will now be able to approve your own job:
