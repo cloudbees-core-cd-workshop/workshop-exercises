@@ -13,8 +13,8 @@ To get started goto the [**Set-up Instructions**](Setup.md).
 **The exercises covered in the workshop are available at the following links:**
 
   * [**Introduction to Pipelines with CloudBees Core**](exercises/intro-pipeline-cb-core.md)
-  * [**Pipeline Approvals and Artifact Management with CloudBees Core**](exercises/approvals-post-cb-core.md)
-  * [**Parallel and Sequential Stages with CloudBees Core**](exercises/artifacts-parallel-sequential-cb-core.md)
+  * [**Pipeline Approvals, Post Actions and Notifications with CloudBees Core**](exercises/approvals-post-cb-core.md)
+  * [**Pipeline Artifacts and Restartable, Parallel and Sequential Stages with CloudBees Core**](exercises/artifacts-parallel-sequential-cb-core.md)
   * [**Advanced Pipelines with CloudBees Core**](exercises/advanced-pipeline-cb-core.md)
 
 # Training Prerequisites
