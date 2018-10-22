@@ -98,15 +98,15 @@ WorkflowScript: 1: Missing required section "agent" @ line 1, column 1.
 
 ```groovy
 pipeline {
-   agent any
-   stages {
-      stage('Say Hello') {
-         steps {
-            echo 'Hello World!'   
-            sh 'java -version'
-         }
+  agent any
+  stages {
+    stage('Say Hello') {
+      steps {
+        echo 'Hello World!'   
+        sh 'java -version'
       }
-   }
+    }
+  }
 }
 ```
 
@@ -162,7 +162,7 @@ The [`options` directive](https://jenkins.io/doc/book/pipeline/syntax/#options) 
   }
 ```
 
-2. **Commit Changes** and then navigate to the **master** branch of your **helloworld-nodejs** job in the classic UI on your Team Master and run the job. Once the job has run at least once, the job configuation will be updated to reflect what was added to the Pipeline script. <p><img src="img/intro/options_build_discard.png" width=850/>
+2. **Commit Changes** and then navigate to the **master** branch of your **helloworld-nodejs** job in the classic UI on your **Team Master** and run the job. Once the job has run at least once, the job configuation will be updated to reflect what was added to the Pipeline script. <p><img src="img/intro/options_build_discard.png" width=850/>
 
 > **NOTE:** A Pipeline job must run in Jenkins before any type of Pipeline directive that modifies the job configuration can take effect because there is no way for the Jenkins master to know about it until it is runs on the Jenkins master. Also note that for Multibranch Pipeline projects - the only way to modify much of the configuration of branch specific Pipeline jobs is by doing it in the Pipeline script as those jobs are not directly configurable from the Jenkins UI.
 
@@ -178,21 +178,21 @@ We will use the Kubernetes plugin provided [Pipeline `container` block](https://
 
 1. Navigate to and click on the **nodejs-app/Jenkinsfile.template** in the file list within your forked **custom-marker-pipelines** repository
 2. Click on the **Edit this file** button (pencil)
-3. First, we need to update the `agent any` directive with the following so that we will get the correct Kubernetes Pod Template - configured with the **Container Template** with the `node:8.12.0-alpine` Docker image:
+3. First, we need to update the `agent any` directive with the following so that we will get the correct Kubernetes Pod Template - configured with the **Container Template** that includes the `node:8.12.0-alpine` Docker image:
 ```
   agent { label 'nodejs-app' }
 ```
 4. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. <p><img src="img/intro/k8s_agent_run_from_bo.png" width=800/> <p>The build logs should be almost the same as before - we are still using the default `jnlp` container. Let's change that by replacing the **Say Hello** `stage` with the following **Test** `stage`:
 
 ```groovy
-      stage('Test') {
-        steps {
-          container('nodejs') {
-            echo 'Hello World!'   
-            sh 'java -version'
-          }
+    stage('Test') {
+      steps {
+        container('nodejs') {
+          echo 'Hello World!'   
+          sh 'java -version'
         }
       }
+    }
 ```
 
   All of the Pipeline steps within that `container` block will run in the container specified by the **Name** of the **Container Template** - and in this case that **Container Template** is using the `node:8.12.0-alpine` Docker image. Run the **helloworld-nodejs** job again - it will result in an error because the `nodejs` container does not have Java installed. <p><img src="img/intro/k8s_agent_java_error.png" width=800/>
@@ -217,15 +217,15 @@ In this exercise we will edit the `nodejs-app/Jenkinsfile.template` Pipeline scr
 2. Insert the following stage after the existing **Test** stage, commit the change and note the `beforeAgent true` option - this setting will result in the `when` condition being evaluated before acquiring an `agent` for the `stage`:
 
 ```
-      stage('Build and Push Image') {
-         when {
-            beforeAgent true
-            branch 'master'
-         }
-         steps {
-            echo "TODO - build and push image"
-         }
+    stage('Build and Push Image') {
+      when {
+         beforeAgent true
+         branch 'master'
       }
+      steps {
+         echo "TODO - build and push image"
+      }
+    }
 ```
 3. Next, in GitHub, navigate to your forked **helloworld-nodejs** repository - click on the **Branch** drop down menu, type ***development*** in the input box, and then click on the blue box to create the new branch - ***Create branch: development*** <p><img src="img/intro/conditional_create_dev_branch.png" width=800/>
 4. Navigate to the **helloworld-nodejs** job in Blue Ocean on your Team Master. You should see that a new Pipeline job for the new branch was created automatically (thanks to the GitHub webhook that was created earlier when we created the GitHub Organization project) and the job should be running or queued to run. Note that the ***Build and Push Image*** `stage` was skipped. <p><img src="img/intro/conditional_skipped_stage.png" width=800/>
