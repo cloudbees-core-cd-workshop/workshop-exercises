@@ -1,4 +1,6 @@
-# Pipeline Approvals and Artifact Management with CloudBees Core
+# Pipeline Approvals, Post Actions and Notifications with CloudBees Core
+
+In this set of exercises, we will see how you can capture interactive input to your Jenkins Pipeline while it is running, get an introduction to the Declarative [`post` sections](https://jenkins.io/doc/book/pipeline/syntax/#post) and use a **post-condition** block to send a notification. We will also see how CloudBees Core enables [easy simultaneous updates of all of our Team Masters](https://go.cloudbees.com/docs/cloudbees-core/cloud-admin-guide/operating/#_bulk_upgrading_managed_masters) and will use this capability to add the Slack plugin and necessary configuration to send a Slack notification from our Pipeline job.
 
 ## Interactive Input
 
@@ -94,7 +96,7 @@ Now that we all have a new team member, you can add them as a `submitter` for th
 
 <p><img src="img/more/input_submitter_favorite.png" width=800/>
 
-## Post Actions
+## Declarative Post Section
 
 What happens if your `input` step times out or if the *approver* clicks the **Abort** button? There is a special [`post` section for Delcarative Pipelines](https://jenkins.io/doc/book/pipeline/syntax/#post) that allows you to define one or more additional steps that are run upon the completion of the entire `pipeline` or an individual `stage` execution and are designed to [handle a variety of conditions](https://jenkins.io/doc/book/pipeline/syntax/#post-conditions) (not only **aborted**) that could occur outside the standard Pipeline flow.
 
@@ -140,7 +142,7 @@ pipeline {
 
 ### Skip Default Checkout
 
-By default, when a global `agent` - that is an `agent` at the `pipeline` level - is used and there aren't any agents defined at the individual `stage` levels, then that same `agent` is shared across all the `stages` and the automatic source code checkout only happens once. But you will typically want to use different agents for different stages. And sometimes you don't need to checkout the source code in every `stage`. That is the case for our Pipeline for the **helloworld-nodejs** repository - we will eventually have different Kubernetes Pod Template based agents for each `stage`. So we are going to revisit the automatic code checkout for Declarative Pipelines that was mentioned in the [Basic Declarative Syntax Structure](./intro-pipeline-cb-core.md#basic-declarative-syntax-structure) lesson. Declarative Pipeline checks out source code by default as part of the `agent` directive. However, we don't need all of the files in the **helloworld-nodejs** repository in all of the stages. The `skipDefaultCheckout` option is a global level `options` to disable automatic checkouts.
+By default, when a global `agent` - that is an `agent` at the `pipeline` level - is used and there aren't any agents defined at the individual `stage` levels, then that same `agent` is shared across all the `stages` and the automatic source code checkout only happens once. But you will typically want to use different **agents** for different **stages**. And sometimes you don't need to checkout the source code in every `stage`. That is the case for our Pipeline for the **helloworld-nodejs** repository - we will eventually have different Kubernetes Pod Template based agents for each `stage`. So we are going to revisit the automatic code checkout for Declarative Pipelines that was mentioned in the [Basic Declarative Syntax Structure](./intro-pipeline-cb-core.md#basic-declarative-syntax-structure) lesson. Declarative Pipeline checks out source code by default as part of the `agent` directive. However, we don't need all of the files in the **helloworld-nodejs** repository in all of the stages. The `skipDefaultCheckout` option is a global level `options` to disable automatic checkouts.
 
 1. First, update the global `options` directive by adding the `skipDefaultCheckout` job setting:
 
@@ -172,21 +174,46 @@ pipeline {
 
 >**NOTE:** The `scm` part of the [`checkout scm` step](https://jenkins.io/doc/pipeline/steps/workflow-scm-step/#code-checkout-code-general-scm) is a special variable that is created for all Pipelines configured to load their Pipeline script from source control such as our **helloworld-nodejs** Multibranch Pipeline project.
 
-## Stash and Unstash
+## Send Notification
+Typically if you are using the `input` step with your Jenkins Pipeline you will want to send out a notification to the targeted approvers before the `input` step pauses the job. In this exercise we will send a notification using the Slack plugin's `slackSend` step. But before that, we must update everyone's **Team Master** by installing and configuring the Slack plugin. Rather than have everyone do that manually on their own, we will take advantage of the CloudBees Core Operations Center [Cluster Operations to *bulk* upgrade everyone's **Team Master**](https://go.cloudbees.com/docs/cloudbees-core/cloud-admin-guide/operating/#_bulk_upgrading_managed_masters).
 
-Sometimes you may need to share certain files between `stages` of a `pipeline` but not actually need to archive those files for use once the job run has completed. That is precisely the purpose of the [`stash`](https://jenkins.io/doc/pipeline/steps/workflow-basic-steps/#stash-stash-some-files-to-be-used-later-in-the-build) and [`unstash`](https://jenkins.io/doc/pipeline/steps/workflow-basic-steps/#unstash-restore-files-previously-stashed) steps. We are eventually going to need certain files from **helloworld-nodejs** in the **Build and Push Image** `stage` - but we won't need all of the checked out files - like the **test** files. So we will `stash` only the files checked out in the **Test** `stage` that we will need for the the **Build and Push Image** `stage`.
+### Bulk-upgrading Team Masters
+For the first part of this exercise everyone will just follow along as it is the Operations Center administrator that would perform this task for all the Teams across your organization. Most of the tasks required to complete this task have already been done, but we will review all of the components of the bulk-upgrade to enable Slack notifications across all **Team Masters**.
 
-1. Add the following `post` section just below the `steps` section of the **Test** `stage` using the GitHub editor and commit your changes:
+1. For this workshop we have created a [custom container (Docker) image for our Team Masters](https://github.com/kypseli/cb-core-mm/blob/kube-workshop/Dockerfile). Among other things, this custom image allows us to manage the automatic installation of additional plugins. So the first thing we will need to do is add the **Slack** plugin to this custom image and to do that, all we have to do is add it to the `plugin.txt` file which will utilize the [`plugin.sh` script](https://github.com/kypseli/cb-core-mm/blob/kube-workshop-slack/plugins.sh) to install every plugin in the list and their dependencies:
 
 ```
-      post {
-        success {
-          stash name: 'app', includes: '*.js, public/**, views/*, Dockerfile'
-        }
-      }
+configuration-as-code:1.2
+configuration-as-code-support:1.2
+notification-api:1.1
+operations-center-notification:1.0
+aws-credentials:1.23
+artifact-manager-s3:1.1
+aws-global-configuration:1.0
+devoptics:1.1494
+slack:2.4
 ```
 
-2. Remember, `post` sections are available at both the global `pipeline` level and at the individual `stage` level. The reason we added it to the `success` condition of the `post` section is because we only need the `stash` of files if we successfully get past the **Test** `stage`. Now we will add the `unstash` step to the **Build and Push Image** `stage`.
+>**NOTE:** The 2.4 version of the Slack plugin is not yet released and we are actually using a **SNAPSHOT** release. To use the **SNAPSHOT** version, we downloaded the **SNAPSHOT** build from the Jenkins CI server and added it to the [`plugins` directory](https://github.com/kypseli/cb-core-mm/tree/kube-workshop-slack/plugins) of our custom container image, thhe plugins in that directory are in turn copied to the `/usr/share/jenkins/ref/plugins/` directory of each **Team Master** Jenkins home from which it is automatically installed - with this approach, plugin dependencies must be managed manually. Once the 2.4 version is released we will be able to utilize the method above.
+
+2. Next we want to add the necessary **configuration** for the Slack plugin so that every Team can start using it right away. Fot that, we turn to the [Jenkins **C**onfiguration **as** **C**ode plugin](https://github.com/jenkinsci/configuration-as-code-plugin). The **CasC** plugin allows us to define configuration for all the **Team Masters** in a [simple yaml file](https://github.com/kypseli/cb-core-mm/blob/kube-workshop-slack/config-as-code.yml) that we [copy into the custom container image](https://github.com/kypseli/cb-core-mm/blob/kube-workshop-slack/Dockerfile#L20). Here is the configuration snippet for the Slack plugin:
+
+```
+  slackNotifier:
+    teamDomain: beedemo-team
+    tokenCredentialId: beedemo-slack
+    room: "#ci"
+```
+
+3. After those changes are made for our custom container image we need to build the image and push it to container registry. We, of course, have already done that and the image has been pushed to an AWS Elastic Container Registry (ECR) as `946759952272.dkr.ecr.us-east-1.amazonaws.com/kypseli/cb-core-mm:2.138.2.2-kube-workshop-slack-1`.
+4. Next, we need to update what Docker Image is the default for our **Team Masters** on Operations Center:<p><img src="img/more/slack_update_docker_image.png" width=800/>
+5. Now all we have to do is run a Cluster Operation job on CloudBees Core Operations Center that has been configured to *reprovision* all of the **Team Masters** resulting in each **Team Master** using the new container image. Once your **Team Master** has been restarted the Slack plugin will be installed and cofigured:<p><img src="img/more/slack_cluster_op.png" width=800/>
+
+### Send a Slack Notification
+
+Now all you have to do is add the `slackSend` step to the `success` `post` block of the **Build and Push Image** `stage`.
+
+1. Use the GitHub file editor to update your `nodejs-app/Jenkinsfile.template` Pipeline script in your forked **custom-marker-pipelines** repository and add the following `post` block after the `steps` block of the **Build and Push Image** `stage` and then commit the changes:
 
 ```
     stage('Build and Push Image') {
@@ -199,44 +226,19 @@ Sometimes you may need to share certain files between `stages` of a `pipeline` b
         echo "TODO - build and push image"
         unstash 'app'
       }
+      post {
+        success {
+          slackSend "${JOB_NAME} pipeline job is awaiting approval at: ${RUN_DISPLAY_URL}"
+        }
+      }
     }
 ```
 
-4. Also note that we added `agent any` to the **Build and Push Image** `stage` because the `unstash` step requires a heavyweight executor as discussed in the [**Stage Specific Agents and Agent None**](exercises/intro-pipeline-cb-core.md#stage-specific-agents-and-agent-none) lesson - it won't execute successfully on the **fly-weight** executor of the Jenkins master. Next, navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. You will see files being `stashed` and then `unstashed`.
-
-```
-Stashed 4 file(s) to https://cd-accel.s3.amazonaws.com/cb-core/artifacts/beedemod-dev/bee-cd/helloworld-nodejs/master/28/stashes/app.tgz
-...
-Unstashed file(s) from https://cd-accel.s3.amazonaws.com/cb-core/artifacts/beedemod-dev/bee-cd/helloworld-nodejs/master/28/stashes/app.tgz
-```
-
->**NOTE:** Typically `stash` files are copied from the `agent` to the Jenkins master and `unstash` files are copied from the Jenkins master back to the agent. This results in quite a bit of network IO between the Jenkins master(s) and agents, and has been a source of numerous performance issues with CloudBees customs. So CloudBees developed an AWS S3 based implementation of the [**ArtifactManagerFactory**](https://jenkins.io/doc/developer/extensions/jenkins-core/#artifactmanagerfactory) extension that was added to Jenkins core as of the 2.118 release. The CloudBees developed [Artifact Manager on S3 plugin](https://github.com/jenkinsci/artifact-manager-s3-plugin) integrates transparently with the `archive`/`unarchive` and `stash`/`unstash` Pipeline steps to store those files in an AWS S3 Bucket - with the upload and download happening on the `agent` without any overhead for the Jenkins master. And because of the modern, container based architecture of CloudBees Core on Kubernetes - we were able to [easily add the necessarry plugins and configuration to the custom Team Master Docker image being used by everyone with CasC](https://github.com/kypseli/cb-core-mm/blob/kube-workshop/config-as-code.yml#L16). This made it super easy to provide this awesome cloud native artifact storage for everyones' Team Master - as soon as they were provisioned.
-
- <p><img src="img/more/stash_aws_s3_bucket.png" width=850/>
-
-## Restartable Stages
-
-Declarative Pipelines support a feature referred to as [***Restartable Stages***](https://jenkins.io/doc/book/pipeline/running-pipelines/#restart-from-a-stage). You can restart any completed Declarative Pipeline from any top-level `stage` which ran in that Pipeline job run. This allows you to re-run a Pipeline from a `stage` which may have failed due to transient or environmental reasons. All inputs to the Pipeline will be the same. This includes SCM information, build parameters, and the contents of any `stash` step calls in the original Pipeline, if specified. Stages which were skipped due to an earlier failure will not be available to be restarted, but `stages` which were skipped due to a `when` condition not being satisfied will be available.
-
-1. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master.
-2. Select the **Build and Push Image** `stage` if it isn't already selected and then click on the ***Restart Build and Push Image*** link. <p><img src="img/more/restart_build_push_link.png" width=850/>
-3. The **Test** `stage` will be skipped, but the job will fail with the following error: <p><img src="img/more/restart_build_push_fail.png" width=850/>
-4. So what is going on? By default, a `stash` is removed when a Pipeline job completes, regardless of the result of the Pipeline. But in this case we want to **restart** from a `stage` where we `unstash` files. Declarative Pipeline has the ability to **preserve** a `stash` across job runs for this exact reason - but you must declare it by adding the `preserveStashes` job property to the `pipeline` global `options`. Update the global `options` section of your **nodejs-app/Jenkinsfile.template** Pipeline script:
-
-```
-  options { 
-    buildDiscarder(logRotator(numToKeepStr: '2'))
-    skipDefaultCheckout true
-    preserveStashes(buildCount: 2)
-  }
-```
-
-5. By default, the `preserveStashes` step will only preserver 1 run, but provides the `buildCount` parameter to set a range from 1 to 50 runs to preserve. We will preserve 2 runs to match the `buildDiscarder` policy we have in place. 
-6. Next, navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job from the start. This is necessary for the `preserveStash` to take effect and for the `stash` in the **Test** `stage` to get preserved. 
-7. Once the job has completed, select the **Build and Push Image** `stage` and then click on the ***Restart Build and Push Image*** link. The `unstash` step in the **Build and Push Image** `stage` will work now and the job will complete successfully. <p><img src="img/more/restart_build_push_success.png" width=850/>
+2. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. 
+3. After your Pipeline job completes the `steps` in the **Build and Push Image** `stage` a message from your **Team Master** in the beedemo-team #ci Slack channel as below:<p><img src="img/more/slack_beedemo_channel.png" width=800/>
 
 ## Next Lesson
 
 Before moving on to the next lesson you can make sure that your **nodejs-app/Jenkinsfile.template** Pipeline script is correct by comparing to or copying from the **after-approvals** branch of your forked **custom-marker-pipelines** repository.
 
-You may proceed to the next set of exercises - **[Parallel and Sequential Stages with CloudBees Core](./parallel-sequential-cb-core.md)** - when your instructor tells you.
+You may proceed to the next set of exercises - **[Pipeline Artifacts and Restartable, Parallel and Sequential Stages with CloudBees Core](./artifacts-parallel-sequential-cb-core.md)** - when your instructor tells you.

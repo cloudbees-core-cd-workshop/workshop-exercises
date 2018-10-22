@@ -1,10 +1,10 @@
 # Introduction to Pipelines with CloudBees Core
 
-In addition to all the freely available [Jenkins Pipeline features](https://jenkins.io/doc/book/pipeline/), CloudBees Core provides additional features and capabilities that make it easier and faster for organizations of any size to implement and manage Jenkins Pipelines for Continuous Delivery. We like to refer to it as CD Acceleration.
+In addition to all the freely available [Jenkins Pipeline features](https://jenkins.io/doc/book/pipeline/), CloudBees Core provides additional features and capabilities that make it easier and faster for organizations of any size to implement and manage Jenkins Pipelines for Continuous Delivery.
 
 ## GitHub Organization Project
 
-In this exercise we are going to create a special type of Jenkins Pipeline project referred to as an [*Organization Folder*](https://jenkins.io/doc/book/pipeline/multibranch/#organization-folders) and more specifically a *GitHub Organization* project. The *GitHub Organization* project will scan a GitHub Organization to discover the organization’s repositories, automatically creating **managed** *Multibranch Pipeline* jobs for any repository with at least one branch containing a *project recognizer* - typically **Jenkinsfile**. We will use the GitHub Organization that you created in **[Setup - Create a GitHub Organization](./Setup.md#create-a-github-organization)**. A *GitHub Organization* project will also utilize the GitHub Organization level webhook it creates to automatically clean-up Jenkins jobs - both individual branch jobs and Mutlibranch jobs associcated to repositories - when a branch or a repository is deleted from the GitHub Organization.
+In this exercise we are going to create a special type of Jenkins Pipeline project referred to as an [*Organization Folder*](https://jenkins.io/doc/book/pipeline/multibranch/#organization-folders) and more specifically a *GitHub Organization* project. The *GitHub Organization* project will scan a GitHub Organization to discover the organization’s repositories, automatically creating **managed** *Multibranch Pipeline* jobs for any repository with at least one branch containing a *project recognizer* - typically **Jenkinsfile**. We will use the GitHub Organization that you created in **[Setup - Create a GitHub Organization](./Setup.md#create-a-github-organization)**. A *GitHub Organization* project will also utilize a GitHub Organization level webhook it creates to automatically clean-up Jenkins jobs - both individual branch jobs and Mutlibranch jobs associcated to repositories - when a branch or a repository is deleted from the GitHub Organization.
 
 We must exit the Blue Ocean UI to the Jenkins classic UI to complete the steps in this lesson.
 
@@ -281,4 +281,4 @@ Attempted to execute a step that requires a node context while ‘agent none’ 
 
 Before moving on to the next lesson you can make sure that your **nodejs-app/Jenkinsfile.template** Pipeline script is correct by comparing to or copying from the **after-intro** branch of your forked **custom-marker-pipelines** repository.
 
-You may proceed to the next set of exercises - **[Pipeline Approvals and Artifact Management with CloudBees Core](./approvals-artifacts-cb-core.md)** - when your instructor tells you.
+You may proceed to the next set of exercises - **[Pipeline Approvals, Post Actions and Notifications with CloudBees Core](./approvals-post-cb-core.md)** - when your instructor tells you.

@@ -2,11 +2,11 @@
 
 In this set of exercise we will continue to explore [Pipeline Shared Libraries](https://jenkins.io/doc/book/pipeline/shared-libraries/) and use a Shared Library of **custom steps** to:
 - make our Declarative Pipeline more readable
-- build a Docker image for the **helloworld-nodejs** app with [Kaniko](https://github.com/GoogleContainerTools/kaniko)
+- build a Docker image for the **helloworld-nodejs** app with [Kaniko](https://github.com/GoogleContainerTools/kaniko) - a tool to build container images without a Docker daemon; perfect for a Kubernetes cluster
 - push that Docker image to an [Amazon Elastic Container Registry](https://aws.amazon.com/ecr/)
 - deploy the **helloworld-nodejs** app to Kubernetes. 
 
-But before we do all of that we will update the **nodejs-app/Jenkinsfile.template** Pipeline script to be more dynamic - and then build a Shared Library **custom step** to improve on that example.
+But before we do all of that we will update the **nodejs-app/Jenkinsfile.template** Pipeline script to be more dynamic - and then create a Shared Library **custom step** to improve on that example.
 
 We will also take a look at the [CloudBees Core Cross Team Collaboration feature](https://go.cloudbees.com/docs/cloudbees-core/cloud-admin-guide/cross-team-collaboration/#) and how it can improve team collaboration by connecting Team Pipelines across Masters to deliver software faster. 
 
@@ -16,12 +16,12 @@ We will also take a look at the [CloudBees Core Cross Team Collaboration feature
 
 ## Dynamic Properties for Pipelines
 
-The **Custom Marker** feature of CloudBees Core provides a lot of control and easy management of Pipelines for your dev teams' Pipelines. But it does not give individual teams much flexibility. In this exercise we are going to update the **nodejs-app/Jenkinsfile.template** Pipeline script to read in the `.nodejs-app` marker file from the  **helloworld-nodejs** repository as a properties file using the [`readProperties` step](https://jenkins.io/doc/pipeline/steps/pipeline-utility-steps/#readproperties-read-properties-from-files-in-the-workspace-or-text) of [Pipeline Utilities plugin](https://jenkins.io/doc/pipeline/steps/pipeline-utility-steps/). This will allow individual dev teams to override certain properties of the **nodejs-app/Jenkinsfile.template**.
+The **Custom Marker** feature of CloudBees Core provides a lot of control and easy management of Pipelines for your dev teams' Pipelines. But it does not give individual teams much flexibility. In this exercise we are going to update the **nodejs-app/Jenkinsfile.template** Pipeline script to read in the `.nodejs-app` marker file from the  **helloworld-nodejs** repository as a properties file using the [`readProperties` step](https://jenkins.io/doc/pipeline/steps/pipeline-utility-steps/#readproperties-read-properties-from-files-in-the-workspace-or-text) of the [Pipeline Utilities plugin](https://jenkins.io/doc/pipeline/steps/pipeline-utility-steps/). This will allow individual dev teams to override certain properties of the **nodejs-app/Jenkinsfile.template**.
 
 We have been installing two specific Node.js packages - `express` and `pug` - for everyone but what if there are dev teams that want to use different or additional packages. We can allow individual teams to set a `npmPackages` propety in the `.nodejs-app` marker file and then load that file with the `readProperties` step. We can then use that value to override the packages installed by default in the `nodejs` `container` steps of the **App Setup** nested `stage`.
 
 1. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **custom-marker-pipelines** repository.
-2. The `readProperties` step will read a file in the current working directory and return a map of String keys and values. In order to use this map of key/value pairs in our Pipeine script we will assign it as a value of a newly defined Groovy variable. However, the Declarative syntax does not allow defining or assigning values to variables. So we will need to use the `script` block again - this time so that we can assign the output of the `readProperties` step to use in our `nodejs` steps. Add the following `script` block right after the `checkout scm` step of the **Test** `stage`:
+2. The `readProperties` step will read a file in the current working directory and return a map of String keys and values. In order to use this map of key/value pairs in our Pipeine script we will assign it as a value of a newly defined Groovy variable. However, the Declarative syntax does not allow defining or assigning values to variables. So we will need to use the `script` block again - this time so that we can assign the output of the `readProperties` step to use in our `nodejs` steps. Add the following `script` block right after the `checkout scm` step of the **Web Tests** nested `stage`:
 
 ```
             script {
@@ -56,13 +56,13 @@ We have been installing two specific Node.js packages - `express` and `pug` - fo
 
 5. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will complete successfully using our default values for `npmPackages`. <p><img src="img/advanced/read_properties_with_defaults.png" width=800/>
 
-## More Pipeline Shared Libraries
+## Custom Steps with Pipeline Shared Libraries
 
 In this exercise we are going to add a **custom step** to our Pipeline from a [**Pipeline Shared Library**](https://jenkins.io/doc/book/pipeline/shared-libraries/), providing functionality to set default values based on default Jenkins environmental variables that will provide a reusable way of using the `readProperties` step with Delcarative Pipelines and make our Pipeline script more readable.
 
 ### Pipeline Directory Structure
 
-Shared Libraries have a very specific directory structure as follows:
+Shared Libraries have a very specific directory structure as follows with the focus on the `vars` directory for this exercise:
 
 ```
 (root)
@@ -89,7 +89,7 @@ A `resources` directory allows the `libraryResource` step to be used to load ass
 
 ### Create a Custom Step
 
-For this workshop we will only be using the simpler and more straight-forward **global variables**, and we will also work with `resources` and the `libraryResource` step. But before we create a new **global variable** we need to decide what it needs to do. Pipeline Shared Libraries are like any other shared framework or utility - the purpose being to reduce redundant code and to adhere to [DRY](https://en.wikipedia.org/wiki/Don't_repeat_yourself) principle of software development. Also, with the advent of two different syntaxes for Pipelines - Declarative and Scripted - it is sometimes useful to use Shared Library [**custom steps**](https://jenkins.io/doc/book/pipeline/shared-libraries/#defining-custom-steps) to encapsulate Scripted syntax making Declarative Pipelines much more readable. We will do just that for the `readProperties` `script` block that we added above. We will call our **custom step** `defineProps` - we can't use `readProperties` because then our new **custom step** would override and replace the `readProperties` step from the Pipeline Utilities plugin and we will actually use that step in our **custom step** as you will see below.
+For this workshop we will only be using the simpler and more straight-forward **global variables** to define reusable Pipeline script from a Shared Library. But before we create a new **global variable** we need to decide what it needs to do. Pipeline Shared Libraries are like any other shared framework or utility - the purpose being to reduce redundant code and to adhere to [DRY](https://en.wikipedia.org/wiki/Don't_repeat_yourself) principle of software development. Also, with the advent of two different syntaxes for Pipelines - Declarative and Scripted - it is sometimes useful to use Shared Library [**custom steps**](https://jenkins.io/doc/book/pipeline/shared-libraries/#defining-custom-steps) to encapsulate Scripted syntax making Declarative Pipelines more readable. We will do just that for the `readProperties` `script` block that we added above. We will call our **custom step** `defineProps` - we can't use `readProperties` because then our new **custom step** would override and replace the `readProperties` step from the Pipeline Utilities plugin and we will actually use that step in our **custom step** as you will see below.
 
 1. In the **master** branch of your forked **pipeline-library** repostiory click on the **Create new file** button and enter `vars/defineProps.groovy`. <p><img src="img/advanced/shared_lib_global_var_defineProps.png" width=800/>
 2. We will implement a `call` method as [the `call` method allows the global variable to be invoked in a manner similar to a regular Pipeline step](https://jenkins.io/doc/book/pipeline/shared-libraries/#defining-custom-steps):
@@ -164,7 +164,7 @@ library 'cd-accel'
 
 ### Shared Library Steps for the 'Build and Push Image' and 'Deploy' Stages
 
-So the **Test** `stage` of our Pipeline executes some real **Testcafe** tests but the **Build and Push Image** and **Deploy** `stages` still don't do much. Let's change that by using some Shared Library **custom steps** that have already been created for everyone. If you open your **pipeline-library** repostiory in GitHub and switch to the `completed` branch you will notice a number of additional `groovy` files in the `vars` directory and a number of additional `resources` - including the `vars/defineProps.groovy` file and `resources/podtemplates/nodejs-app/test-pod.yml` file that we added above. 
+So the **Tests** `stage` of our Pipeline executes actual **Testcafe** tests but the **Build and Push Image** and **Deploy** `stages` still don't do much. Let's change that by using some Shared Library **custom steps** that have already been created for everyone. If you open your **pipeline-library** repostiory in GitHub and switch to the `completed` branch you will notice a number of additional `groovy` files in the `vars` directory and a number of additional `resources` - including the `vars/defineProps.groovy` file and `resources/podtemplates/nodejs-app/test-pod.yml` file that we added above. 
 <p><img src="img/advanced/shared_lib_completed_branch.png" width=800/> 
 
 The `completed` branch contains the following **global variables** and `resource` files:
@@ -185,7 +185,8 @@ The `completed` branch contains the following **global variables** and `resource
 |       +- dockerBuildPush.yml    # Pod Template with a tool called Kaniko - used to build and push Docker images to ECR without Docker
 |       +- kubeDeploy.yml         # Pod Template with container for k8s deployments
 |       +- nodejs-app
-|           +- test-pod.yml       # k8s Pod config for **Node.js** app testing
+|           +- web-test-pod.yml       # k8s Pod config for **Node.js** app web testing
+|           +- load-test-pod.yml      # k8s Pod config for **Node.js** app load testing
 |   +- k8s
 |       +- basicDeploy.yml        # k8s configuration to deploy basic apps with ingress
 |   +- aws
@@ -194,7 +195,7 @@ The `completed` branch contains the following **global variables** and `resource
 |               +- tempImagePolicy.json #AWS ECR Image Lifecycle Policy for all Docker images pushed to ECR
 ```
 
-As you can see, there are quite a few additional **custom steps** and `resources`, and rather than waste time creating them together we are going to use them right away in the next exercise.
+As you can see, there are quite a few additional **custom steps** and `resources`, and rather than take the time creating them together we are going we will use the completed versions.
 
 #### Update Your Team Master's 'cd-accel' Shared Library
 
