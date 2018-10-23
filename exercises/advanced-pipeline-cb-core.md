@@ -21,37 +21,37 @@ The **Custom Marker** feature of CloudBees Core provides a lot of control and ea
 We have been installing two specific Node.js packages - `express` and `pug` - for everyone but what if there are dev teams that want to use different or additional packages. We can allow individual teams to set a `npmPackages` propety in the `.nodejs-app` marker file and then load that file with the `readProperties` step. We can then use that value to override the packages installed by default in the `nodejs` `container` steps of the **App Setup** nested `stage`.
 
 1. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **custom-marker-pipelines** repository.
-2. The `readProperties` step will read a file in the current working directory and return a map of String keys and values. In order to use this map of key/value pairs in our Pipeine script we will assign it as a value of a newly defined Groovy variable. However, the Declarative syntax does not allow defining or assigning values to variables. So we will need to use the `script` block again - this time so that we can assign the output of the `readProperties` step to use in our `nodejs` steps. Add the following `script` block right after the `checkout scm` step of the **Web Tests** nested `stage`:
+2. The `readProperties` step will read a file in the current working directory and return a map of String keys and values. In order to use this map of key/value pairs in our Pipeine script we will assign it as a value of a newly defined Groovy variable. However, the Declarative syntax does not allow defining or assigning values to variables. So we will need to use the `script` block again - this time so that we can assign the output of the `readProperties` step to use in our `nodejs` steps. Add the following `script` block right after the `checkout scm` step of the **Nodejs Setup** nested `stage` of the **Web Tests** parent `stage`:
 
 ```
-            script {
-              //use the Pipeline Utility Steps plugin readProperties step to read the .nodejs-app custom marker file 
-              def props = readProperties file: '.nodejs-app'
-              env.npmPackages = props['npmPackages']
-            }
+                script {
+                  //use the Pipeline Utility Steps plugin readProperties step to read the .nodejs-app custom marker file 
+                  def props = readProperties file: '.nodejs-app'
+                  env.npmPackages = props['npmPackages']
+                }
 ```
 
 3. Next replace the `npm i -S express pug` of the `nodejs` `sh` step with the value of the `npmPackages` property - note the use of **triple double-quotes** instead of **triple single-quotes** - this is required to [support the interpolation](https://jenkins.io/doc/book/pipeline/jenkinsfile/#string-interpolation) of our `npmPackages` variable. The entire `nodejs` `container` block should match the following:
 
 ```
-            container('nodejs') {
-              sh """
-                npm i -S ${npmPackages}
-                node ./hello.js &
-              """
-            }
+                container('nodejs') {
+                  sh """
+                    npm i -S ${npmPackages}
+                    node ./hello.js &
+                  """
+                }
 ```
 
 4. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The browser tests will both fail because we didn't add an `npmPackages` property to the `.nodejs-app` marker file in the **helloworld-nodejs** repository: <p><img src="img/advanced/props_failure.png" width=850/>  <p>The **express** framework and **pug** templating are what the majority of the dev teams use for Node.js development. So what we really want is to have a default value set, and then allow different dev teams to override that value if they are using different packages. Lucky for us, the `readProperties` step includes a parameter aptly named `defaults` that allows us to provide a map containing default key/values. We will update the `readProperties` script block with a map of default values and add the `defaults` parameter set to that map:
 
 ```
-            script {
-              //define default values that may be overridden via the .nodejs-app file
-              def d = [npmPackages: 'express pug']
-              //use the Pipeline Utility Steps plugin readProperties step to read the .nodejs-app custom marker file 
-              def props = readProperties defaults: d, file: '.nodejs-app'
-              env.npmPackages = props['npmPackages']
-            }
+                script {
+                  //define default values that may be overridden via the .nodejs-app file
+                  def d = [npmPackages: 'express pug']
+                  //use the Pipeline Utility Steps plugin readProperties step to read the .nodejs-app custom marker file 
+                  def props = readProperties defaults: d, file: '.nodejs-app'
+                  env.npmPackages = props['npmPackages']
+                }
 ```
 
 5. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will complete successfully using our default values for `npmPackages`. <p><img src="img/advanced/read_properties_with_defaults.png" width=800/>
