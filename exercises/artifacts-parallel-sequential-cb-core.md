@@ -2,7 +2,7 @@
 
 The ability to define stages to run in parallel is an important feature of Jenkins Pipeline jobs. The Declarative Pipeline syntax has extended support for [parallel stages](https://jenkins.io/doc/book/pipeline/syntax/#parallel), [sequential stages](https://jenkins.io/doc/book/pipeline/syntax/#sequential-stages) and nested stages - and all of these features are nicely visualized in the Blue Ocean UI. In this set of exercises, we will use sequential `stages` and Pipeline parallelization to speed up the execution of some web tests and a load test that we will add for our **helloworld-nodejs** app.
 
-We will also take a look at a more advanced usage of the Kubernetes plugin by defining `agents` inline in our Pipeline Jenkinsfile and explore the use of [Pipeline Shared Libraries](https://jenkins.io/doc/book/pipeline/shared-libraries/) [**resources**](https://jenkins.io/doc/book/pipeline/shared-libraries/#loading-resources) to make our `Jenkinsfile` more readable.
+We will also take a look at the archiving of artifacts - or more specifically, stashing build artifacts and a explore a more advanced usage of the Kubernetes plugin by defining `agents` inline in our Pipeline Jenkinsfile and explore the use of [Pipeline Shared Libraries](https://jenkins.io/doc/book/pipeline/shared-libraries/) [**resources**](https://jenkins.io/doc/book/pipeline/shared-libraries/#loading-resources) to make our `Jenkinsfile` more readable.
 
 >**Starting Here or Catching Up?**
 >
