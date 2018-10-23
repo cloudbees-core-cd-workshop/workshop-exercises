@@ -239,9 +239,9 @@ We will now update the **Build and Push Image** `stage` to use the `dockerBuildP
     }
 ```
 
-3. Some interesting things to note are:
+3. Some interesting things to note from the updated **Deploy** `stage`:
     1. We no longer have an `agent` defined. If you look at the `dockerBuildPush.groovy` in the `completed` branch of your **pipeline-library** repopsitory you will see that it defines a `node` which is basically a more complex version of the `agent` section and is available in both Scripted and Declarative Pipeline syntax whereas `agent` is only available in Declarative.
-    2. The `unstash` step is inside of the `dockerBuildPush` step block. This is called a `closure` and [allows you to run addition, arbritary steps inside of a **custom step**](https://jenkins.io/doc/book/pipeline/shared-libraries/#defining-custom-steps).
+    2. The `unstash` step is inside of the `dockerBuildPush` step block. This is called a `closure` and [allows you to run additional, arbritary steps inside of a **custom step**](https://jenkins.io/doc/book/pipeline/shared-libraries/#defining-custom-steps).
 4. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will run successfully and everyone will have a brand new Docker Image in the Amazon Elastic Container Registry we are using for this workshop. All in all, as you can see below, there is a lot more going on in the **Build and Push Image** `stage` now: <p><img src="img/advanced/build_push_finished.png" width=850/>
 
 #### Update the 'Deploy' Stage
