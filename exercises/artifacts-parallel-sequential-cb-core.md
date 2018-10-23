@@ -123,7 +123,7 @@ Once you have forked the ***pipeline-library*** repository into your GitHub Orga
 6. For the **Source Code Management** select **GitHub**.
 7. Select the GitHub **Credentials** you created earlier, enter your GitHub Organization name as the **Owner**, select **pipeline-library** for the **Repository** and then click the **Save** button. <p><img src="img/advanced/shared_lib_config.png" width=900/>
 
-If you navigate back to your fork of the **pipeline-library** repository you will notice that all it contains is the *LICENSE* and *README.md* files. For a Pipeline Shared Library, we need to create a very specific directory structure in your forked **pipeline-library** repositories and then we will be able to create our first Shared Library script.
+If you navigate back to your fork of the **pipeline-library** repository you will notice that it contains is the *LICENSE* and *README.md* files and a `vars` directory with an empty `defineProps.groovy` file. A Pipeline Shared Library requires a specific directory structure and a `vars` or `src` directory is required in order to load a shared library in your Pipeline script.
 
 ### Pipeline Directory Structure
 
@@ -157,7 +157,7 @@ A `resources` directory allows the `libraryResource` step to be used to load ass
 One of the Shared Library directories mentioned above was the `resource` directory. Shared Libraries make files from the `resources/` directory available to be loaded in your Pipeline script using the `libraryResource` step. The argument is a relative pathname in the `resource` directory. The file is loaded as a string, suitable for passing to certain APIs or using as a the value for a `String` parameter of a Pipeline `step`. We are going to use such a `resource` for the latter use case - as a `String` value of a Pipeline step parameter. We will make our Pipeline script more readable by replacing the inline yaml definition of our `kubernetes` agent `yaml` parameter with the `String` output of a `resource` from our `cd-accel` Shared Library.
 
 1. In the **master** branch of your forked **pipeline-library** repostiory click on the **Create new file** button and enter `resources/podtemplates/nodejs-app/web-test-pod.yml`. 
-2. The contents of this file will be the `Pod` configuration from the `yaml` parameter of the `kubernetes` block in the **Test** `stage` of our Pipeline script. Copy and paste that as the content of this new `web-test-pod.yml` `resource` file: 
+2. The contents of this file will be the `Pod` configuration from the `yaml` parameter of the `kubernetes` block in the **Test** `stage` of our Pipeline script plug the configuration for the **testcafe** image that we will be used in the next exercise for some automated web tests. Copy and paste that as the content of this new `web-test-pod.yml` `resource` file: 
 
 ```
 kind: Pod
@@ -181,13 +181,19 @@ spec:
 
 3. Commit the changes.
 4. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **custom-marker-pipelines** repository.
-5. Just below the `library 'cd-accel'` step, add the following - *note that we are specifying the relative path to `web-test-pod.yml` from the `resources` directory*:
+5. Add the following line to the very top of the Pipeline script, above the `pipeline` block - remember that we named the Shared Library **cd-accel** when we added it to our GitHub Organization project on our Team Masters:
+
+```
+library 'cd-accel'
+```
+6. Just below the `library 'cd-accel'` step, add the following - *note that we are specifying the relative path to `web-test-pod.yml` from the `resources` directory*:
 
 ```groovy
+library 'cd-accel'
 def testPodYaml = libraryResource 'podtemplates/nodejs-app/web-test-pod.yml'
 ```
 
-6. Next, update the the `yaml` argument for the `kubernetes` block so your `agent` for the **Test** `stage` matches the following and commit the changes:
+7. Next, update the `label` to `'nodejs-testcafe'` and the `yaml` argument for the `kubernetes` block so your `agent` for the **Test** `stage` matches the following and commit the changes:
 
 ```
       agent {
@@ -198,7 +204,7 @@ def testPodYaml = libraryResource 'podtemplates/nodejs-app/web-test-pod.yml'
       }
 ```
 
-7. Wow, that really makes our Jenkinsfile much more readable. Next, navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will run successfully using the `yaml` definition from our Shared Library.
+8. Wow, that really makes our Jenkinsfile much more readable. Next, navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will run successfully using the `yaml` definition from our Shared Library.
 
 ## Web Browser Tests with Testcafe
 

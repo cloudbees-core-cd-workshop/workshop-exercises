@@ -91,8 +91,8 @@ A `resources` directory allows the `libraryResource` step to be used to load ass
 
 For this workshop we will only be using the simpler and more straight-forward **global variables** to define reusable Pipeline script from a Shared Library. But before we create a new **global variable** we need to decide what it needs to do. Pipeline Shared Libraries are like any other shared framework or utility - the purpose being to reduce redundant code and to adhere to [DRY](https://en.wikipedia.org/wiki/Don't_repeat_yourself) principle of software development. Also, with the advent of two different syntaxes for Pipelines - Declarative and Scripted - it is sometimes useful to use Shared Library [**custom steps**](https://jenkins.io/doc/book/pipeline/shared-libraries/#defining-custom-steps) to encapsulate Scripted syntax making Declarative Pipelines more readable. We will do just that for the `readProperties` `script` block that we added above. We will call our **custom step** `defineProps` - we can't use `readProperties` because then our new **custom step** would override and replace the `readProperties` step from the Pipeline Utilities plugin and we will actually use that step in our **custom step** as you will see below.
 
-1. In the **master** branch of your forked **pipeline-library** repostiory click on the **Create new file** button and enter `vars/defineProps.groovy`. <p><img src="img/advanced/shared_lib_global_var_defineProps.png" width=800/>
-2. We will implement a `call` method as [the `call` method allows the global variable to be invoked in a manner similar to a regular Pipeline step](https://jenkins.io/doc/book/pipeline/shared-libraries/#defining-custom-steps):
+1. In the **master** branch of your forked **pipeline-library** repostiory navigate to the `vars` directory and open the `defineProps.groovy` with the GitHub editor. <p><img src="img/advanced/shared_lib_global_var_defineProps.png" width=800/>
+2. The file will be empty, but we will implement a `call` method as [the `call` method allows the global variable to be invoked in a manner similar to a regular Pipeline step](https://jenkins.io/doc/book/pipeline/shared-libraries/#defining-custom-steps):
 
 ```groovy
 // vars/defineProps.groovy
@@ -136,13 +136,7 @@ A custom step for using the <pre>readProperties</pre> step from the Pipeline Uti
 Now that the **Pipeline Shared Library** is configured for your Team Master and we have a **global variable** to use, we will use it in the `nodejs-app/Jenkinsfile.template` Pipeline script.
 
 1. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **custom-marker-pipelines** repository.
-2. Add the following line to the very top of the Pipeline script, above the `pipeline` block - remember that we named the Shared Library **cd-accel** when we added it to our GitHub Organization project on our Team Masters:
-
-```
-library 'cd-accel'
-```
-
-3. Next we will replace the `script` block where we are using the `readProperties` step with our new custom step. Update the  **App Setup** `stage` nested in the **Test** `stage` to match the following:
+2. Replace the `script` block where we are using the `readProperties` step with our new custom step. Update the  **App Setup** `stage` nested in the **Test** `stage` to match the following:
 
 ```groovy
         stage('App Setup') {
@@ -159,8 +153,8 @@ library 'cd-accel'
         }
 ```
 
-4. Not only have we created a reusable **custom step**, we have also made our Declartive Pipeline script much more readable. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will run successfully. Note in **Console Output** in the classic UI the checkout of the our `cd-accel` Shared Library: <p><img src="img/advanced/shared_lib_checkout.png" width=800/>
-5. Exit to the class UI and click on the **Pipeline Syntax** link in the left navigation menu. Then click on the **Global Variables Reference** link and scroll to the bottom of the page. You will find the documentation that we created for our `defineProps` custom step: <p><img src="img/advanced/shared_lib_syntax_link.png" width=800/>
+3. Not only have we created a reusable **custom step**, we have also made our Declartive Pipeline script much more readable. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will run successfully. Note in **Console Output** in the classic UI the checkout of the our `cd-accel` Shared Library: <p><img src="img/advanced/shared_lib_checkout.png" width=800/>
+4. Exit to the class UI and click on the **Pipeline Syntax** link in the left navigation menu. Then click on the **Global Variables Reference** link and scroll to the bottom of the page. You will find the documentation that we created for our `defineProps` custom step: <p><img src="img/advanced/shared_lib_syntax_link.png" width=800/>
 
 ### Shared Library Steps for the 'Build and Push Image' and 'Deploy' Stages
 
