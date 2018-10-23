@@ -207,13 +207,15 @@ slack:2.4
     room: "#ci"
 ```
 
-3. After those changes are made for our custom container image we need to build the image and push it to container registry. We, of course, have already done that and the image has been pushed to an AWS Elastic Container Registry (ECR) as `946759952272.dkr.ecr.us-east-1.amazonaws.com/kypseli/cb-core-mm:2.138.2.2-kube-workshop-slack-1`.
-4. Next, we need to update what Docker Image is the default for our **Team Masters** on Operations Center:<p><img src="img/more/slack_update_docker_image.png" width=800/>
-5. Now all we have to do is run a Cluster Operation job on CloudBees Core Operations Center that has been configured to *reprovision* all of the **Team Masters** resulting in each **Team Master** using the new container image. Once your **Team Master** has been restarted the Slack plugin will be installed and cofigured:<p><img src="img/more/slack_cluster_op.png" width=800/>
+1. After those changes are made for our custom container image we need to build the image and push it to container registry. We have already done that and the image has been pushed to an AWS Elastic Container Registry (ECR) as `946759952272.dkr.ecr.us-east-1.amazonaws.com/kypseli/cb-core-mm:2.138.2.2-kube-workshop-slack-1`.
+2. Next, we need to update what Docker Image is the default for our **Team Masters** on Operations Center:<p><img src="img/more/slack_update_docker_image.png" width=800/>
+3. Now all we have to do is run a **Cluster Operation** job on CloudBees Core Operations Center that has been configured to *reprovision* all of the **Team Masters** resulting in each **Team Master** using the new container image. Once your **Team Master** has been restarted the Slack plugin will be installed and cofigured:<p><img src="img/more/slack_cluster_op.png" width=800/>
+
+That's it, once everyone's **Team Master** is restarted they will have the updated plugins and configuration provided by the updated container image.
 
 ### Send a Slack Notification
 
-Now all you have to do is add the `slackSend` step to the `success` `post` block of the **Build and Push Image** `stage`.
+Now all you have to do to send a Slack message is add the `slackSend` step to the `success` `post` block of the **Build and Push Image** `stage`.
 
 1. Use the GitHub file editor to update your `nodejs-app/Jenkinsfile.template` Pipeline script in your forked **custom-marker-pipelines** repository and add the following `post` block after the `steps` block of the **Build and Push Image** `stage` and then commit the changes:
 
