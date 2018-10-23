@@ -270,7 +270,7 @@ Now that we have successfully built a Docker image for our **helloworld-nodejs**
     }
 ```
 
-3. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will run successfully and there is a clickable link to your deployed app in the last step of the **Deploy** `stage`: <p><img src="img/advanced/deploy_echo_url.png" width=850/><p>In your app, notice the 'Build Number' and 'Commit' id in the footer: <p><img src="img/advanced/deploy_app_screenshot.png" width=750/>
+3. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will run successfully and there is a clickable link to your deployed app in the last step of the **Deploy** `stage`: <p><img src="img/advanced/deploy_echo_url.png" width=850/><p>In your app, notice the 'Build Number' and 'Commit' id in the footer: <p><img src="img/advanced/deploy_app_screenshot2.png" width=750/>
 
 ## Cross Team Collaboration
 In this exercise we are going to demonstrate [CloudBee's Core Cross Team Collaboration feature](https://go.cloudbees.com/docs/cloudbees-core/cloud-admin-guide/cross-team-collaboration/).
