@@ -67,9 +67,9 @@ Declarative Pipelines support a feature referred to as [***Restartable Stages***
   }
 ```
 
-1. By default, the `preserveStashes` step will only preserver 1 run, but it provides the `buildCount` parameter to set a range from 1 up to 50 runs to preserve. We will preserve 2 runs to match the `buildDiscarder` policy configured for our Team Masters. 
-2. Next, navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job from the start. This is necessary for the `preserveStash` to take effect and for the `stash` in the **Test** `stage` to get preserved. 
-3. Once the job has completed, select the **Build and Push Image** `stage` and then click on the ***Restart Build and Push Image*** link. The `unstash` step in the **Build and Push Image** `stage` will work now and the job will complete successfully. <p><img src="img/more/restart_build_push_success.png" width=850/>
+5. By default, the `preserveStashes` step will only preserver 1 run, but it provides the `buildCount` parameter to set a range from 1 up to 50 runs to preserve. We will preserve 2 runs to match the `buildDiscarder` policy configured for our Team Masters. 
+6. Next, navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job from the start. This is necessary for the `preserveStash` to take effect and for the `stash` in the **Test** `stage` to get preserved. 
+7. Once the job has completed, select the **Build and Push Image** `stage` and then click on the ***Restart Build and Push Image*** link. The `unstash` step in the **Build and Push Image** `stage` will work now and the job will complete successfully. <p><img src="img/more/restart_build_push_success.png" width=850/>
 
 ## Kubernetes Pod Templates Defined in Pipeline Script
 
