@@ -211,7 +211,7 @@ slack:2.4
 2. Next, we need to update what Docker Image is the default for our **Team Masters** on Operations Center:<p><img src="img/more/slack_update_docker_image.png" width=800/>
 3. Now all we have to do is run a **Cluster Operation** job on CloudBees Core Operations Center that has been configured to *reprovision* all of the **Team Masters** resulting in each **Team Master** using the new container image. Once your **Team Master** has been restarted the Slack plugin will be installed and cofigured:<p><img src="img/more/slack_cluster_op.png" width=800/>
 
-That's it, once everyone's **Team Master** is restarted they will have the updated plugins and configuration provided by the updated container image.
+That's it, once everyone's **Team Master** is restarted they will have the updated plugins and configuration provided by the updated container image.<p><img src="img/more/slack_beedemo_config.png" width=800/>
 
 ### Send a Slack Notification
 
@@ -241,7 +241,7 @@ Now all you have to do to send a Slack message is add the `slackSend` step to th
 >**NOTE:** The [global environmental variables](https://jenkins.io/doc/book/pipeline/getting-started/#global-variable-reference) - `JOB_NAME` and `RUN_DISPLAY_URL` that we are including in our Slack message. Among other things, these are very handy for including in messages, providing a link to navigate directly to the job.
 
 2. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. 
-3. After your Pipeline job completes the `steps` in the **Build and Push Image** `stage` a message from your **Team Master** in the beedemo-team #ci Slack channel as below:<p><img src="img/more/slack_beedemo_channel.png" width=800/>
+3. After your Pipeline job completes the `steps` in the **Build and Push Image** `stage` a message from your **Team Master** in the beedemo-team #ci Slack channel as below:<p><img src="img/more/slack_beedemo_channel.png" width=600/>
 
 ## Next Lesson
 
