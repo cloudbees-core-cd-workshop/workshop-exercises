@@ -231,6 +231,11 @@ We will now update the **Build and Push Image** `stage` to use the `dockerBuildP
           unstash 'app'
         }
       }
+      post {
+        success {
+          slackSend "${JOB_NAME} pipeline job is awaiting approval at: ${RUN_DISPLAY_URL}"
+        }
+      }
     }
 ```
 
