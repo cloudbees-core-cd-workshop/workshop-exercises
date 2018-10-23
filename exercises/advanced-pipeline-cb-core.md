@@ -136,21 +136,21 @@ A custom step for using the <pre>readProperties</pre> step from the Pipeline Uti
 Now that the **Pipeline Shared Library** is configured for your Team Master and we have a **global variable** to use, we will use it in the `nodejs-app/Jenkinsfile.template` Pipeline script.
 
 1. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **custom-marker-pipelines** repository.
-2. Replace the `script` block where we are using the `readProperties` step with our new custom step. Update the  **App Setup** `stage` nested in the **Test** `stage` to match the following:
+2. Replace the `script` block where we are using the `readProperties` step with our new custom step - `defineProps`. Update the of the **Nodejs Setup** nested `stage` of the **Web Tests** parent `stage` to match the following:
 
 ```groovy
-        stage('App Setup') {
-          steps {
-            checkout scm
-            defineProps('.nodejs-app', [npmPackages: 'express pug'])
-            container('nodejs') {
-              sh """
-                npm i -S ${npmPackages}
-                node ./hello.js &
-              """
+            stage('Nodejs Setup') {
+              steps {
+                checkout scm
+                defineProps('.nodejs-app', [npmPackages: 'express pug'])            
+                container('nodejs') {
+                  sh """
+                    npm i -S ${npmPackages}
+                    node ./hello.js &
+                  """
+                }
+              }   
             }
-          }
-        }
 ```
 
 3. Not only have we created a reusable **custom step**, we have also made our Declartive Pipeline script much more readable. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will run successfully. Note in **Console Output** in the classic UI the checkout of the our `cd-accel` Shared Library: <p><img src="img/advanced/shared_lib_checkout.png" width=800/>
