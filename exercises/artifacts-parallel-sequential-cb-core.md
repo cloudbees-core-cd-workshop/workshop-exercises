@@ -259,7 +259,7 @@ metadata:
 spec:
   containers:
   - name: nodejs
-    image: node:10.9.0-alpine
+    image: node:10.10.0-alpine
     command:
     - cat
     tty: true
@@ -269,8 +269,6 @@ spec:
     - cat
     tty: true
 ```
-
-<p><img src="img/advanced/shared_lib_resource_load_test_pod_yaml.png" width=850/>
 
 3. Commit the changes.
 4. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **custom-marker-pipelines** repository.
@@ -305,6 +303,8 @@ def loadTestPodYaml = libraryResource 'podtemplates/nodejs-app/load-test-pod.yml
       }
     }  
 ```
+
+1. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will complete successfully.
 
 ## Parallel Stages
 
