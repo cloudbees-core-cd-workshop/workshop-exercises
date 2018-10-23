@@ -298,7 +298,7 @@ def loadTestPodYaml = libraryResource 'podtemplates/nodejs-app/load-test-pod.yml
           '''
         }
         container('apache-benchmark') {
-          sh 'ab -n 10 -c 4 -s 5 localhost:8080'
+          sh 'ab -n 10 -c 4 -s 5 http://localhost:8080'
         }
       }
     }  
