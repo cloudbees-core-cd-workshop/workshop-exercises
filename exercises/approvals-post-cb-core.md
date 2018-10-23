@@ -228,7 +228,6 @@ Now all you have to do to send a Slack message is add the `slackSend` step to th
       }
       steps {
         echo "TODO - build and push image"
-        unstash 'app'
       }
       post {
         success {
