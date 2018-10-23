@@ -422,24 +422,32 @@ Running in parallel doesn't save a lot of time for our simple **helloworld-nodej
             }
           } 
         }
-        stage('Load Test') {  
+        stage('Load Test') {
           agent {
             kubernetes {
               label 'nodejs-ab'
               yaml loadTestPodYaml
             }
           }
-          steps {
-            checkout scm
-            container('nodejs') {
-              sh '''
-                npm install express
-                npm install pug --save
-                node ./hello.js &
-              '''
+          stages {
+            stage('Nodejs Setup') {
+              steps {
+                checkout scm
+                container('nodejs') {
+                  sh '''
+                    npm install express
+                    npm install pug --save
+                    node ./hello.js &
+                  '''
+                }
+              }   
             }
-            container('apache-benchmark') {
-              sh 'ab -n 10 -c 4 -s 5 http://localhost:8080/'
+            stage('Apache Benchmark') {  
+              steps {
+                container('apache-benchmark') {
+                  sh 'ab -n 10 -c 4 -s 5 http://localhost:8080/'
+                }
+              }
             }
           }
         }
@@ -447,7 +455,7 @@ Running in parallel doesn't save a lot of time for our simple **helloworld-nodej
     }
 ```
 
-1. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. It will complete successfully: <p><img src="img/parallel/sequential_nested_success.png" width=850/> Note that, just like with parallel stages, you can only restart from the top-level **Tests** `stage`. <p> Although it makes our Jenkinsfile slight more verbose, exactly what our Pipeline is doing is clearer in Blue Ocean.
+1. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. It will complete successfully: <p><img src="img/parallel/sequential_nested_success.png" width=850/> Note that, just like with parallel stages, you can only restart from the top-level **Tests** `stage`. <p> Although it makes our Jenkinsfile slight more verbose, using **Sequential Stages** let's us see exactly what our Pipeline is doing in Blue Ocean.
 
 ## Next Lesson
 
