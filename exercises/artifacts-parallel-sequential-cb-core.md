@@ -73,7 +73,7 @@ Declarative Pipelines support a feature referred to as [***Restartable Stages***
 
 ## Kubernetes Pod Templates Defined in Pipeline Script
 
-Before we take a look at parallelization and sequential stages for Declartive Pipelines we need a reason to use those features. So we will add some tests for our **helloworld-nodejs** app. However, before we add tests to the **nodejs-app/Jenkinsfile.template** Pipeline script we will need an additional Docker *container* for executing tests. We also want to use a different vesion of the **node** Docker image than the one provided by the CJOC *Kubernetes Shared Cloud* which is `node:8.12.0-alpine`. So far we have been using the **nodejs-app** [Kubernetes *Pod Template* defined for us on **CloudBees Jenkins Operations Center (CJOC)**](https://go.cloudbees.com/docs/cloudbees-core/cloud-admin-guide/agents/#_globally_editing_pod_templates_in_operations_center). In order to be able to control what `containers` and what Docker `image` version we use in our Pipeline we will update the **nodejs-app/Jenkinsfile.template** Pipeline script with an [*inline* Kubernetes Pod Template definition](https://github.com/jenkinsci/kubernetes-plugin#declarative-pipeline).
+Before we take a look at parallelization and sequential stages for Declartive Pipelines we need a reason to use those features. So we will add some tests for our **helloworld-nodejs** app. But, before we add tests to the **nodejs-app/Jenkinsfile.template** Pipeline script we will need an additional Docker *container* for executing tests. We also want to use a different vesion of the **node** Docker image than the one provided by the CJOC *Kubernetes Shared Cloud* which is `node:8.12.0-alpine`. So far we have been using the **nodejs-app** [Kubernetes *Pod Template* defined for us on **CloudBees Jenkins Operations Center (CJOC)**](https://go.cloudbees.com/docs/cloudbees-core/cloud-admin-guide/agents/#_globally_editing_pod_templates_in_operations_center). In order to be able to control what `containers` and what Docker `image` version we use in our Pipeline we will update the **nodejs-app/Jenkinsfile.template** Pipeline script with an [*inline* Kubernetes Pod Template definition](https://github.com/jenkinsci/kubernetes-plugin#declarative-pipeline).
 
 1. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **custom-marker-pipelines** repository.
 2. Replace the `agent` section of the **Test** `stage` with the following:
@@ -111,7 +111,7 @@ spec:
 
 ## Pipeline Shared Libraries
 
-You will fork an existing Pipeline Shared Library GitHub repository for this exercise from https://github.com/cloudbees-cd-acceleration-workshop/pipeline-library into the GitHub Organization you created in **[Setup - Create a GitHub Organization](./Setup.md#create-a-github-organization)**.
+For this exercise, you will fork an existing Pipeline Shared Library GitHub repository for this exercise from https://github.com/cloudbees-cd-acceleration-workshop/pipeline-library into the GitHub Organization you created in **[Setup - Create a GitHub Organization](./Setup.md#create-a-github-organization)**.
 
 Once you have forked the ***pipeline-library*** repository into your GitHub Organization you will need to configure it as a Pipeline Shared Library for your Team Master. Pipeline Shared Libraries may be configured at the Jenkins Master level or the Jenkins folder level. The GitHub Oranization project that you created earlier is actually a special type of folder, so we will add the configuration for ***pipeline-library*** to that folder.
 
@@ -166,7 +166,7 @@ metadata:
 spec:
   containers:
   - name: nodejs
-    image: node:10.9.0-alpine
+    image: node:10.10.0-alpine
     command:
     - cat
     tty: true
