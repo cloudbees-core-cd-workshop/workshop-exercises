@@ -29,7 +29,6 @@ In order to follow along with the hands on portion of the workshop students shou
     - admin:repo_hook: all
     - admin:org_hook
     - user: all
-  * Access to a Jenkins server
   
 Detailed set-up instructions are available at **[Setup](Setup.md)**
 
