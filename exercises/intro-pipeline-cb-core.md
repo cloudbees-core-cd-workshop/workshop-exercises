@@ -74,7 +74,7 @@ For the purposes of this workshop everyone is creating and updating their own fo
 
 In the previous lesson your Pipeline should have run and will have failed. <p><img src="img/intro/basic_syntax_failed.png" width=850/>
 
-In this exercise we will update the `nodejs-app/Jenkinsfile.template` Declarative Pipeline using the GitHub editor so that it will actually do something as opposed to resulting in the following errors:
+In this exercise we will update the `nodejs-app/Jenkinsfile.template` Declarative Pipeline using the GitHub file editor so that it will actually run as opposed to resulting in the following syntax errors:
 
 ```
 WorkflowScript: 1: Missing required section "stages" @ line 1, column 1.
@@ -92,7 +92,7 @@ WorkflowScript: 1: Missing required section "agent" @ line 1, column 1.
 
 1. We will use the GitHub file editor to update the `nodejs-app/Jenkinsfile.template` file in your forked **custom-marker-pipelines** repository. Navigate to the `custom-marker-pipelines/nodejs-app/Jenkinsfile.template` file in the **master** branch of your forked repository and then click on the pencil icon to the upper right to edit that file. <p><img src="img/intro/basic_snytax_edit_github.png" width=850/>
 
-> NOTE: Remember we are using a CloudBees Core feature that allows us to specify a Pipeline script from a different source code repository than the one where the application code is committed.
+> NOTE: Remember we are using a CloudBees Core feature that allows us to specify a Pipeline script from a different source code repository than the one where the application code is committed. This may be a bit confusing at first as commits to your *template* will not trigger a build via GitHub webhooks because we aren't actually making a commit to the application repository.
 
 2. Replace the contents of that file with the following Declarative Pipeline:
 
@@ -122,7 +122,7 @@ pipeline {
   ...
   ```
 
-  2. The agent is being provisioned from a Kubernetes Pod Template (more on this in the next lesson):
+  6. The agent is being provisioned from a Kubernetes Pod Template (more on this in the next lesson):
 
   ```
   ...
@@ -130,7 +130,7 @@ pipeline {
   ...
   ```
 
-  3. Your fork of the **helloworld-nodejs** repository is being checked out, even though you did not put any steps in the `nodejs-app/Jenkinsfile.template` to do so:
+  7. Your fork of the **helloworld-nodejs** repository is being checked out, even though you did not put any steps in the `nodejs-app/Jenkinsfile.template` to do so:
 
   ```
   ...
@@ -138,7 +138,7 @@ pipeline {
   ...
   ```
 
-  4. The agent has a Java version of `1.8.0_171`:
+  8. The agent has a Java version of `1.8.0_171`:
 
 ```
 ...
