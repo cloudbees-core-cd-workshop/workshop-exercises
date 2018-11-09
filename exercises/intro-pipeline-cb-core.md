@@ -114,7 +114,7 @@ pipeline {
 4. Navigate back to the **helloworld-nodejs** *master* branch job on your Team Master and click the **Build Now** button in the left menu. <p><img src="img/intro/basic_syntax_build_now.png" width=550/>
 5. Your job will complete successfully. Note some things from the log:
   
-   1. The custom marker script - `nodejs-app/Jenkinsfile.template` - is being pulled from your forked **custom-marker-pipelines** forked repository and not from the **helloworld-nodejs** repository:
+   i. The custom marker script - `nodejs-app/Jenkinsfile.template` - is being pulled from your forked **custom-marker-pipelines** forked repository and not from the **helloworld-nodejs** repository:
 
   ```
   ...
@@ -122,7 +122,7 @@ pipeline {
   ...
   ```
 
-  6. The agent is being provisioned from a Kubernetes Pod Template (more on this in the next lesson):
+  ii. The agent is being provisioned from a Kubernetes Pod Template (more on this in the next lesson):
 
   ```
   ...
@@ -130,7 +130,7 @@ pipeline {
   ...
   ```
 
-  7. Your fork of the **helloworld-nodejs** repository is being checked out, even though you did not put any steps in the `nodejs-app/Jenkinsfile.template` to do so:
+  iii. Your fork of the **helloworld-nodejs** repository is being checked out, even though you did not put any steps in the `nodejs-app/Jenkinsfile.template` to do so:
 
   ```
   ...
@@ -138,7 +138,7 @@ pipeline {
   ...
   ```
 
-  8. The agent has a Java version of `1.8.0_171`:
+  iv. The agent has a Java version of `1.8.0_171`:
 
 ```
 ...
