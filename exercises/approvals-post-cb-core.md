@@ -239,8 +239,8 @@ Now all you have to do to send a Slack message is add the `slackSend` step to yo
 
 >**NOTE:** The [global environmental variables](https://jenkins.io/doc/book/pipeline/getting-started/#global-variable-reference) - `JOB_NAME` and `RUN_DISPLAY_URL` that we are including in our Slack message are very handy for including in messages, providing a link to navigate directly to the job.
 
-1. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. 
-2. After your Pipeline job completes the `steps` in the **Build and Push Image** `stage` a message from your **Team Master** in the beedemo-team #ci Slack channel as below:<p><img src="img/more/slack_beedemo_channel.png" width=600/>
+2. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. 
+3. After your Pipeline job completes the `steps` in the **Build and Push Image** `stage` a message from your **Team Master** in the beedemo-team #ci Slack channel as below:<p><img src="img/more/slack_beedemo_channel.png" width=600/>
 
 ## Next Lesson
 
