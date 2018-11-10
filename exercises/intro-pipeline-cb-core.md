@@ -55,15 +55,15 @@ Once those repositories are forked:
 1. In the **Github Organization** folder Jenkins project you started to create in the previous exercise scroll down to the **Project Recognizers** section.
 2. Delete the default **Project Recognizer** **Pipeline Jenkinsfile**. <p><img src="img/intro/custom_marker_delete_default.png" width=800/>
 3. Next, under **Project Recognizers** click the **Add** button and select **Custom Script** <p><img src="img/intro/custom_marker_add_custom_script.png" width=700/>
-3. In **Marker file** type `.nodejs-app`
+3. In **Marker file** input, enter `.nodejs-app`
 4. Under **Pipeline** - **Definition** select **Pipeline script from SCM**
 5. Select **Git** for the **SCM** drop-down
 6. In **Repository URL** enter: `https://github.com/{your_org_name}/custom-marker-pipelines`
-7. Select the credentials you created in the previous exercise.
+7. Select the credentials you created in the previous exercise for the **Credentials** drop-down.
 8. In **Script path** enter: `nodejs-app/Jenkinsfile.template`. Other than the GitHub Organization name it should look like the following: <p><img src="img/intro/custom_marker_config.png" width=850/>
 9. Click on **Save**
 10. After the scan is complete, click on the bread-crumb link to go back to your **Github Organization** folder Jenkins project <p><img src="img/intro/custom_marker_scan_complete.png" width=850/>
-11. When the scan is complete your **Github Organization** project should be **empty**! <p><img src="img/intro/custom_marker_empty.png" width=800/> <p>But, when the project was created it also should have created a webhook in Github. Verify that the webhook was created in Github by checking **Webhooks** within your Organization's Github **Settings**. <p><img src="img/intro/custom_marker_org_webhook.png" width=850/>
+11. When the scan is complete your **Github Organization** project should be **empty**! <p><img src="img/intro/custom_marker_empty.png" width=800/> <p>However, when the project was created it also should have created a webhook in Github. Verify that the webhook was created in Github by checking **Webhooks** within your Organization's Github **Settings**. <p><img src="img/intro/custom_marker_org_webhook.png" width=850/>
 12. In your forked copy of the **helloworld-nodejs** repository click on the **Create new  file** button towards the top right of the screen. <p><img src="img/intro/custom_marker_create_file.png" width=850/>
 13. Name the file `.nodejs-app` - no need to add any content - and click the **Commit new file** button at the bottom of the screen to save it your repository master branch.  <p><img src="img/intro/custom_marker_commit_file.png" width=850/>
 14. Navigate back to your GitHub Organization Folder project on your CloudBees Team Master and voila (*Disclaimer: You may need to refresh your browser*) - you have a new [Pipeline Multibranch project](https://jenkins.io/doc/book/pipeline/multibranch/) mapped to the the **helloworld-nodejs** repository thanks to the the GitHub Organization webhook that was created when we first save the GitHub Organization Folder project. Notice how the **helloworld-nodej** Multibranch Pipeline project's description came from the GitHub repository description. <p><img src="img/intro/custom_marker_multibranch.png" width=850/>
