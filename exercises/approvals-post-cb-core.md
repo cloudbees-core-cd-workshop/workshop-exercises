@@ -142,7 +142,7 @@ pipeline {
     }
 ```
 
-### Skip Default Checkout
+### More Options - Skip Default Checkout
 
 By default, when a global `agent` - that is an `agent` at the `pipeline` level - is used and there aren't any agents defined at the individual `stage` levels, then that same `agent` is shared across all the `stages` and the source code repository associated with the Jenkins job is automatically checked out only once. But you will typically want to use different **agents** for different **stages**. And sometimes you don't need to checkout the source code for every `stage`. That is the case for our Pipeline for the **helloworld-nodejs** repository - we will eventually have different Kubernetes Pod Template based agents for each `stage`. So we are going to revisit the automatic code checkout for Declarative Pipelines that was mentioned in the [Basic Declarative Syntax Structure](./intro-pipeline-cb-core.md#basic-declarative-syntax-structure) lesson. Declarative Pipeline checks out source code by default as part of the `agent` directive. However, we don't need all of the files in the **helloworld-nodejs** repository in all of the stages. The `skipDefaultCheckout` option is a global level `options` to disable automatic checkouts.
 
@@ -174,7 +174,7 @@ pipeline {
 
 3. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job.
 
->**NOTE:** The `scm` part of the [`checkout scm` step](https://jenkins.io/doc/pipeline/steps/workflow-scm-step/#code-checkout-code-general-scm) is a special variable that is created for all Pipelines configured to load their Pipeline script from source control such as our **helloworld-nodejs** Multibranch Pipeline project.
+>**NOTE:** The `scm` part of the [`checkout scm` step](https://jenkins.io/doc/pipeline/steps/workflow-scm-step/#code-checkout-code-general-scm) is a special environment variable that is created for all Pipelines configured to load their Pipeline script from source control such as our **helloworld-nodejs** Multibranch Pipeline project.
 
 ## Send Notification
 Typically if you are using the `input` step with your Jenkins Pipeline you will want to send out a notification to the targeted approvers before the `input` step pauses the job. In this exercise we will send a notification using the Slack plugin `slackSend` step. But before that, we must update everyone's **Team Master** by installing and configuring the Slack plugin. Rather than have everyone do that manually on their own, we will take advantage of the CloudBees Core Operations Center [Cluster Operations to *bulk* upgrade everyone's **Team Master**](https://go.cloudbees.com/docs/cloudbees-core/cloud-admin-guide/operating/#_bulk_upgrading_managed_masters).
@@ -207,15 +207,15 @@ slack:2.4
     room: "#ci"
 ```
 
-1. After those changes are made for our custom container image we need to build the image and push it to container registry. We have already done that and the image has been pushed to an AWS Elastic Container Registry (ECR) as `946759952272.dkr.ecr.us-east-1.amazonaws.com/kypseli/cb-core-mm:2.138.2.2-kube-workshop-slack-1`.
-2. Next, we need to update what Docker Image is the default for our **Team Masters** on Operations Center:<p><img src="img/more/slack_update_docker_image.png" width=800/>
-3. Now all we have to do is run a **Cluster Operation** job on CloudBees Core Operations Center that has been configured to *reprovision* all of the **Team Masters** resulting in each **Team Master** using the new container image. Once your **Team Master** has been restarted the Slack plugin will be installed and cofigured:<p><img src="img/more/slack_cluster_op.png" width=800/>
+3. After those changes are made for our custom container image we need to build the image and push it to container registry. We have already done that and the image has been pushed to an AWS Elastic Container Registry (ECR) as `946759952272.dkr.ecr.us-east-1.amazonaws.com/kypseli/cb-core-mm:2.138.2.2-2-kube-workshop-slack-1`.
+4. Next, we need to update what Docker Image is the default for our **Team Masters** on Operations Center:<p><img src="img/more/slack_update_docker_image.png" width=800/>
+5. Now all we have to do is run a **Cluster Operation** job on CloudBees Core Operations Center that has been configured to *reprovision* all of the **Team Masters** resulting in each **Team Master** using the new container image. Once your **Team Master** has been restarted the Slack plugin will be installed and cofigured:<p><img src="img/more/slack_cluster_op.png" width=800/>
 
 That's it, once everyone's **Team Master** is restarted they will have the updated plugins and configuration provided by the updated container image.<p><img src="img/more/slack_beedemo_config.png" width=800/>
 
 ### Send a Slack Notification
 
-Now all you have to do to send a Slack message is add the `slackSend` step to the `success` `post` block of the **Build and Push Image** `stage`.
+Now all you have to do to send a Slack message is add the `slackSend` step to your Pipeline. We will add it to the `success` `post` block of the **Build and Push Image** `stage`.
 
 1. Use the GitHub file editor to update your `nodejs-app/Jenkinsfile.template` Pipeline script in your forked **custom-marker-pipelines** repository and add the following `post` block after the `steps` block of the **Build and Push Image** `stage` and then commit the changes:
 
@@ -237,10 +237,10 @@ Now all you have to do to send a Slack message is add the `slackSend` step to th
     }
 ```
 
->**NOTE:** The [global environmental variables](https://jenkins.io/doc/book/pipeline/getting-started/#global-variable-reference) - `JOB_NAME` and `RUN_DISPLAY_URL` that we are including in our Slack message. Among other things, these are very handy for including in messages, providing a link to navigate directly to the job.
+>**NOTE:** The [global environmental variables](https://jenkins.io/doc/book/pipeline/getting-started/#global-variable-reference) - `JOB_NAME` and `RUN_DISPLAY_URL` that we are including in our Slack message are very handy for including in messages, providing a link to navigate directly to the job.
 
-2. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. 
-3. After your Pipeline job completes the `steps` in the **Build and Push Image** `stage` a message from your **Team Master** in the beedemo-team #ci Slack channel as below:<p><img src="img/more/slack_beedemo_channel.png" width=600/>
+1. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. 
+2. After your Pipeline job completes the `steps` in the **Build and Push Image** `stage` a message from your **Team Master** in the beedemo-team #ci Slack channel as below:<p><img src="img/more/slack_beedemo_channel.png" width=600/>
 
 ## Next Lesson
 
