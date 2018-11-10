@@ -1,6 +1,6 @@
 # Pipeline Approvals, Post Actions and Notifications with CloudBees Core
 
-In this set of exercises, we will see how you can capture interactive input to your Jenkins Pipeline while it is running, get an introduction to the Declarative [`post` sections](https://jenkins.io/doc/book/pipeline/syntax/#post) and use a **post-condition** block to send a notification. We will also see how CloudBees Core enables [easy simultaneous updates of all of our Team Masters](https://go.cloudbees.com/docs/cloudbees-core/cloud-admin-guide/operating/#_bulk_upgrading_managed_masters) and will use this capability to add the Slack plugin and necessary configuration to send a Slack notification from our Pipeline job.
+In this set of exercises, we will see how you can capture interactive input in your Jenkins Pipeline while it is running, get an introduction to the Declarative [`post` sections](https://jenkins.io/doc/book/pipeline/syntax/#post) and use a **post-condition** block to send a notification. We will also see how CloudBees Core enables [easy simultaneous updates of all of our Team Masters](https://go.cloudbees.com/docs/cloudbees-core/cloud-admin-guide/operating/#_bulk_upgrading_managed_masters) and will use this capability to add the Slack plugin and necessary configuration to send a Slack notification from our Pipeline job.
 
 ## Interactive Input
 
