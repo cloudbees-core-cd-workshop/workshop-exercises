@@ -104,11 +104,11 @@ def call(String file, Map defaults) {
   }
 }
 ```
->**NOTE:** We could actually define the `defaults` directly in the custom step like `def call(String file, Map defaults = [npmPackages: 'express pug'])` and then you would have to even provide the second parameter when calling this step from your Pipeline script - but we will actually want to reuse this particular custom step across many Pipeline templates, not just the on for Node.js applications.
+>**NOTE:** We could actually define the `defaults` directly in the custom step like `def call(String file, Map defaults = [npmPackages: 'express pug'])` and then you wouldn't have to provide the second parameter when calling this step from your Pipeline script - but we will actually want to reuse this particular custom step across many Pipeline templates, not just the on for Node.js applications, so it doesn't make much sense to have a global default across all application types.
 
 
-3. Commit the `defineProps.groovy` file. 
-4. Next we will create a `defineProps.txt` file in the `vars` directory. We will format it as HTML as we are using the ***Safe HTML*** **Markup Formatter** that is configured for all the Team Masters via CJOC.  <p><img src="img/advanced/cjoc_configured_markup_formatter.png" width=800/><p>This will provide dynamically generated documentation on whatever Jenkins instance the Shared Library is installed for our custom step:
+1. Commit the `defineProps.groovy` file. 
+2. Next we will create a `defineProps.txt` file in the `vars` directory. We will format it as HTML as we are using the ***Safe HTML*** **Markup Formatter** that is configured for all the Team Masters via CJOC.  <p><img src="img/advanced/cjoc_configured_markup_formatter.png" width=800/><p>This will provide dynamically generated documentation on whatever Jenkins instance the Shared Library is installed for our custom step:
 
 ```html
 <h2>defineProps step</h2>
