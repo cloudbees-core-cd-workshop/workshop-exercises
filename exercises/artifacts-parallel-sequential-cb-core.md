@@ -177,8 +177,6 @@ spec:
     tty: true
 ```
 
-<p><img src="img/advanced/shared_lib_resource_test_pod_yaml.png" width=850/>
-
 3. Commit the changes.
 4. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **custom-marker-pipelines** repository.
 5. Add the following line to the very top of the Pipeline script, above the `pipeline` block - remember that we named the Shared Library **cd-accel** when we added it to our GitHub Organization project on our Team Masters:
