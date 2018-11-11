@@ -202,7 +202,7 @@ def testPodYaml = libraryResource 'podtemplates/nodejs-app/web-test-pod.yml'
       }
 ```
 
-8. Wow, that really makes our Jenkinsfile much more readable. Next, navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will run successfully using the `yaml` definition from the Shared Library you just added to your Pipeline script.
+8. Wow, that really makes our Jenkinsfile much more readable. Next, navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will run successfully using the `yaml` definition from the Shared Library you just added to your Pipeline script. Note in **Console Output** in the classic UI the checkout of the our `cd-accel` Shared Library: <p><img src="img/advanced/shared_lib_checkout.png" width=800/>
 
 ## Web Browser Tests with Testcafe
 

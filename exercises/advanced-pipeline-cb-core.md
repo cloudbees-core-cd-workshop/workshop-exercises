@@ -131,14 +131,14 @@ A custom step for using the <pre>readProperties</pre> step from the Pipeline Uti
 
 5. Even though we wrote it as HTML, we still have to save it with a `.txt` extension as mentioned above. Commit the `defineProps.txt` file.
 
->**NOTE:** Global Variable Documentation for custom steps will only be availale under a Pipeline job that uses it and has run successfully.
+>**NOTE:** Global Variable Documentation for custom steps will only be availale under a Pipeline job that uses it and has run successfully at least once.
 
 ### Use a Custom Step
 
-Now that the **Pipeline Shared Library** is configured for your Team Master and we have a **global variable** to use, we will use it in the `nodejs-app/Jenkinsfile.template` Pipeline script.
+With the **Pipeline Shared Library** already configured for your Team Master and a **global variable** to use, we will use it in the `nodejs-app/Jenkinsfile.template` Pipeline script.
 
 1. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **custom-marker-pipelines** repository.
-2. Replace the `script` block where we are using the `readProperties` step with our new custom step - `defineProps`. Update the of the **Nodejs Setup** nested `stage` of the **Web Tests** parent `stage` to match the following:
+2. Replace the `script` block where we are using the `readProperties` step with our new custom step - `defineProps`. Update the **Nodejs Setup** nested `stage` of the **Web Tests** parent `stage` to match the following:
 
 ```groovy
             stage('Nodejs Setup') {
@@ -155,7 +155,7 @@ Now that the **Pipeline Shared Library** is configured for your Team Master and 
             }
 ```
 
-3. Not only have we created a reusable **custom step**, we have also made our Declartive Pipeline script much more readable. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will run successfully. Note in **Console Output** in the classic UI the checkout of the our `cd-accel` Shared Library: <p><img src="img/advanced/shared_lib_checkout.png" width=800/>
+3. Not only have we created a reusable **custom step**, we have also made our Declartive Pipeline script much more readable. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will run successfully. 
 4. Exit to the class UI and click on the **Pipeline Syntax** link in the left navigation menu. Then click on the **Global Variables Reference** link and scroll to the bottom of the page. You will find the documentation that we created for our `defineProps` custom step: <p><img src="img/advanced/shared_lib_syntax_link.png" width=800/>
 
 ### Shared Library Steps for the 'Build and Push Image' and 'Deploy' Stages
@@ -191,11 +191,11 @@ The `completed` branch contains the following **global variables** and `resource
 |               +- tempImagePolicy.json #AWS ECR Image Lifecycle Policy for all Docker images pushed to ECR
 ```
 
-As you can see, there are quite a few additional **custom steps** and `resources`, and rather than take the time creating them together we are going we will use the completed versions.
+As you can see, there are quite a few additional **custom steps** and `resources`, and rather than take the time creating them together in this workshop, we will just use the completed versions.
 
 #### Update Your Team Master's 'cd-accel' Shared Library
 
-Before we can use the the additional *custom steps** and library `resources` described above we need get access to them. We could just merge the `completed` branch of your forked **pipeline-library** repository to the `master` branch. But we won't waste our time with that, as a simple update to the `library` step in your **nodejs-app/Jenkinsfile.template** Pipeline script will allow us to target a different branch. That is because when we first configured the Shared Library in our GitHub Organization project folder, we left the ***Allow default version to be overridden*** property checked - [this will allow us to override the version of the Shared Library directly in our Pipeline script](https://jenkins.io/doc/book/pipeline/shared-libraries/#library-versions).
+Before we can use the the additional *custom steps** and library `resources` described above we need get make them available to our Pipeline script. We could just merge the `completed` branch of your forked **pipeline-library** repository to the `master` branch. But we won't waste our time with that, as a simple update to the `library` step in your **nodejs-app/Jenkinsfile.template** Pipeline script will allow us to target a different branch. That is because when we first configured the Shared Library in our GitHub Organization project folder, we left the ***Allow default version to be overridden*** property checked - [this will allow us to override the version (branch, tag, or specific commit) of the Shared Library directly in our Pipeline script](https://jenkins.io/doc/book/pipeline/shared-libraries/#library-versions).
 
 1. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **custom-marker-pipelines** repository.
 2. Update the `library` step to match the following:
@@ -242,13 +242,13 @@ We will now update the **Build and Push Image** `stage` to use the `dockerBuildP
 ```
 
 3. Some interesting things to note from the updated **Deploy** `stage`:
-    1. We no longer have an `agent` defined. If you look at the `dockerBuildPush.groovy` in the `completed` branch of your **pipeline-library** repopsitory you will see that it defines a `node` which is basically a more complex version of the `agent` section and is available in both Scripted and Declarative Pipeline syntax whereas `agent` is only available in Declarative.
+    1. We no longer have an `agent` defined. If you look at the `dockerBuildPush.groovy` in the `completed` branch of your **pipeline-library** repopsitory you will see that it defines a `node` which is basically the non-Declarative way of specifying an `agent` section.
     2. The `unstash` step is inside of the `dockerBuildPush` step block. This is called a `closure` and [allows you to run additional, arbritary steps inside of a **custom step**](https://jenkins.io/doc/book/pipeline/shared-libraries/#defining-custom-steps).
 4. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will run successfully and everyone will have a brand new Docker Image in the Amazon Elastic Container Registry we are using for this workshop. All in all, as you can see below, there is a lot more going on in the **Build and Push Image** `stage` now: <p><img src="img/advanced/build_push_finished.png" width=850/>
 
 #### Update the 'Deploy' Stage
 
-Now that we have successfully built a Docker image for our **helloworld-nodejs** app we want to deploy it. We will update the **Deploy** `stage` to use the `kubeDeploy` **custom step** described above to deploy our app to Kubernetes.
+Now that we have successfully built a Docker image for our **helloworld-nodejs** app we want to deploy it. We will update the **Deploy** `stage` to use the `kubeDeploy` **custom step** described above to deploy our applications to Kubernetes.
 
 1. Open the GitHub editor for the **nodejs-app/Jenkinsfile.template** Pipeline script in the **master** branch of your forked **custom-marker-pipelines** repository.
 2. Replace the entire **Deploy** `stage` with the version below:
