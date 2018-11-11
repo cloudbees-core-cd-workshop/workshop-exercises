@@ -202,7 +202,7 @@ def testPodYaml = libraryResource 'podtemplates/nodejs-app/web-test-pod.yml'
       }
 ```
 
-8. Wow, that really makes our Jenkinsfile much more readable. Next, navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will run successfully using the `yaml` definition from our Shared Library.
+8. Wow, that really makes our Jenkinsfile much more readable. Next, navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will run successfully using the `yaml` definition from the Shared Library you just added to your Pipeline script.
 
 ## Web Browser Tests with Testcafe
 
@@ -226,7 +226,7 @@ So far, we have a **Test** `stage` that doesn't really do anything. We are going
         }
       }
 ```
-3. Notice how we now have 2 `container` blocks - with both containers being provided by our inline Pod Template. Also notice the `xunit:res.xml` part of the **testcafe** `sh` step. **Testcafe**  provides JUnit compatible output and it is useful to have Jenkins record that output for reporting and visualization. We will use the [`junit` step from the the JUnit plugin to captured and display test results](https://jenkins.io/doc/book/pipeline/jenkinsfile/#test) in Jenkins. We will add the `always` condition block to our `post` section of the `test` `stage` - because we want to capture both successful tests and failures:
+3. Notice how we now have 2 `container` blocks - with both containers being provided by our inline Pod Template. Also notice the `xunit:res.xml` part of the **testcafe** `sh` step. **Testcafe**  provides JUnit compatible output and it is useful to have Jenkins record that output for reporting and visualization. We will use the [`junit` step from the the JUnit plugin to capture and display test results](https://jenkins.io/doc/book/pipeline/jenkinsfile/#test) in Jenkins. We will add the `always` condition block to our `post` section of the `test` `stage` - because we want to capture both successful tests and failures:
 
 ```groovy
       post {
