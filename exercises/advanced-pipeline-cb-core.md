@@ -31,7 +31,7 @@ We have been installing two specific Node.js packages - `express` and `pug` - fo
                 }
 ```
 
-3. Next replace the `npm i -S express pug` of the `nodejs` `sh` step with the value of the `npmPackages` property - note the use of **triple double-quotes** instead of **triple single-quotes** - this is required to [support the interpolation](https://jenkins.io/doc/book/pipeline/jenkinsfile/#string-interpolation) of our `npmPackages` variable. The entire `nodejs` `container` block should match the following:
+3. Next replace the `npm i -S express pug` command of the `nodejs` `sh` step with the value of the `npmPackages` property - note the use of **triple double-quotes** instead of **triple single-quotes** - this is required to [support the string interpolation](https://jenkins.io/doc/book/pipeline/jenkinsfile/#string-interpolation) of our `npmPackages` variable. The entire `nodejs` `container` block should match the following:
 
 ```
                 container('nodejs') {
@@ -42,7 +42,7 @@ We have been installing two specific Node.js packages - `express` and `pug` - fo
                 }
 ```
 
-4. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The browser tests will both fail because we didn't add an `npmPackages` property to the `.nodejs-app` marker file in the **helloworld-nodejs** repository: <p><img src="img/advanced/props_failure.png" width=850/>  <p>The **express** framework and **pug** templating are what the majority of the dev teams use for Node.js development. So what we really want is to have a default value set, and then allow different dev teams to override that value if they are using different packages. Lucky for us, the `readProperties` step includes a parameter aptly named `defaults` that allows us to provide a map containing default key/values. We will update the `readProperties` script block with a map of default values and add the `defaults` parameter set to that map:
+4. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The browser tests should both fail. The reason they should fail is  because we didn't add an `npmPackages` property to the `.nodejs-app` marker file in the **helloworld-nodejs** repository: <p><img src="img/advanced/props_failure.png" width=850/>  <p>The **express** framework and **pug** templating are what the majority of the dev teams use for Node.js development. So what we really want is to specify a set of default values, and then allow different dev teams to override those values if they are using different packages. Lucky for us, the `readProperties` step includes a parameter aptly named `defaults` that allows us to provide a map containing default key/values. We will update the `readProperties` script block with a map of default values and add the `defaults` parameter set to that map so our `script` block looks like so:
 
 ```
                 script {
@@ -54,15 +54,15 @@ We have been installing two specific Node.js packages - `express` and `pug` - fo
                 }
 ```
 
-5. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will complete successfully using our default values for `npmPackages`. <p><img src="img/advanced/read_properties_with_defaults.png" width=800/>
+5. Commit the changes and then navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will complete successfully using the default values we specified for `npmPackages`. <p><img src="img/advanced/read_properties_with_defaults.png" width=800/>
 
 ## Custom Steps with Pipeline Shared Libraries
 
-In this exercise we are going to add a **custom step** to our Pipeline from a [**Pipeline Shared Library**](https://jenkins.io/doc/book/pipeline/shared-libraries/), providing functionality to set default values based on default Jenkins environmental variables that will provide a reusable way of using the `readProperties` step with Delcarative Pipelines and make our Pipeline script more readable.
+In this exercise we are going to add a **custom step** to our Pipeline from the [**Pipeline Shared Library**](https://jenkins.io/doc/book/pipeline/shared-libraries/) we created and configured earlier. This custom step will provide functionality to set default values based on default Jenkins environmental variables and will provide a reusable way of using the `readProperties` step with Delcarative Pipelines and make our Pipeline script more readable.
 
 ### Pipeline Directory Structure
 
-Shared Libraries have a very specific directory structure as follows with the focus on the `vars` directory for this exercise:
+Remember, Shared Libraries have a very specific directory structure as follows wiht our focus being on the `vars` directory for this exercise:
 
 ```
 (root)
@@ -89,7 +89,7 @@ A `resources` directory allows the `libraryResource` step to be used to load ass
 
 ### Create a Custom Step
 
-For this workshop we will only be using the simpler and more straight-forward **global variables** to define reusable Pipeline script from a Shared Library. But before we create a new **global variable** we need to decide what it needs to do. Pipeline Shared Libraries are like any other shared framework or utility - the purpose being to reduce redundant code and to adhere to [DRY](https://en.wikipedia.org/wiki/Don't_repeat_yourself) principle of software development. Also, with the advent of two different syntaxes for Pipelines - Declarative and Scripted - it is sometimes useful to use Shared Library [**custom steps**](https://jenkins.io/doc/book/pipeline/shared-libraries/#defining-custom-steps) to encapsulate Scripted syntax making Declarative Pipelines more readable. We will do just that for the `readProperties` `script` block that we added above. We will call our **custom step** `defineProps` - we can't use `readProperties` because then our new **custom step** would override and replace the `readProperties` step from the Pipeline Utilities plugin and we will actually use that step in our **custom step** as you will see below.
+For this workshop we will only be using the simpler and more straight-forward **global variables** to define reusable Pipeline script from a Shared Library. But before we create a new **global variable** we need to decide what it needs to do. Pipeline Shared Libraries are like any other shared framework or utility - the purpose being to simplify our Jenkinsfiles and to adhere to [DRY](https://en.wikipedia.org/wiki/Don't_repeat_yourself) principle of software development. Also, with the advent of two different syntaxes for Pipelines - Declarative and Scripted - it is sometimes useful to use Shared Library [**custom steps**](https://jenkins.io/doc/book/pipeline/shared-libraries/#defining-custom-steps) to encapsulate Scripted syntax making Declarative Pipelines more readable. We will do just that for the `readProperties` `script` block that we added above. We will call our **custom step** `defineProps` - we can't use `readProperties` because then our new **custom step** would override and replace the `readProperties` step from the Pipeline Utilities plugin and we will actually use that step in our **custom step** as you will see below.
 
 1. In the **master** branch of your forked **pipeline-library** repostiory navigate to the `vars` directory and open the `defineProps.groovy` with the GitHub editor. <p><img src="img/advanced/shared_lib_global_var_defineProps.png" width=800/>
 2. The file will be empty, but we will implement a `call` method as [the `call` method allows the global variable to be invoked in a manner similar to a regular Pipeline step](https://jenkins.io/doc/book/pipeline/shared-libraries/#defining-custom-steps):
@@ -104,9 +104,11 @@ def call(String file, Map defaults) {
   }
 }
 ```
+>**NOTE:** We could actually define the `defaults` directly in the custom step like `def call(String file, Map defaults = [npmPackages: 'express pug'])` and then you would have to even provide the second parameter when calling this step from your Pipeline script - but we will actually want to reuse this particular custom step across many Pipeline templates, not just the on for Node.js applications.
 
-4. Commit the `defineProps.groovy` file. 
-3. Next we will create a `defineProps.txt` file in the `vars` directory. We will format it as HTML as we are using the ***Safe HTML*** **Markup Formatter** that is configured for all the Team Masters via CJOC.  <p><img src="img/advanced/cjoc_configured_markup_formatter.png" width=800/><p>This will provide dynamically generated documentation on whatever Jenkins instance the Shared Library is installed for our custom step:
+
+3. Commit the `defineProps.groovy` file. 
+4. Next we will create a `defineProps.txt` file in the `vars` directory. We will format it as HTML as we are using the ***Safe HTML*** **Markup Formatter** that is configured for all the Team Masters via CJOC.  <p><img src="img/advanced/cjoc_configured_markup_formatter.png" width=800/><p>This will provide dynamically generated documentation on whatever Jenkins instance the Shared Library is installed for our custom step:
 
 ```html
 <h2>defineProps step</h2>
