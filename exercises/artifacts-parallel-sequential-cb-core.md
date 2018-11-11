@@ -247,8 +247,8 @@ So far, we have a **Test** `stage` that doesn't really do anything. We are going
 
 Now that we have added some web tests, we will next add a very simple load test utilizing the Apache Benchmark tool. But first we will need to add another Pod Template to the `resources` folder of your **pipeline-library** repostiory.
 
-1. In the **master** branch of your forked **pipeline-library** repostiory click on the **Create new file** button and enter `resources/podtemplates/nodejs-app/load-test-pod.yml`. 
-2. The contents of this file will be the following `Pod` configuration and will include the `apache-benchmark` container. Copy and paste the following as the content of this new `load-test-pod.yml` `resource` file: 
+1. In the **master** branch of your forked **pipeline-library** repository click on the **Create new file** button and enter `resources/podtemplates/nodejs-app/load-test-pod.yml`. 
+2. The contents of this file will be the following Kubernetes `Pod` configuration and will include the `apache-benchmark` container. Copy and paste the following as the content of this new `load-test-pod.yml` `resource` file: 
 
 ```
 kind: Pod
@@ -302,7 +302,7 @@ def loadTestPodYaml = libraryResource 'podtemplates/nodejs-app/load-test-pod.yml
     }  
 ```
 
-1. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will complete successfully.
+7. Navigate to the **master** branch of your **helloworld-nodejs** job in Blue Ocean on your Team Master and run the job. The job will complete successfully.
 
 ## Parallel Stages
 
