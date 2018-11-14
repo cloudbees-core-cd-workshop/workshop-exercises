@@ -59,7 +59,7 @@ Once those repositories are forked:
 4. Under **Pipeline** - **Definition** select **Pipeline script from SCM**
 5. Select **Git** for the **SCM** drop-down
 6. In **Repository URL** enter: `https://github.com/{your_org_name}/custom-marker-pipelines` - *making sure to replace {your_org_name} with the name you chose for your GitHub Organization*.
-7. Select the credentials you created in the previous exercise for the **Credentials** drop-down.
+7. Select the credentials you created in the previous exercise for the **Credentials** drop-down value.
 8. In **Script path** enter: `nodejs-app/Jenkinsfile.template`. Other than the GitHub Organization name it should look like the following: <p><img src="img/intro/custom_marker_config.png" width=850/>
 9. Click on **Save**
 10. After the scan is complete, click on the bread-crumb link to go back to your **Github Organization** folder Jenkins project <p><img src="img/intro/custom_marker_scan_complete.png" width=850/>
