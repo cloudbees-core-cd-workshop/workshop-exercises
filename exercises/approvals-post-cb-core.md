@@ -185,20 +185,18 @@ For the first part of this exercise everyone will just follow along as it is the
 1. For this workshop we have created a [custom container (Docker) image for our Team Masters](https://github.com/kypseli/cb-core-mm/blob/kube-workshop/Dockerfile). Among other things, this custom image allows us to manage the automatic installation of additional plugins. So the first thing we will need to do is add the **Slack** plugin to this custom image. To do that, we just have to add a text entry to the `plugin.txt` file which is utilized by the [`plugin.sh` script](https://github.com/kypseli/cb-core-mm/blob/kube-workshop-slack/plugins.sh) to install every plugin in the list and their dependencies:
 
 ```
-configuration-as-code:1.2
-configuration-as-code-support:1.2
+configuration-as-code:1.3
+configuration-as-code-support:1.3
 notification-api:1.1
 operations-center-notification:1.0
 aws-credentials:1.23
 artifact-manager-s3:1.1
 aws-global-configuration:1.0
-devoptics:1.1494
+devoptics:1.1561
 slack:2.4
 ```
 
->**NOTE:** The 2.4 version of the Slack plugin is not yet released and we are actually using a **SNAPSHOT** release. To use the **SNAPSHOT** version, we downloaded the **SNAPSHOT** build from the Jenkins CI server and added it to the [`plugins` directory](https://github.com/kypseli/cb-core-mm/tree/kube-workshop-slack/plugins) of our custom container image, the plugins in that directory are in turn copied to the `/usr/share/jenkins/ref/plugins/` directory of each **Team Master** Jenkins home from which it is automatically installed on start-up - with this approach, plugin dependencies must be managed manually. Once the 2.4 version is released we will be able to utilize the method above.
-
-2. Next we want to add the necessary **configuration** for the Slack plugin so that every Team can start using it right away. Fot that, we turn to the [Jenkins **C**onfiguration **as** **C**ode plugin](https://github.com/jenkinsci/configuration-as-code-plugin). The **CasC** plugin allows us to define configuration for all the **Team Masters** in a [simple yaml file](https://github.com/kypseli/cb-core-mm/blob/kube-workshop-slack/config-as-code.yml) that we [copy into the custom container image](https://github.com/kypseli/cb-core-mm/blob/kube-workshop-slack/Dockerfile#L20). Here is the configuration snippet for the Slack plugin:
+1. Next we want to add the necessary **configuration** for the Slack plugin so that every Team can start using it right away. Fot that, we turn to the [Jenkins **C**onfiguration **as** **C**ode plugin](https://github.com/jenkinsci/configuration-as-code-plugin). The **CasC** plugin allows us to define configuration for all the **Team Masters** in a [simple yaml file](https://github.com/kypseli/cb-core-mm/blob/kube-workshop-slack/config-as-code.yml) that we [copy into the custom container image](https://github.com/kypseli/cb-core-mm/blob/kube-workshop-slack/Dockerfile#L20). Here is the configuration snippet for the Slack plugin:
 
 ```
   slackNotifier:
@@ -207,7 +205,7 @@ slack:2.4
     room: "#ci"
 ```
 
-3. After those changes are made for our custom container image we need to build the image and push it to container registry. We have already done that and the image has been pushed to an AWS Elastic Container Registry (ECR) as `946759952272.dkr.ecr.us-east-1.amazonaws.com/kypseli/cb-core-mm:2.138.2.2-2-kube-workshop-slack-1`.
+3. After those changes are made for our custom container image, we need to build the image and push it to a container registry. We have already done that and the image has been pushed to an AWS Elastic Container Registry (ECR) as `946759952272.dkr.ecr.us-east-1.amazonaws.com/kypseli/cb-core-mm:2.138.3.1-kube-workshop-slack-2`.
 4. Next, we need to update what Docker Image is the default for our **Team Masters** on Operations Center:<p><img src="img/more/slack_update_docker_image.png" width=800/>
 5. Now all we have to do is run a **Cluster Operation** job on CloudBees Core Operations Center that has been configured to *reprovision* all of the **Team Masters** resulting in each **Team Master** using the new container image. Once your **Team Master** has been restarted the Slack plugin will be installed and cofigured:<p><img src="img/more/slack_cluster_op.png" width=800/>
 
