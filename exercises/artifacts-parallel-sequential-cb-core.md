@@ -276,7 +276,7 @@ spec:
 def loadTestPodYaml = libraryResource 'podtemplates/nodejs-app/load-test-pod.yml'
 ```
 
-6. Next, we will add a new **Load Test** stage using `loadTestPodYaml` as the `yaml` argument for the `kubernetes` based `agent`:
+6. Next, we will add a new **Load Test** stage after the **Test** `stage` using `loadTestPodYaml` as the `yaml` argument for the `kubernetes` based `agent`:
 
 ```
     stage('Load Test') {  
