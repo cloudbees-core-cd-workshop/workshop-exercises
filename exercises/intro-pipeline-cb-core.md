@@ -2,7 +2,7 @@
 
 In addition to all the great [Jenkins Pipeline features](https://jenkins.io/doc/book/pipeline/), CloudBees Core provides additional features and capabilities that make it easier and faster for organizations of any size to implement and manage Jenkins Pipelines for Continuous Delivery. In this set of exercises we will use a CloudBees Core feature referred to as *Custom Marker Files* to provide OOTB CI/CD for development teams that may not know the first thing about Jenkins, CI or CD.
 
-In this set of exercises we will also get an overview of the basic fundamentals of the Declarative Pipeline syntax, get an introduction to Kubernetes based agents and learn how to add conditional logic to a Declarative Pipeline.
+In addition to an introduction to *Custom Marker Files*, we will also get an overview of the basic fundamentals of the Declarative Pipeline syntax, get an introduction to Kubernetes based agents and learn how to add conditional logic to a Declarative Pipeline.
 
 ## GitHub Organization Project
 
